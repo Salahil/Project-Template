@@ -28,10 +28,6 @@ export const routes: Routes = [
     path: 'redefinir-senha/:token',
     loadComponent: () => import('./pages/acesso/redefinir-senha/redefinir-senha.component').then(m => m.RedefinirSenhaComponent)
   },
-  { 
-    path: 'cardapio-publico/:idRestaurante', // :idRestaurante será o parâmetro
-    loadComponent: () => import('./pages/cardapio-publico/cardapio-publico.component').then(m => m.CardapioPublicoComponent) 
-  },
   {
     path: '',
     loadComponent: () => import('./pages/layout-principal/layout-principal.component').then(m => m.LayoutPrincipalComponent),
