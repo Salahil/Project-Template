@@ -1,0 +1,1342 @@
+@use 'sass:color';
+@use '../../../../styles/shared/_menu-navigation.scss';
+
+// Variáveis
+$primary-color: #F6BD38;
+$accent-color: #3B221B;
+$text-color: #3B221B;
+$light-gray: #f5f5f5;
+$medium-gray: #e0e0e0;
+$dark-gray: #757575;
+$white: #fff;
+$border-radius: 16px;
+$success-color: #52c41a;
+$warning-color: #faad14;
+
+// Cores do Tavola
+$tavola-amarelo: #F6BD38;
+$tavola-vermelho: #DA4A24;
+$tavola-amarelo-claro: #FFF4D6;
+$tavola-cinza: #F8F9FA;
+
+// ==========================================================================
+// MIXIN: ESTILOS DO CARTÃO DE RESERVA (COMPARTILHADO DESKTOP E MOBILE)
+// ==========================================================================
+@mixin card-reserva-styles {
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  
+  .cabecalho-reserva {
+    background: $tavola-amarelo;
+    padding: 20px 24px;
+    text-align: center;
+    position: relative;
+    flex-shrink: 0;
+    
+    .titulo-reserva {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      color: $accent-color;
+    }
+    
+    .texto-gratis {
+      font-size: 15px;
+      color: $tavola-vermelho;
+      font-weight: 600;
+      margin: 0;
+    }
+    // Botão de fechar específico do drawer (só aparecerá se o HTML existir)
+    .fechar-drawer-btn {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-color;
+      background: rgba(255, 255, 255, 0.2);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+  
+  // Navegação horizontal
+  .navegacao-reserva {
+    display: flex;
+    padding: 0;
+    border-bottom: 1px solid $light-gray;
+    flex-shrink: 0;
+    
+    .etapa-nav {
+      flex: 1;
+      background: $white;
+      border: none;
+      padding: 12px 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 3px solid transparent;
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      &.active {
+        background: $white;
+        border-bottom-color: $tavola-amarelo;
+        
+        .conteudo-etapa {
+          color: $text-color;
+          font-weight: 600;
+        }
+      }
+      
+      &.completed {
+        background: $white;
+        border-bottom-color: $success-color;
+        
+        .conteudo-etapa {
+          color: $text-color;
+          font-weight: 500;
+        }
+      }
+      
+      &:hover:not(:disabled) {
+        background: $tavola-cinza;
+      }
+      
+      .conteudo-etapa {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        
+        i {
+          font-size: 16px;
+          color: $medium-gray;
+        }
+        
+        span {
+          font-size: 11px;
+          color: $dark-gray;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 70px;
+        }
+      }
+      
+      &.active .conteudo-etapa i,
+      &.completed .conteudo-etapa i {
+        color: inherit;
+      }
+    }
+  }
+  
+  // Container de conteúdo com scroll
+  .conteudo-reserva {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    min-height: 0;
+    
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: $light-gray;
+      border-radius: 2px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: $medium-gray;
+      border-radius: 2px;
+      
+      &:hover {
+        background: $dark-gray;
+      }
+    }
+  }
+  
+  .etapa-reserva {
+    .cabecalho-etapa {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      
+      .botao-voltar {
+        padding: 6px;
+        color: $text-color;
+        
+        &:hover {
+          color: $tavola-amarelo;
+        }
+      }
+      
+      h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 600;
+        color: $text-color;
+      }
+    }
+    
+    // Calendário estilo Tavola
+    .calendario-tavola {
+      // Ajuste para garantir visualização no mobile
+      width: 100%;
+      display: block;
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      
+      &::-webkit-scrollbar {
+        width: 4px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: $light-gray;
+        border-radius: 2px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: $medium-gray;
+        border-radius: 2px;
+        
+        &:hover {
+          background: $dark-gray;
+        }
+      }
+      
+      ::ng-deep .ant-picker-calendar {
+        .ant-picker-calendar-header {
+          padding: 10px 0;
+          position: sticky;
+          top: 0;
+          background: $white;
+          z-index: 10;
+          
+          .ant-picker-calendar-year-select,
+          .ant-picker-calendar-month-select {
+            color: $text-color;
+            font-size: 15px;
+          }
+        }
+        
+        .ant-picker-body {
+          padding: 0;
+        }
+        
+        .ant-picker-content {
+          th, td {
+            padding: 3px;
+            font-size: 12px;
+          }
+          
+          th {
+            color: $dark-gray;
+            font-weight: 500;
+          }
+        }
+        
+        .ant-picker-cell {
+          &:hover .ant-picker-cell-inner {
+            background-color: $tavola-amarelo-claro;
+          }
+          
+          &.ant-picker-cell-selected .ant-picker-cell-inner {
+            background-color: $tavola-amarelo;
+            color: $text-color;
+            font-weight: 600;
+          }
+          
+          &.ant-picker-cell-disabled .ant-picker-cell-inner {
+            color: $medium-gray;
+            background-color: transparent;
+          }
+          
+          .ant-picker-cell-inner {
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin: 0 auto; // Centraliza no mobile
+          }
+        }
+      }
+    }
+    
+    // Horários estilo Tavola
+    .periodo-horario {
+      margin-bottom: 24px;
+      
+      h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 14px;
+        color: $text-color;
+      }
+      
+      .slots-horario {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        
+        .slot-horario {
+          position: relative;
+          padding: 10px 6px;
+          font-size: 12px;
+          font-weight: 500;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+          border: 1px solid $medium-gray;
+          background: $white;
+          
+          &:hover:not(:disabled) {
+            background-color: $tavola-amarelo;
+            border-color: $tavola-amarelo;
+            color: $text-color;
+          }
+          
+          &.limitado {
+            border-color: $warning-color;
+            background-color: rgba(250, 173, 20, 0.1);
+            
+            .percentual {
+              position: absolute;
+              top: -6px;
+              right: -6px;
+              background-color: $warning-color;
+              color: $white;
+              font-size: 8px;
+              padding: 1px 3px;
+              border-radius: 3px;
+              font-weight: 600;
+            }
+          }
+          
+          &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background-color: $light-gray;
+          }
+        }
+      }
+    }
+    
+    // Seleção de pessoas estilo Tavola
+    .grid-pessoas {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+      
+      .botao-pessoa {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        border: 1px solid $medium-gray;
+        background: $white;
+        
+        &:hover {
+          border-color: $tavola-amarelo;
+          background-color: $tavola-amarelo-claro;
+        }
+        
+        &.selecionado {
+          background-color: $tavola-amarelo;
+          border-color: $tavola-amarelo;
+          color: $text-color;
+        }
+      }
+    }
+    
+    // Resumo da reserva
+    .resumo-reserva {
+      background-color: $tavola-amarelo-claro;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 16px;
+        color: $text-color;
+      }
+      
+      .resumo-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        
+        .label {
+          font-weight: 500;
+          color: rgba(59, 34, 27, 0.8);
+        }
+        
+        .value {
+          font-weight: 600;
+          color: $text-color;
+        }
+      }
+    }
+    
+    // Comentários
+    .comentarios-section {
+      margin-bottom: 24px;
+      
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 8px;
+        color: $text-color;
+      }
+      
+      .comentarios-desc {
+        font-size: 14px;
+        color: rgba(59, 34, 27, 0.7);
+        margin-bottom: 16px;
+      }
+      
+      // IMPORTANTE: Garante que o input do Material ocupe a largura no mobile
+      .mat-mdc-form-field {
+        width: 100%;
+        display: block;
+      }
+      
+      .sugestoes-rapidas {
+        margin-top: 16px;
+        
+        .sugestoes-label {
+          display: block;
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 8px;
+          color: $text-color;
+        }
+        
+        .sugestoes-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          
+          .sugestao-chip {
+            font-size: 12px;
+            padding: 4px 8px;
+            height: auto;
+            border-color: $medium-gray;
+            
+            &:hover {
+              border-color: $tavola-amarelo;
+              color: $tavola-amarelo;
+            }
+          }
+        }
+      }
+    }
+    
+    // Confirmação
+    .confirmacao-section {
+      text-align: center;
+      padding-bottom: 24px;
+      
+      .botao-confirmar {
+        width: 100%;
+        height: 48px;
+        font-size: 16px;
+        font-weight: 600;
+        background-color: $tavola-amarelo;
+        border-color: $tavola-amarelo;
+        color: $text-color;
+        
+        &:hover {
+          background-color: color.adjust($tavola-amarelo, $lightness: -10%);
+          border-color: color.adjust($tavola-amarelo, $lightness: -10%);
+        }
+        
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}
+
+// ==========================================================================
+// ESTILOS GERAIS E DESKTOP
+// ==========================================================================
+
+// Container principal com ajuste para drawer
+.container-rounded {
+  background: $white;
+  border-radius: 24px;
+  padding: 24px;
+  margin: 24px auto;
+  max-width: 1200px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+  color: $text-color;
+  position: relative;
+  transition: all 0.3s ease;
+  
+  &.drawer-open {
+    max-width: 1200px;
+    margin-right: auto;
+  }
+  
+  &.sidebar-aberta {
+    max-width: 960px;
+    margin-left: auto;
+    margin-right: auto;
+    
+    .content-area {
+      gap: 16px;
+    }
+    
+    .coluna-reserva {
+      min-width: 320px;
+      max-width: 320px;
+    }
+    
+    .menu-content {
+      .categorias-nav-container {
+         .categorias-nav.fixed {
+           top: 76px;
+         }
+      }
+      .categorias-content {
+        .categoria-section {
+          scroll-margin-top: 150px;
+        }
+      }
+    }
+  }
+}
+
+// Breadcrumb
+.breadcrumb {
+  margin-bottom: 24px;
+  
+  ::ng-deep .ant-breadcrumb-link {
+    a {
+      color: $text-color;
+      text-decoration: none;
+      &:hover { color: $primary-color; }
+    }
+    i { margin-right: 4px; color: $text-color; }
+  }
+}
+
+// Cabeçalho do Restaurante
+.restaurant-header {
+  margin-bottom: 24px;
+  
+  .title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    
+    .restaurant-title {
+      font-size: 32px;
+      font-weight: 700;
+      margin: 0;
+      color: $text-color;
+    }
+    
+    .favorite-button {
+      color: $tavola-vermelho;
+      border: 1px solid $medium-gray;
+      
+      &:hover {
+        color: $tavola-vermelho;
+        border-color: $accent-color;
+      }
+      
+      i[nzTheme="fill"] { color: $tavola-vermelho; }
+    }
+  }
+  
+  .restaurant-info {
+    .info-item {
+      display: flex;
+      align-items: center;
+      margin-bottom: 8px;
+      i { margin-right: 8px; color: $text-color; }
+    }
+    
+    .rating {
+      display: flex;
+      align-items: center;
+      ::ng-deep .ant-rate {
+        font-size: 16px;
+        color: $primary-color;
+        margin-right: 8px;
+      }
+      .rating-value { font-weight: 700; margin-right: 4px; }
+      .reviews-count { color: rgba(59, 34, 27, 0.7); font-size: 14px; }
+    }
+  }
+}
+
+// Galeria de Fotos
+.photo-gallery {
+  margin-bottom: 24px;
+  
+  .gallery-grid.desktop-gallery {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+    height: 400px;
+  }
+  
+  .gallery-grid-irregular.mobile-gallery,
+  .scroll-indicator.mobile-gallery {
+    display: none;
+  }
+  
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    gap: 8px;
+    height: 400px;
+    
+    .main-photo { grid-column: 1; grid-row: 1 / span 2; }
+    .medium-photo { grid-column: 2; grid-row: 1 / span 2; }
+    .small-photo-top { grid-column: 3; grid-row: 1; }
+    .small-photo-bottom { grid-column: 3; grid-row: 2; }
+    
+    .main-photo, .medium-photo, .small-photo-top, .small-photo-bottom {
+      border-radius: $border-radius;
+      overflow: hidden;
+      cursor: pointer;
+      img {
+        width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease;
+        &:hover { transform: scale(1.05); }
+      }
+    }
+    
+    .more-photos {
+      grid-column: 3; grid-row: 2; position: relative;
+      border-radius: $border-radius; overflow: hidden; cursor: pointer;
+      img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.3s ease; }
+      .more-overlay {
+        position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+        background-color: rgba(0, 0, 0, 0.6); display: flex; align-items: center;
+        justify-content: center; color: $white; font-weight: 500; text-align: center; padding: 0 8px;
+      }
+    }
+  }
+}
+
+// Abas de Navegação
+.navigation-tabs {
+  margin-bottom: 24px;
+  background-color: $white;
+  border-radius: $border-radius;
+  z-index: 100;
+  
+  &.fixed {
+    position: sticky; top: 0; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  ::ng-deep {
+    .mat-mdc-tab {
+      color: $text-color;
+      &.mdc-tab--active { color: $primary-color; }
+    }
+    .mdc-tab-indicator__content--underline { border-color: $primary-color !important; }
+    .mat-mdc-tab.mat-mdc-tab-active .mdc-tab__text-label { color: $primary-color !important; }
+    .mat-mdc-tab:not(.mat-mdc-tab-active) .mdc-tab__text-label { color: $text-color !important; }
+  }
+}
+
+// Área de Conteúdo
+.content-area {
+  display: flex;
+  gap: 16px;
+  
+  .content-column {
+    flex: 1;
+    transition: all 0.3s ease;
+    min-width: 0;
+    
+    h2 { font-size: 24px; font-weight: 700; margin: 0 0 16px; color: $text-color; }
+    h3 { font-size: 18px; font-weight: 600; margin: 0 0 12px; color: $text-color; }
+    p { line-height: 1.6; color: rgba(59, 34, 27, 0.9); margin-bottom: 16px; }
+    
+    .sobre-content {
+      .descricao-section { margin-bottom: 32px; }
+      .localizacao-section {
+        margin-bottom: 32px;
+        .mapa-container { border-radius: $border-radius; overflow: hidden; margin-bottom: 16px; }
+        .endereco-completo {
+          display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px;
+          .endereco-copy { display: flex; align-items: center; gap: 8px; flex: 1; p { margin: 0; } }
+          .como-chegar-btn {
+            color: $primary-color; border-color: $primary-color; transition: all 0.2s ease; flex-shrink: 0; margin-left: 12px;
+            &:disabled { opacity: 0.6; cursor: not-allowed; }
+            mat-icon { margin-right: 8px; }
+            &:hover:not(:disabled) { background-color: rgba(246, 189, 56, 0.1); }
+          }
+        }
+      }
+      
+      .mais-detalhes-section {
+        .horarios-section {
+          margin-bottom: 24px;
+          .horarios-lista { margin-bottom: 16px; }
+          .horario-item {
+            display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid rgba(59, 34, 27, 0.1);
+            .dia { font-weight: 500; } .horas { color: rgba(59, 34, 27, 0.8); }
+          }
+          .mostrar-mais { color: $primary-color; }
+        }
+        .recursos-section .recursos-lista {
+          display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 16px;
+          .recurso-item { display: flex; align-items: center; gap: 8px; mat-icon { color: $primary-color; } }
+        }
+      }
+    }
+  }
+  
+  // COLUNA LATERAL (DESKTOP)
+  .coluna-reserva {
+    flex: 0 0 380px;
+    min-width: 380px;
+    max-width: 380px;
+    
+    .card-reserva-fixo {
+      position: sticky;
+      top: 20px;
+      
+      .card-reserva-tavola {
+        // APLICA O MIXIN AQUI PARA O DESKTOP
+        @include card-reserva-styles;
+        
+        // Estilos específicos desktop
+        border-radius: 12px;
+        box-shadow: 0 2px 16px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        height: 500px;
+      }
+    }
+  }
+}
+
+// Estilos para aba Menu, Modal Galeria, Avaliações (mantidos iguais)
+.full-gallery .gallery-grid-modal { 
+  display: grid; 
+  grid-template-columns: repeat(3, 1fr); 
+  gap: 16px; 
+  .gallery-item { 
+    border-radius: $border-radius; 
+    overflow: hidden; 
+    aspect-ratio: 4/3; 
+    img { width: 100%; height: 100%; object-fit: cover; } 
+  } 
+}
+
+.horarios-descricao { margin-bottom: 16px; color: $text-color; }
+
+.horarios-lista-completa .horario-item { 
+  display: flex; 
+  justify-content: space-between; 
+  padding: 12px 0; 
+  border-bottom: 1px solid rgba(59, 34, 27, 0.1); 
+  .dia { font-weight: 500; color: $text-color; } 
+  .horas { color: rgba(59, 34, 27, 0.8); } 
+}
+
+.back-to-top { 
+  position: fixed; 
+  bottom: 24px; 
+  right: 24px; 
+  z-index: 99; 
+  background-color: $primary-color !important; 
+  color: $text-color !important; 
+}
+
+::ng-deep {
+  .ant-image-preview-operations { background-color: rgba(0, 0, 0, 0.5); }
+  .ant-image-preview-img { max-width: 90%; max-height: 90%; }
+  .ant-image-preview-switch-left, .ant-image-preview-switch-right { 
+    color: white; 
+    background-color: rgba(0, 0, 0, 0.3); 
+    &:hover { background-color: rgba(0, 0, 0, 0.5); } 
+  }
+  .ant-tooltip-inner { background-color: $text-color; color: white; }
+  .ant-tooltip-arrow-content { background-color: $text-color; }
+}
+
+.menu-content {
+  .menu-intro {
+    margin-bottom: 32px;
+    h2 { font-size: 24px; font-weight: 700; margin: 0 0 8px; color: $text-color; }
+    p { color: rgba(59, 34, 27, 0.8); margin-bottom: 24px; }
+    .menu-info .opcoes-dieteticas {
+      display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: $border-radius; background-color: $light-gray; cursor: pointer; transition: all 0.2s ease;
+      &:hover { background-color: darken($light-gray, 3%); }
+      i { color: $text-color; font-size: 20px; }
+      div { 
+        flex: 1; 
+        span { display: block; font-weight: 500; margin-bottom: 4px; } 
+        p { margin: 0; font-size: 14px; color: rgba(59, 34, 27, 0.7); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 400px; } 
+      }
+    }
+  }
+}
+
+.drawer-description { margin-bottom: 24px; color: rgba(59, 34, 27, 0.8); line-height: 1.6; }
+
+.opcoes-dieteticas-drawer .opcao-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 12px; 
+  margin-bottom: 16px; 
+  padding: 8px 0; 
+  i { color: $primary-color; font-size: 16px; } 
+  span { font-size: 16px; color: $text-color; } 
+}
+
+// Estilos para o Drawer de Opções Dietéticas
+::ng-deep .opcoes-dieteticas-drawer-wrapper {
+  // No mobile, garante que ocupe 60% da tela
+  @media (max-width: 768px) {
+    .ant-drawer-content-wrapper {
+      width: 60% !important;
+      max-width: 60vw !important;
+    }
+    
+    .ant-drawer-content {
+      width: 100%;
+    }
+    
+    .ant-drawer-body {
+      padding: 24px;
+      overflow-y: auto;
+      height: calc(100% - 55px); // Altura total menos o header
+    }
+  }
+  
+  // Desktop mantém 400px
+  @media (min-width: 769px) {
+    .ant-drawer-content-wrapper {
+      width: 400px !important;
+    }
+  }
+}
+
+.mat-rounded-button { 
+  border-radius: 8px !important; 
+  height: 48px !important; 
+  font-size: 16px !important; 
+  font-weight: 800 !important; 
+  background-color: $tavola-amarelo !important; 
+  color: $text-color !important; 
+  &:hover { background-color: color.adjust($tavola-amarelo, $lightness: -10%) !important; } 
+  mat-icon { margin-right: 8px; } 
+}
+
+.descricao-restaurante { white-space: pre-line; word-break: break-word; }
+
+.avaliacoes-content {
+  .loading-container { 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 48px; 
+    gap: 16px; 
+    p { color: $dark-gray; margin: 0; } 
+  }
+
+  .avaliacoes-container {
+    .avaliacoes-titulo { font-size: 24px; font-weight: 700; margin: 0 0 24px; color: $text-color; }
+
+    .resumo-avaliacoes-card {
+      background: $white; 
+      border-radius: $border-radius; 
+      padding: 32px; 
+      margin-bottom: 32px; 
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08); 
+      display: flex; 
+      flex-direction: column; 
+      gap: 24px;
+
+      .resumo-header { display: flex; align-items: center; gap: 32px; flex-wrap: wrap; }
+
+      .resumo-left .circulo-avaliacao {
+        position: relative; display: inline-block;
+        .progress-circle-fill { transition: stroke-dasharray 0.5s ease; }
+        .nota-overlay { 
+          position: absolute; 
+          top: 50%; 
+          left: 50%; 
+          transform: translate(-50%, -50%); 
+          display: flex; 
+          flex-direction: column; 
+          align-items: center; 
+          justify-content: center; 
+          .nota-valor { font-size: 36px; font-weight: 700; color: $text-color; line-height: 1; } 
+          .nota-max { font-size: 14px; color: $dark-gray; margin-top: 4px; } 
+        }
+      }
+
+      .resumo-right {
+        flex: 1;
+        .badge-avaliacao { 
+          display: inline-block; 
+          padding: 8px 16px; 
+          border-radius: 20px; 
+          font-size: 14px; 
+          font-weight: 600; 
+          margin-bottom: 8px; 
+          &.excelente { background-color: #E8F5E9; color: #2E7D32; } 
+          &.muito-bom { background-color: #C8E6C9; color: #388E3C; } 
+          &.bom { background-color: #DCEDC8; color: #558B2F; } 
+          &.regular { background-color: #FFF9C4; color: #F57F17; } 
+          &.ruim { background-color: #FFE0B2; color: #E65100; } 
+          &.pessimo { background-color: #FFCDD2; color: #C62828; } 
+        }
+        .total-avaliacoes { font-size: 16px; color: $dark-gray; margin: 0; }
+      }
+
+      .card-informativo-avaliacoes {
+        background: $light-gray; 
+        border: 1px solid rgba(59, 34, 27, 0.1); 
+        border-radius: $border-radius; 
+        padding: 20px; 
+        margin-top: 0; 
+        margin-bottom: 0;
+        .informativo-content { 
+          display: flex; 
+          align-items: flex-start; 
+          gap: 16px; 
+          .informativo-icon { color: #52c41a; font-size: 24px; width: 24px; height: 24px; margin-top: 2px; flex-shrink: 0; } 
+          .informativo-texto { 
+            flex: 1; 
+            .informativo-titulo { font-size: 16px; font-weight: 600; color: $text-color; margin: 0 0 8px; } 
+            .informativo-descricao { font-size: 14px; color: rgba(59, 34, 27, 0.8); margin: 0; line-height: 1.6; } 
+          } 
+        }
+      }
+    }
+
+    .lista-avaliacoes {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      
+      .comentario-item { 
+        width: 100%;
+        padding: 0;
+        background: #ffffff;
+        border-radius: 12px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        border: 1px solid rgba(0, 0, 0, 0.06);
+        transition: all 0.2s ease;
+        overflow: hidden;
+        
+        &:hover {
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+          transform: translateY(-1px);
+        }
+        
+        ::ng-deep {
+          nz-comment {
+            padding: 20px 24px; // Espaçamento interno confortável no card
+            display: block;
+          }
+        }
+      }
+      
+      // Estilos para manter compatibilidade se ainda usar nz-list
+      ::ng-deep {
+        .ant-list-item { 
+          padding: 0 !important; 
+          border: none !important; 
+          margin-bottom: 16px !important;
+          
+          &:last-child {
+            margin-bottom: 0 !important;
+          }
+        }
+        
+        .ant-comment {
+          .ant-comment-inner { 
+            padding: 0; 
+          }
+          
+          // Avatar
+          .ant-comment-avatar { 
+            margin-right: 16px; 
+            cursor: default;
+            
+            .ant-avatar { 
+              width: 48px !important; 
+              height: 48px !important; 
+              border: none !important; // Remove borda grossa
+              background-color: #f5f5f5; // Fundo suave se não tiver imagem
+              
+              img { 
+                width: 100%; 
+                height: 100%; 
+                object-fit: cover; 
+              } 
+              
+              .anticon { 
+                font-size: 24px; 
+                color: #bfbfbf;
+              } 
+            } 
+          }
+          
+          .ant-comment-content {
+            .avaliacao-header-custom { 
+              display: flex;
+              justify-content: space-between; // Joga o rating para a direita
+              align-items: flex-start;
+              margin-bottom: 8px;
+              
+              .nome-data-wrapper { 
+                display: flex; 
+                flex-direction: column; 
+                
+                .nome-cliente { 
+                  font-size: 15px; 
+                  font-weight: 700; // Nome mais forte
+                  color: #3B221B; 
+                  line-height: 1.2;
+                  margin-bottom: 2px;
+                } 
+                
+                .data-reserva { 
+                  font-size: 12px; 
+                  color: #8c8c8c; // Cinza para a data (menos destaque)
+                } 
+              } 
+              
+              .avaliacao-rating { 
+                display: flex; 
+                align-items: center; 
+                background-color: #FFF9C4; // Fundo amarelo bem claro (opcional, estilo iFood/TheFork)
+                padding: 4px 8px;
+                border-radius: 6px;
+                
+                .rating-stars-comment ::ng-deep {
+                  .ant-rate { 
+                    font-size: 14px; 
+                    color: #F6BD38; 
+                    margin-right: 4px;
+                  }
+                  .ant-rate-star {
+                    margin-right: 2px; // Estrelas mais juntas
+                  }
+                } 
+                
+                .nota-numero { 
+                  font-size: 14px; 
+                  font-weight: 700; 
+                  color: #3B221B; 
+                } 
+              } 
+            }
+            
+            .comentario-texto { 
+              font-size: 15px; 
+              color: #4a4a4a; 
+              line-height: 1.6; 
+              margin: 0;
+              white-space: pre-wrap; // Preserva quebras de linha do comentário
+            }
+            
+            // Ações (Gostar/Denunciar) se você tiver
+            .ant-comment-actions {
+              margin-top: 12px;
+              li { color: #8c8c8c; font-size: 12px; }
+            }
+          }
+        }
+      }
+    }
+
+    .sem-avaliacoes { 
+      display: flex; 
+      flex-direction: column; 
+      align-items: center; 
+      justify-content: center; 
+      padding: 64px 32px; 
+      text-align: center; 
+      mat-icon { font-size: 64px; width: 64px; height: 64px; color: $medium-gray; margin-bottom: 16px; } 
+      p { font-size: 16px; color: $dark-gray; margin: 0; } 
+    }
+  }
+}
+
+// ==========================================================================
+// ESTILOS MOBILE E RESPONSIVIDADE
+// ==========================================================================
+
+// Footer Fixo para Reserva (Mobile)
+.sticky-booking-footer {
+  position: fixed; 
+  bottom: 0; 
+  left: 0; 
+  right: 0; 
+  background-color: $white; 
+  padding: 16px; 
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.12); 
+  z-index: 100; 
+  border-top: 1px solid $medium-gray;
+
+  .botao-escolha-reserva { 
+    width: 100%; 
+    display: flex; 
+    align-items: center; 
+    justify-content: center; 
+    gap: 12px; 
+    background: linear-gradient(135deg, $tavola-amarelo, #f4a261); 
+    color: $text-color; 
+    border: none; 
+    border-radius: 12px; 
+    padding: 16px 24px; 
+    font-size: 16px; 
+    font-weight: 700; 
+    cursor: pointer; 
+    transition: all 0.3s ease; 
+    box-shadow: 0 4px 12px rgba(246, 189, 56, 0.3); 
+    mat-icon { font-size: 24px; width: 24px; height: 24px; } 
+    span { font-weight: 700; letter-spacing: 0.3px; } 
+    &:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(246, 189, 56, 0.4); } 
+    &:active { transform: translateY(0); } 
+  }
+}
+
+// Estilos para o Dialog de Reserva (Mobile) - APLICA O MIXIN
+::ng-deep {
+  // Container do overlay - z-index alto para ficar acima de tudo
+  .cdk-overlay-container {
+    z-index: 10000 !important;
+  }
+  
+  // Remove backdrop cinza
+  .cdk-overlay-backdrop {
+    &.reserva-dialog-backdrop,
+    &.cdk-overlay-backdrop-showing {
+      background: transparent !important;
+    }
+  }
+  
+  // Pane do dialog - ocupa toda a tela
+  .cdk-overlay-pane.reserva-dialog-mobile {
+    max-width: 100vw !important;
+    max-height: 100vh !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+    z-index: 10000 !important;
+    transform: none !important;
+    margin: 0 !important;
+  }
+  
+  // Container do dialog
+  .reserva-dialog-mobile {
+    .mat-mdc-dialog-container {
+      padding: 0 !important;
+      overflow: hidden !important;
+      max-width: 100vw !important;
+      max-height: 100vh !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      border-radius: 0 !important;
+      position: relative !important;
+      margin: 0 !important;
+    }
+    
+    .mat-mdc-dialog-surface {
+      border-radius: 0 !important;
+      overflow: hidden !important;
+      height: 100vh !important;
+      max-height: 100vh !important;
+      width: 100vw !important;
+    }
+    
+    .card-reserva-tavola.card-reserva-dialog {
+      // APLICA O MIXIN AQUI PARA O MOBILE
+      @include card-reserva-styles;
+      
+      // Estilos específicos mobile
+      background: $white;
+      border-radius: 0;
+      box-shadow: none;
+      overflow: hidden;
+      height: 100vh;
+      max-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+  }
+}
+
+@media (max-width: 992px) {
+  .content-area {
+    flex-direction: column;
+    .coluna-reserva { display: none; }
+  }
+}
+
+@media (max-width: 768px) {
+  .container-rounded {
+    margin: 0 -20px;
+    // Aumenta o padding-top para empurrar o conteúdo (breadcrumb, título) para baixo do header fixo
+    padding: 110px 20px 80px 20px;
+    max-width: calc(100vw); 
+    width: calc(100vw);
+    border-radius: 0; 
+    box-shadow: none; 
+    background: $white; 
+    position: relative;
+  }
+  
+  .breadcrumb { margin-bottom: 16px; padding: 0; }
+  
+  .restaurant-header .title-row { 
+    flex-direction: row; 
+    align-items: center; 
+    gap: 12px; 
+    .restaurant-title { font-size: 24px; flex: 1; line-height: 1.2; } 
+    .favorite-button { flex-shrink: 0; } 
+  }
+  
+  .photo-gallery {
+    margin: 24px -20px; 
+    padding-bottom: 0;
+    .gallery-grid.desktop-gallery { display: none; }
+    .gallery-grid-irregular.mobile-gallery {
+      display: flex; 
+      overflow-x: auto; 
+      overflow-y: hidden; 
+      height: auto; 
+      gap: 12px; 
+      padding: 0 16px; 
+      scroll-behavior: smooth; 
+      scroll-snap-type: x mandatory; 
+      -ms-overflow-style: none; 
+      scrollbar-width: none; 
+      &::-webkit-scrollbar { display: none; }
+      .mobile-gallery-item { 
+        scroll-snap-align: start; 
+        flex-shrink: 0; 
+        width: 85%; 
+        height: auto; 
+        aspect-ratio: 4 / 3; 
+        border-radius: 12px; 
+        overflow: hidden; 
+        position: relative; 
+        cursor: pointer; 
+        .gallery-image { width: 100%; height: 100%; object-fit: cover; } 
+        .more-overlay { 
+          position: absolute; 
+          top: 0; 
+          left: 0; 
+          width: 100%; 
+          height: 100%; 
+          background: rgba(0, 0, 0, 0.7); 
+          display: flex; 
+          align-items: center; 
+          justify-content: center; 
+          color: white; 
+          font-weight: 600; 
+          font-size: 14px; 
+          text-align: center; 
+          z-index: 1; 
+        } 
+      }
+    }
+    .scroll-indicator.mobile-gallery { 
+      display: block; 
+      text-align: center; 
+      padding: 12px 0 0 0; 
+      color: rgba(59, 34, 27, 0.5); 
+      font-size: 11px; 
+      font-weight: 500; 
+      &::before { content: "← →"; display: block; font-size: 14px; margin-bottom: 4px; opacity: 0.7; } 
+    }
+  }
+  
+  .coluna-reserva { display: none !important; }
+  
+  .recursos-section .recursos-lista { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+  
+  .localizacao-section .endereco-completo { 
+    flex-direction: column; 
+    align-items: flex-start !important; 
+    .como-chegar-btn { margin-top: 12px; margin-left: 0; width: 100%; } 
+  }
+}
+
+@media (max-width: 480px) {
+  .container-rounded { margin: 0 -20px; padding: 12px 20px 80px 20px; }
+  .photo-gallery { margin: 16px -20px; }
+  .full-gallery .gallery-grid-modal { grid-template-columns: 1fr; }
+  .recursos-section .recursos-lista { grid-template-columns: 1fr !important; }
+  
+  .menu-content .categorias-content .categoria-section { 
+    .categoria-titulo { font-size: 18px; } 
+    .itens-lista .item-card .item-content { 
+      flex-direction: column; 
+      align-items: stretch; 
+      .item-image { width: 100%; height: 150px; border-radius: $border-radius $border-radius 0 0; } 
+      .item-info { text-align: center; padding: 12px 12px 8px 12px; .item-tags { justify-content: center; } } 
+      .item-preco { text-align: center; padding: 8px 12px 12px 12px; border-top: 1px solid #eee; width: 100%; } 
+    } 
+  }
+  
+  .avaliacoes-content { 
+    .resumo-avaliacoes-card { 
+      padding: 20px; 
+      .resumo-header { flex-direction: column; gap: 20px; } 
+    } 
+    .lista-avaliacoes ::ng-deep .ant-comment { 
+      .ant-comment-avatar { 
+        margin-right: 12px; 
+        ::ng-deep .ant-avatar { 
+          width: 48px !important; 
+          height: 48px !important; 
+          .anticon { font-size: 24px; } 
+        } 
+      } 
+      .ant-comment-content { 
+        .avaliacao-header-custom { 
+          .nome-data-wrapper { 
+            .nome-cliente { font-size: 15px; } 
+            .data-reserva { font-size: 13px; } 
+          } 
+          .avaliacao-rating { 
+            gap: 8px; 
+            .nota-numero { font-size: 13px; } 
+          } 
+        } 
+        .comentario-texto { font-size: 14px; } 
+      } 
+    } 
+  }
+}

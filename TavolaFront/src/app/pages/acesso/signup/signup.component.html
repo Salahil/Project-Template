@@ -1,0 +1,371 @@
+<app-default-login-layout>
+  <mat-tab-group [(selectedIndex)]="selectedTabIndex" class="signup-tabs" mat-stretch-tabs="false" mat-align-tabs="center">
+    <!-- Tab Cliente -->
+    <mat-tab label="Cliente">
+      <form [formGroup]="clienteForm" class="signup-form" (ngSubmit)="cadastrarCliente()">
+        <div class="form-section">
+          <h3 class="section-title">Informações da Conta</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nome Completo</mat-label>
+              <input matInput formControlName="nome" type="text">
+              <mat-error *ngIf="clienteForm.get('nome')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>E-mail</mat-label>
+              <input matInput formControlName="email" type="email">
+              <mat-error *ngIf="clienteForm.get('email')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+              <mat-error *ngIf="clienteForm.get('email')?.hasError('email')">
+                E-mail inválido
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Telefone</mat-label>
+              <input matInput formControlName="telefone" mask="(00) 00000-0000" placeholder="(11) 99999-9999">
+              <mat-error *ngIf="clienteForm.get('telefone')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Senha</mat-label>
+              <input matInput formControlName="senha" [type]="passwordVisibility['senhaCliente'] ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="togglePasswordVisibility('senhaCliente')" type="button">
+                <mat-icon>{{passwordVisibility['senhaCliente'] ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="clienteForm.get('senha')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+              <mat-error *ngIf="clienteForm.get('senha')?.hasError('minCaracteres')">
+                A senha deve ter no mínimo 8 caracteres
+              </mat-error>
+              <mat-error *ngIf="clienteForm.get('senha')?.hasError('semCaractereEspecial')">
+                A senha deve conter ao menos um caractere especial
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirme sua senha</mat-label>
+              <input matInput formControlName="passwordConfirm" [type]="passwordVisibility['confirmSenhaCliente'] ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="togglePasswordVisibility('confirmSenhaCliente')" type="button">
+                <mat-icon>{{passwordVisibility['confirmSenhaCliente'] ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="clienteForm.get('passwordConfirm')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+              <mat-error *ngIf="clienteForm.get('passwordConfirm')?.hasError('passwordMismatch')">
+                As senhas não coincidem
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">Endereço</h3>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>CEP</mat-label>
+              <input matInput formControlName="cep" mask="00000-000" (blur)="buscarCepGenerico(clienteForm, 'mensagemCepInvalido')">
+              <mat-error *ngIf="clienteForm.get('cep')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Estado</mat-label>
+              <input matInput formControlName="estado">
+              <mat-error *ngIf="clienteForm.get('estado')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Cidade</mat-label>
+              <input matInput formControlName="cidade">
+              <mat-error *ngIf="clienteForm.get('cidade')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Bairro</mat-label>
+              <input matInput formControlName="bairro">
+              <mat-error *ngIf="clienteForm.get('bairro')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Rua</mat-label>
+              <input matInput formControlName="rua">
+              <mat-error *ngIf="clienteForm.get('rua')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Número</mat-label>
+              <input matInput formControlName="numero">
+              <mat-error *ngIf="clienteForm.get('numero')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Complemento</mat-label>
+              <input matInput formControlName="complemento">
+            </mat-form-field>
+          </div>
+        </div>
+        
+        <!-- Botões de ação para Cliente -->
+        <div class="actions">
+          <button 
+            type="submit" 
+            class="primary-action" 
+            [disabled]="!clienteForm.valid">
+            <i nz-icon nzType="user-add" nzTheme="outline"></i>
+            Cadastrar Cliente
+          </button>
+          
+          <button 
+            type="button"
+            class="secondary-action" 
+            (click)="irParaLogin()">
+            <i nz-icon nzType="login" nzTheme="outline"></i>
+            Já tenho uma conta
+          </button>
+        </div>
+      </form>
+    </mat-tab>
+
+    <!-- Tab Restaurante -->
+    <mat-tab label="Restaurante">
+      <form [formGroup]="restauranteForm" class="signup-form" (ngSubmit)="cadastrarRestaurante()">
+        <div class="form-section">
+          <h3 class="section-title">Informações da Conta</h3>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Nome do Restaurante</mat-label>
+              <input matInput formControlName="nomeCompleto">
+              <mat-error *ngIf="restauranteForm.get('nomeCompleto')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>E-mail</mat-label>
+              <input matInput formControlName="email" type="email">
+              <mat-error *ngIf="restauranteForm.get('email')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+              <mat-error *ngIf="restauranteForm.get('email')?.hasError('email')">
+                E-mail inválido
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Senha</mat-label>
+              <input matInput formControlName="senha" [type]="passwordVisibility['senhaRestaurante'] ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="togglePasswordVisibility('senhaRestaurante')" type="button">
+                  <mat-icon>{{passwordVisibility['senhaRestaurante'] ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="restauranteForm.get('senha')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+              <mat-error *ngIf="restauranteForm.get('senha')?.hasError('minCaracteres')">
+                A senha deve ter no mínimo 8 caracteres
+              </mat-error>
+              <mat-error *ngIf="restauranteForm.get('senha')?.hasError('semCaractereEspecial')">
+                A senha deve conter ao menos um caractere especial
+              </mat-error>
+            </mat-form-field>
+          </div>
+          
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Confirme sua senha</mat-label>
+              <input matInput formControlName="passwordConfirm" [type]="passwordVisibility['confirmSenhaRestaurante'] ? 'password' : 'text'">
+              <button mat-icon-button matSuffix (click)="togglePasswordVisibility('confirmSenhaRestaurante')" type="button">
+                  <mat-icon>{{passwordVisibility['confirmSenhaRestaurante'] ? 'visibility_off' : 'visibility'}}</mat-icon>
+              </button>
+              <mat-error *ngIf="restauranteForm.get('passwordConfirm')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+              <mat-error *ngIf="restauranteForm.get('passwordConfirm')?.hasError('passwordMismatch')">
+                As senhas não coincidem
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">Endereço</h3>
+          <div formGroupName="endereco">
+            <div class="form-row two-columns">
+              <mat-form-field appearance="outline">
+                <mat-label>CEP</mat-label>
+                <input matInput formControlName="cep" mask="00000-000" (blur)="buscarCepGenerico(enderecoFormGroup, 'mensagemCepInvalidoRestaurante')">
+                <mat-error *ngIf="restauranteForm.get('endereco.cep')?.hasError('required')">
+                  Este campo é obrigatório
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Estado</mat-label>
+                <input matInput formControlName="estado">
+                <mat-error *ngIf="restauranteForm.get('endereco.estado')?.hasError('required')">
+                  Este campo é obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="form-row two-columns">
+              <mat-form-field appearance="outline">
+                <mat-label>Cidade</mat-label>
+                <input matInput formControlName="cidade">
+                <mat-error *ngIf="restauranteForm.get('endereco.cidade')?.hasError('required')">
+                  Este campo é obrigatório
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Bairro</mat-label>
+                <input matInput formControlName="bairro">
+                <mat-error *ngIf="restauranteForm.get('endereco.bairro')?.hasError('required')">
+                  Este campo é obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="form-row two-columns">
+              <mat-form-field appearance="outline">
+                <mat-label>Rua</mat-label>
+                <input matInput formControlName="rua">
+                <mat-error *ngIf="restauranteForm.get('endereco.rua')?.hasError('required')">
+                  Este campo é obrigatório
+                </mat-error>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Número</mat-label>
+                <input matInput formControlName="numero">
+                <mat-error *ngIf="restauranteForm.get('endereco.numero')?.hasError('required')">
+                  Este campo é obrigatório
+                </mat-error>
+              </mat-form-field>
+            </div>
+            <div class="form-row">
+              <mat-form-field appearance="outline" class="full-width">
+                <mat-label>Complemento</mat-label>
+                <input matInput formControlName="complemento">
+              </mat-form-field>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">Informações do Restaurante</h3>
+          <div class="form-row full-width">
+            <mat-form-field appearance="outline">
+              <mat-label>Tipo de Cozinha</mat-label>
+              <mat-select formControlName="tipoCozinha">
+                <mat-option *ngFor="let tipo of tiposCozinha" [value]="tipo">{{ tipo }}</mat-option>
+              </mat-select>
+              <mat-error *ngIf="restauranteForm.get('tipoCozinha')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row two-columns">
+            <mat-form-field appearance="outline">
+              <mat-label>Quantidade de Mesas</mat-label>
+              <input matInput type="number" formControlName="quantidadeMesas" min="1">
+              <mat-error *ngIf="restauranteForm.get('quantidadeMesas')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+              <mat-error *ngIf="restauranteForm.get('quantidadeMesas')?.hasError('min')">
+                Deve ter pelo menos 1 mesa
+              </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+              <mat-label>Telefone</mat-label>
+              <input matInput formControlName="telefone" mask="(00) 00000-0000" placeholder="(11) 99999-9999">
+              <mat-error *ngIf="restauranteForm.get('telefone')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+            </mat-form-field>
+          </div>
+          <div class="form-row">
+            <mat-form-field appearance="outline" class="full-width">
+              <mat-label>Descrição</mat-label>
+              <textarea matInput formControlName="descricao" rows="3" maxlength="500"></textarea>
+              <mat-hint align="end">{{restauranteForm.get('descricao')?.value?.length || 0}}/500</mat-hint>
+              <mat-error *ngIf="restauranteForm.get('descricao')?.hasError('required')">
+                Este campo é obrigatório
+              </mat-error>
+              <mat-error *ngIf="restauranteForm.get('descricao')?.hasError('maxlength')">
+                Máximo de 500 caracteres
+              </mat-error>
+            </mat-form-field>
+          </div>
+        </div>
+
+        <div class="form-section">
+          <h3 class="section-title">Horário de Funcionamento</h3>
+          <div formArrayName="horaFuncionamento">
+            <div *ngFor="let horario of horaFuncionamento.controls; let i = index" [formGroupName]="i" class="horario-row-flex">
+              <mat-form-field appearance="outline">
+                <mat-label>Dia da Semana</mat-label>
+                <mat-select formControlName="diaSemana">
+                  <mat-option *ngFor="let dia of diasSemana" [value]="dia.value">{{ dia.label }}</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Abertura</mat-label>
+                <input matInput type="time" formControlName="abertura">
+              </mat-form-field>
+              <mat-form-field appearance="outline">
+                <mat-label>Fechamento</mat-label>
+                <input matInput type="time" formControlName="fechamento">
+              </mat-form-field>
+              <button mat-icon-button color="warn" (click)="removeHorario(i)" *ngIf="horaFuncionamento.length > 1">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+            <button mat-stroked-button color="primary" type="button" (click)="addHorario()" class="add-horario-btn">
+              <mat-icon>add</mat-icon> Adicionar Horário
+            </button>
+          </div>
+        </div>
+        
+        <!-- Botões de ação para Restaurante -->
+        <div class="actions">
+          <button 
+            type="submit" 
+            class="primary-action" 
+            [disabled]="!restauranteForm.valid">
+            <i nz-icon nzType="shop" nzTheme="outline"></i>
+            Cadastrar Restaurante
+          </button>
+          
+          <button 
+            type="button"
+            class="secondary-action" 
+            (click)="irParaLogin()">
+            <i nz-icon nzType="login" nzTheme="outline"></i>
+            Já tenho uma conta
+          </button>
+        </div>
+      </form>
+    </mat-tab>
+  </mat-tab-group>
+</app-default-login-layout>

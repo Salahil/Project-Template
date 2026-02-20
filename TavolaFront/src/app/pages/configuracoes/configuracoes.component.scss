@@ -1,0 +1,477 @@
+@import '../../../styles/variables.scss';
+
+// Variáveis
+$primary-color: #F6BD38; // Amarelo
+$accent-color: #DA4A24; // Laranja
+$text-color: #333333;
+$light-gray: #f5f5f5;
+$border-radius: 16px;
+
+.configuracoes-container {
+  max-width: 800px;
+  margin: 40px auto;
+  padding: 0 16px;
+  background-color: #ebe8e2;
+  min-height: 100vh;
+}
+
+// Page header agora usa estilos globais (.tavola-page-header)
+
+mat-card {
+  border-radius: $border-radius;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  margin-bottom: 24px;
+  border: 1px solid transparent;
+  background-color: white;
+  overflow: hidden;
+  transition: all 0.3s ease;
+  
+  &:hover {
+    border-color: $primary-color;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  }
+}
+
+// Card de perfil melhorado
+.profile-card {
+  padding: 32px;
+  background: white;
+  
+  .profile-header {
+    display: flex;
+    align-items: center;
+    
+    .avatar-container {
+      position: relative;
+      margin-right: 32px;
+      
+      .profile-avatar {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 4px solid $primary-color;
+        box-shadow: 0 8px 24px rgba(246, 189, 56, 0.4);
+        transition: transform 0.3s ease;
+        
+        &:hover {
+          transform: scale(1.05);
+        }
+      }
+      
+      .change-photo-btn {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        background: linear-gradient(135deg, $primary-color 0%, #f4b942 100%);
+        color: #3B221B;
+        width: 40px;
+        height: 40px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: scale(1.1);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+        }
+        
+        mat-icon {
+          font-size: 20px;
+          line-height: 20px;
+          height: 20px;
+          width: 20px;
+        }
+      }
+    }
+    
+    .profile-info {
+      .profile-name {
+        font-size: 28px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: $text-color;
+      }
+      
+      .profile-type {
+        font-size: 18px;
+        color: rgba(59, 34, 27, 0.7);
+        margin: 0 0 12px 0;
+        font-weight: 500;
+      }
+      
+      .status-badge {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        color: white;
+        padding: 8px 16px;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 600;
+        width: fit-content;
+        box-shadow: 0 2px 8px rgba(76, 175, 80, 0.3);
+        
+        mat-icon {
+          font-size: 16px;
+          width: 16px;
+          height: 16px;
+        }
+      }
+    }
+  }
+}
+
+// Cards de informação melhorados
+.info-card {
+  padding: 0;
+  
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+    background: linear-gradient(135deg, #F6BD38 0%, #f4b942 100%);
+    
+    .header-with-icon {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      
+      mat-icon {
+        font-size: 24px;
+        width: 24px;
+        height: 24px;
+        color: #3B221B;
+      }
+      
+      h3 {
+        font-size: 18px;
+        font-weight: 600;
+        margin: 0;
+        color: #3B221B;
+      }
+    }
+    
+    .edit-icon {
+      color: #3B221B;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background-color: rgba(59, 34, 27, 0.1);
+        transform: scale(1.1);
+      }
+    }
+  }
+  
+  .card-content {
+    padding: 24px;
+    background: white;
+    
+    .info-row {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+      padding: 16px;
+      background: #fafafa;
+      border-radius: 12px;
+      border: 1px solid #f0f0f0;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        background: #f5f5f5;
+        border-color: $primary-color;
+        transform: translateX(4px);
+      }
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+      
+      .info-label {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        width: 180px;
+        font-weight: 600;
+        color: #3B221B;
+        font-size: 14px;
+        
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          color: $primary-color;
+        }
+      }
+      
+      .info-value {
+        flex: 1;
+        color: $text-color;
+        font-size: 14px;
+        font-weight: 500;
+      }
+    }
+  }
+  
+  // Formulário de edição melhorado
+  .edit-form {
+    padding: 24px;
+    background: white;
+    display: flex;
+    flex-direction: column;
+    
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      
+      .rua-field {
+        grid-column: 1 / 2;
+      }
+      
+      .numero-field {
+        grid-column: 2 / 2;
+      }
+    }
+    
+    mat-form-field {
+      width: 100%;
+      margin-bottom: 16px;
+      
+      .mat-mdc-form-field-icon-prefix {
+        color: $primary-color;
+      }
+    }
+    
+    .form-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 16px;
+      margin-top: 32px;
+      padding-top: 24px;
+      border-top: 1px solid #f0f0f0;
+      
+      button {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-weight: 600;
+        padding: 12px 24px;
+        border-radius: 12px;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          transform: translateY(-2px);
+        }
+      }
+    }
+  }
+}
+
+.danger-card {
+  border: 2px solid #ffebee;
+  
+  .danger-header {
+    background: linear-gradient(135deg, #ffcdd2 0%, #ef9a9a 100%);
+    
+    .header-with-icon {
+      mat-icon {
+        color: #c62828;
+      }
+      
+      h3 {
+        color: #c62828;
+      }
+    }
+  }
+  
+  .danger-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    
+    .danger-info {
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        color: #c62828;
+        margin: 0 0 8px 0;
+      }
+      
+      p {
+        font-size: 14px;
+        color: rgba(198, 40, 40, 0.7);
+        margin: 0;
+      }
+    }
+    
+    .delete-btn {
+      background: linear-gradient(135deg, #f44336 0%, #d32f2f 100%);
+      color: white;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      padding: 12px 24px;
+      border-radius: 12px;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(244, 67, 54, 0.4);
+      }
+    }
+  }
+}
+
+// Botões melhorados
+.save-btn {
+  background: linear-gradient(135deg, #F6BD38 0%, #f4b942 100%) !important;
+  color: #3B221B !important;
+  font-weight: 600 !important;
+  box-shadow: 0 4px 12px rgba(246, 189, 56, 0.3) !important;
+  
+  &:hover {
+    box-shadow: 0 6px 16px rgba(246, 189, 56, 0.4) !important;
+  }
+}
+
+.loading-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.9);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  backdrop-filter: blur(2px);
+}
+
+// Estilização global melhorada
+::ng-deep {
+  .mat-mdc-stroked-button.mat-warn {
+    color: $accent-color !important;
+    border-color: $accent-color !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    
+    &:hover {
+      background-color: rgba(218, 74, 36, 0.1) !important;
+      transform: translateY(-2px) !important;
+    }
+  }
+  
+  .mat-mdc-form-field-appearance-outline {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(59, 34, 27, 0.2) !important;
+      transition: border-color 0.3s ease !important;
+    }
+    
+    &:hover .mdc-notched-outline__leading,
+    &:hover .mdc-notched-outline__notch,
+    &:hover .mdc-notched-outline__trailing {
+      border-color: $primary-color !important;
+    }
+    
+    &.mat-focused .mdc-notched-outline__leading,
+    &.mat-focused .mdc-notched-outline__notch,
+    &.mat-focused .mdc-notched-outline__trailing {
+      border-color: $primary-color !important;
+      border-width: 2px !important;
+    }
+  }
+  
+  .mat-mdc-form-field-label {
+    color: rgba(59, 34, 27, 0.7) !important;
+  }
+  
+  .mat-mdc-form-field.mat-focused .mat-mdc-form-field-label {
+    color: $primary-color !important;
+  }
+  
+  .mat-mdc-form-field-icon-prefix {
+    color: $primary-color !important;
+    margin-right: 12px !important;
+  }
+}
+
+// Responsividade melhorada
+@media (max-width: 768px) {
+  .configuracoes-container {
+    margin: 12px;
+    padding: 0;
+  }
+  
+  // Responsividade do page-header agora é global
+  
+  .profile-header {
+    flex-direction: column;
+    text-align: center;
+    
+    .avatar-container {
+      margin-right: 0 !important;
+      margin-bottom: 20px;
+    }
+  }
+  
+  .info-row {
+    flex-direction: column;
+    align-items: flex-start !important;
+    
+    .info-label {
+      width: 100% !important;
+      margin-bottom: 8px;
+    }
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .form-actions {
+    flex-direction: column;
+    
+    button {
+      width: 100%;
+    }
+  }
+  
+  .danger-content {
+    flex-direction: column;
+    gap: 16px;
+    text-align: center;
+    
+    .delete-btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .card-header {
+    padding: 16px !important;
+    
+    .header-with-icon {
+      h3 {
+        font-size: 16px !important;
+      }
+    }
+  }
+  
+  .card-content, .edit-form {
+    padding: 16px !important;
+  }
+  
+  .profile-card {
+    padding: 20px !important;
+  }
+}

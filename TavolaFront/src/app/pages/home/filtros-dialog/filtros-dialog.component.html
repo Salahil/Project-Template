@@ -1,0 +1,98 @@
+<div class="tavola-dialog">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <div class="header-icon">
+        <mat-icon>tune</mat-icon>
+      </div>
+      <h1 mat-dialog-title>Filtros de Busca</h1>
+      <p class="subtitle">Refine sua busca por restaurantes</p>
+    </div>
+
+    <div mat-dialog-content class="dialog-content">
+      <form [formGroup]="filtrosForm">
+        <!-- Dia da Semana -->
+        <div class="filtro-section">
+          <div class="section-header">
+            <mat-icon class="section-icon">calendar_today</mat-icon>
+            <label class="section-label">Dia da Semana</label>
+          </div>
+          <mat-form-field appearance="outline" class="full-width">
+            <mat-label>Selecione o dia</mat-label>
+            <mat-select formControlName="diaSemana">
+              <mat-option *ngFor="let dia of diasSemana" [value]="dia.value">
+                {{ dia.label }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!-- Nota Mínima -->
+        <div class="filtro-section">
+          <div class="section-header">
+            <mat-icon class="section-icon">star</mat-icon>
+            <label class="section-label">Nota Mínima</label>
+          </div>
+          <div class="rating-container">
+            <nz-rate 
+              [(ngModel)]="notaMinimaAtual" 
+              (ngModelChange)="onNotaChange($event)"
+              [ngModelOptions]="{standalone: true}"
+              [nzAllowHalf]="false"
+              [nzCount]="5"
+              class="rating-stars">
+            </nz-rate>
+            <span class="rating-text">
+              {{ notaMinimaAtual > 0 ? notaMinimaAtual + ' estrela' + (notaMinimaAtual > 1 ? 's' : '') : 'Qualquer nota' }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Serviços -->
+        <div class="filtro-section">
+          <div class="section-header">
+            <mat-icon class="section-icon">room_service</mat-icon>
+            <label class="section-label">Serviços</label>
+          </div>
+          <div class="servicos-grid">
+            <div 
+              *ngFor="let servico of todosServicos" 
+              class="servico-item"
+              [class.selected]="isServicoSelecionado(servico.nome)"
+              (click)="onServicoChange(servico.nome, !isServicoSelecionado(servico.nome))">
+              <mat-icon class="servico-icon">{{ servico.icone }}</mat-icon>
+              <span class="servico-nome">{{ servico.nome }}</span>
+              <mat-checkbox 
+                [checked]="isServicoSelecionado(servico.nome)"
+                (change)="onServicoChange(servico.nome, $event.checked)"
+                class="servico-checkbox">
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <div mat-dialog-actions class="dialog-actions">
+      <button 
+        mat-button 
+        (click)="limparFiltros()" 
+        class="action-btn secondary-btn">
+        <mat-icon>clear</mat-icon>
+        Limpar
+      </button>
+      <button 
+        mat-button 
+        (click)="cancelar()" 
+        class="action-btn cancel-btn">
+        Cancelar
+      </button>
+      <button 
+        mat-raised-button 
+        (click)="aplicarFiltros()" 
+        class="action-btn primary-btn">
+        <mat-icon>check</mat-icon>
+        Aplicar Filtros
+      </button>
+    </div>
+  </div>
+</div>

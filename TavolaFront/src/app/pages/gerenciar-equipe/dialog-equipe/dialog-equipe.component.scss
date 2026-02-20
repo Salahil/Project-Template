@@ -1,0 +1,540 @@
+@import '../../../../styles/variables.scss';
+
+// Estilos específicos do componente dialog-equipe
+.tavola-dialog {
+  .dialog-container {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    min-width: 400px;
+    max-width: 500px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    border: 2px solid var(--tavola-amarelo);
+  }
+
+  .dialog-header {
+    background: linear-gradient(135deg, #fafafa 0%, rgba(246, 189, 56, 0.05) 100%);
+    padding: 24px;
+    text-align: center;
+    border-bottom: 1px solid rgba(246, 189, 56, 0.2);
+    flex-shrink: 0;
+
+    .header-icon {
+      margin-bottom: 16px;
+      width: 60px;
+      height: 60px;
+      background: linear-gradient(135deg, #F6BD38, #f4a261);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+
+      &.success-icon {
+        background: linear-gradient(135deg, #52c41a, #45a049);
+      }
+
+      mat-icon {
+        font-size: 28px;
+        width: 28px;
+        height: 28px;
+        color: white;
+      }
+    }
+
+    h1 {
+      margin: 0 0 8px 0;
+      color: #3B221B;
+      font-size: 24px;
+      font-weight: 700;
+    }
+
+    .subtitle {
+      margin: 0;
+      color: rgba(59, 34, 27, 0.7);
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  }
+
+  .dialog-content {
+    padding: 24px;
+    flex: 1;
+    overflow-y: auto;
+    
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      
+      .form-field {
+        .full-width {
+          ::ng-deep {
+            .mat-mdc-form-field-flex {
+              background: var(--fundo-claro);
+              border-radius: 8px;
+            }
+            
+            .mat-mdc-input-element {
+              color: var(--cor-texto);
+              font-size: 14px;
+            }
+            
+            .mat-mdc-form-field-label {
+              color: rgba(59, 34, 27, 0.7);
+            }
+            
+            .mdc-notched-outline__leading,
+            .mdc-notched-outline__notch,
+            .mdc-notched-outline__trailing {
+              border-color: var(--tavola-amarelo);
+            }
+            
+            &.mat-focused {
+              .mdc-notched-outline__leading,
+              .mdc-notched-outline__notch,
+              .mdc-notched-outline__trailing {
+                border-color: var(--tavola-amarelo);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .dialog-actions {
+    padding: 20px 24px;
+    background: #fafafa;
+    border-top: 1px solid rgba(246, 189, 56, 0.2);
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    flex-shrink: 0;
+
+    .cancel-btn {
+      color: #666;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      font-weight: 600;
+      padding: 10px 20px;
+      
+      &:hover {
+        background: #f5f5f5;
+        border-color: #ccc;
+      }
+    }
+
+    .submit-btn, .primary-btn {
+      background: linear-gradient(135deg, #F6BD38, #f4a261);
+      color: white;
+      border-radius: 8px;
+      font-weight: 600;
+      padding: 10px 20px;
+      box-shadow: 0 4px 12px rgba(246, 189, 56, 0.3);
+      
+      &:hover {
+        box-shadow: 0 6px 16px rgba(246, 189, 56, 0.4);
+        transform: translateY(-1px);
+      }
+
+      &:disabled {
+        background: #ccc;
+        box-shadow: none;
+        transform: none;
+      }
+    }
+
+    .loading-icon {
+      animation: spin 1s linear infinite;
+    }
+  }
+}
+
+.membro-info {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 24px;
+  padding: 24px;
+  background: linear-gradient(135deg, #fafafa 0%, rgba(246, 189, 56, 0.05) 100%);
+  border-radius: 16px;
+  border: 1px solid rgba(246, 189, 56, 0.2);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+
+  .membro-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid #F6BD38;
+    box-shadow: 0 8px 24px rgba(246, 189, 56, 0.3);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 12px 32px rgba(246, 189, 56, 0.4);
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+  }
+
+  .membro-nome {
+    margin: 0;
+    color: #3B221B;
+    font-size: 22px;
+    font-weight: 700;
+    text-align: center;
+    letter-spacing: -0.5px;
+  }
+}
+
+.dados-acesso {
+  margin-bottom: 20px;
+
+  .detalhe-card {
+    margin-bottom: 16px;
+    background: #fafafa;
+    border-radius: 12px;
+    padding: 16px;
+    border: 1px solid rgba(246, 189, 56, 0.2);
+    transition: all 0.3s ease;
+
+    &:hover {
+      border-color: rgba(246, 189, 56, 0.4);
+      box-shadow: 0 2px 8px rgba(246, 189, 56, 0.1);
+    }
+
+    .card-content {
+      .card-header-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+
+        .card-icon {
+          width: 36px;
+          height: 36px;
+          background: linear-gradient(135deg, #F6BD38, #f4a261);
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+
+          mat-icon {
+            font-size: 18px;
+            width: 18px;
+            height: 18px;
+            color: white;
+          }
+        }
+
+        .card-label {
+          font-size: 14px;
+          font-weight: 600;
+          color: #666;
+          text-transform: uppercase;
+          letter-spacing: 0.5px;
+          margin: 0;
+        }
+      }
+
+      .card-value-container {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .card-value {
+          font-family: 'Courier New', monospace;
+          font-size: 16px;
+          font-weight: 600;
+          color: #3B221B;
+          background: rgba(246, 189, 56, 0.1);
+          padding: 12px 16px;
+          border-radius: 8px;
+          border: 1px solid rgba(246, 189, 56, 0.3);
+          flex: 1;
+          word-break: break-all;
+        }
+      }
+    }
+  }
+}
+
+.aviso-seguranca {
+  .warning-card {
+    background: linear-gradient(135deg, rgba(255, 152, 0, 0.15) 0%, rgba(255, 152, 0, 0.05) 100%);
+    border: 2px solid rgba(255, 152, 0, 0.6);
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 16px rgba(255, 152, 0, 0.2);
+
+    .card-content {
+      .card-header-row {
+        margin-bottom: 16px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+
+        .card-icon.warning-icon {
+          background: linear-gradient(135deg, #ff9800, #f57c00);
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+          animation: pulse-warning 2s infinite;
+
+          mat-icon {
+            color: white;
+            font-size: 24px;
+            width: 24px;
+            height: 24px;
+            font-weight: bold;
+          }
+        }
+
+        .card-label.warning-label {
+          color: #e65100;
+          font-weight: 700;
+          font-size: 18px;
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+        }
+      }
+
+      .warning-text {
+        color: #d84315;
+        font-size: 15px;
+        line-height: 1.6;
+        margin: 0;
+        font-weight: 600;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 16px;
+        border-radius: 12px;
+        border: 1px solid rgba(255, 152, 0, 0.3);
+        box-shadow: inset 0 2px 4px rgba(255, 152, 0, 0.1);
+      }
+    }
+  }
+}
+
+@keyframes pulse-warning {
+  0% {
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(255, 152, 0, 0.6);
+    transform: scale(1.05);
+  }
+  100% {
+    box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+  }
+}
+
+// Responsividade específica
+@media (max-width: 768px) {
+  .tavola-dialog {
+    .dialog-container {
+      min-width: 90vw;
+      max-width: 90vw;
+      margin: 20px;
+      max-height: 90vh;
+      border: none; // Remove borda cinza no mobile
+    }
+
+    .dialog-header {
+      padding: 20px;
+
+      h1 {
+        font-size: 20px;
+      }
+
+      .subtitle {
+        font-size: 13px;
+      }
+    }
+
+    .dialog-content {
+      padding: 20px;
+      
+      .form-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 24px;
+        
+        .form-field {
+          width: 100%;
+          max-width: 400px;
+          
+          .full-width {
+            width: 100%;
+            
+            ::ng-deep {
+              .mat-mdc-form-field-flex {
+                background: var(--fundo-claro);
+                border-radius: 12px;
+                min-height: 60px;
+              }
+              
+              .mat-mdc-input-element {
+                color: var(--cor-texto);
+                font-size: 16px;
+                font-weight: 500;
+                padding: 16px 20px;
+                text-align: center;
+              }
+              
+              .mat-mdc-form-field-label {
+                color: rgba(59, 34, 27, 0.7);
+                font-weight: 600;
+                font-size: 15px;
+              }
+              
+              .mdc-notched-outline__leading,
+              .mdc-notched-outline__notch,
+              .mdc-notched-outline__trailing {
+                border-color: var(--tavola-amarelo);
+                border-width: 2px;
+              }
+              
+              &.mat-focused {
+                .mdc-notched-outline__leading,
+                .mdc-notched-outline__notch,
+                .mdc-notched-outline__trailing {
+                  border-color: var(--tavola-amarelo);
+                  border-width: 2px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    .dialog-actions {
+      padding: 16px 20px;
+      flex-direction: column;
+      gap: 12px;
+
+      button {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  }
+
+  .membro-info {
+    padding: 20px;
+
+    .membro-avatar {
+      width: 100px;
+      height: 100px;
+    }
+
+    .membro-nome {
+      font-size: 20px;
+    }
+  }
+
+  .dados-acesso {
+    .detalhe-card {
+      padding: 12px;
+
+      .card-value-container {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+
+        .card-value {
+          text-align: center;
+          font-size: 14px;
+          padding: 10px 12px;
+        }
+
+        .tavola-copy-btn {
+          align-self: center;
+          width: 44px;
+          height: 44px;
+        }
+      }
+    }
+  }
+
+  .aviso-seguranca {
+    .detalhe-card {
+      padding: 12px;
+
+      .card-content {
+        .card-value {
+          font-size: 13px;
+          line-height: 1.3;
+        }
+      }
+    }
+  }
+}
+
+// Copy Button Global no Dialog
+.tavola-copy-btn {
+  color: #F6BD38;
+  background: rgba(246, 189, 56, 0.1);
+  border-radius: 10px;
+  transition: all 0.3s ease;
+  width: 40px;
+  height: 40px;
+  border: 1px solid rgba(246, 189, 56, 0.3);
+
+  &:hover {
+    color: white;
+    background: #F6BD38;
+    transform: scale(1.1) rotate(5deg);
+    border-color: #F6BD38;
+  }
+
+  &.copied {
+    color: #4CAF50;
+    background: rgba(76, 175, 80, 0.1);
+    border-color: rgba(76, 175, 80, 0.3);
+    
+    &:hover {
+      background: #4CAF50;
+      color: white;
+      border-color: #4CAF50;
+    }
+  }
+
+  mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+  }
+}
+
+// Sobrescreve a cor do ícone de visibilidade da senha
+.form-field {
+  mat-form-field {
+    // Atinge o botão do ícone de sufixo (onde está o "olho")
+    .mat-mdc-icon-button {
+      mat-icon {
+        color: rgba(59, 34, 27, 0.6) !important; // Cor secundária do texto
+      }
+    }
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

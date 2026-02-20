@@ -1,0 +1,477 @@
+@use 'sass:color';
+
+// Variáveis
+$primary-color: #F6BD38;
+$accent-color: #3B221B;
+$text-color: #3B221B;
+$light-gray: #f5f5f5;
+$medium-gray: #e0e0e0;
+$dark-gray: #757575;
+$white: #fff;
+$border-radius: 16px;
+$success-color: #52c41a;
+$warning-color: #faad14;
+
+// Cores do Tavola
+$tavola-amarelo: #F6BD38;
+$tavola-vermelho: #DA4A24;
+$tavola-amarelo-claro: #FFF4D6;
+$tavola-cinza: #F8F9FA;
+
+.card-reserva-tavola.card-reserva-dialog {
+  background: $white;
+  display: flex;
+  flex-direction: column;
+  border-radius: 0;
+  overflow: hidden;
+  height: 100vh;
+  max-height: 100vh;
+  
+  .cabecalho-reserva {
+    background: $tavola-amarelo;
+    padding: 20px 24px;
+    padding-top: 60px; // Espaço extra no topo para não ser cortado pelo menu
+    text-align: center;
+    position: relative;
+    flex-shrink: 0;
+    width: 100%;
+    
+    .titulo-reserva {
+      font-size: 20px;
+      font-weight: 700;
+      margin: 0 0 6px;
+      color: $accent-color;
+    }
+    
+    .texto-gratis {
+      font-size: 15px;
+      color: $tavola-vermelho;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    .fechar-dialog-btn {
+      position: absolute;
+      right: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: $text-color;
+      background: rgba(255, 255, 255, 0.2);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+  
+  // Navegação horizontal
+  .navegacao-reserva {
+    display: flex;
+    padding: 0;
+    border-bottom: 1px solid $light-gray;
+    flex-shrink: 0;
+    
+    .etapa-nav {
+      flex: 1;
+      background: $white;
+      border: none;
+      padding: 12px 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-bottom: 3px solid transparent;
+      
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      
+      &.active {
+        background: $white;
+        border-bottom-color: $tavola-amarelo;
+        
+        .conteudo-etapa {
+          color: $text-color;
+          font-weight: 600;
+        }
+      }
+      
+      &.completed {
+        background: $white;
+        border-bottom-color: $success-color;
+        
+        .conteudo-etapa {
+          color: $text-color;
+          font-weight: 500;
+        }
+      }
+      
+      &:hover:not(:disabled) {
+        background: $tavola-cinza;
+      }
+      
+      .conteudo-etapa {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 4px;
+        
+        i {
+          font-size: 16px;
+          color: $medium-gray;
+        }
+        
+        span {
+          font-size: 11px;
+          color: $dark-gray;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          max-width: 70px;
+        }
+      }
+      
+      &.active .conteudo-etapa i,
+      &.completed .conteudo-etapa i {
+        color: inherit;
+      }
+    }
+  }
+  
+  // Container de conteúdo com scroll
+  .conteudo-reserva {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    min-height: 0;
+    
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+    
+    &::-webkit-scrollbar-track {
+      background: $light-gray;
+      border-radius: 2px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+      background: $medium-gray;
+      border-radius: 2px;
+      
+      &:hover {
+        background: $dark-gray;
+      }
+    }
+  }
+  
+  .etapa-reserva {
+    .cabecalho-etapa {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      
+      .botao-voltar {
+        padding: 6px;
+        color: $text-color;
+        
+        &:hover {
+          color: $tavola-amarelo;
+        }
+      }
+      
+      h3 {
+        margin: 0;
+        font-size: 17px;
+        font-weight: 600;
+        color: $text-color;
+      }
+    }
+    
+    // Calendário estilo Tavola
+    .calendario-tavola {
+      width: 100%;
+      display: block;
+      max-height: 400px;
+      overflow-y: auto;
+      overflow-x: hidden;
+      
+      &::-webkit-scrollbar {
+        width: 4px;
+      }
+      
+      &::-webkit-scrollbar-track {
+        background: $light-gray;
+        border-radius: 2px;
+      }
+      
+      &::-webkit-scrollbar-thumb {
+        background: $medium-gray;
+        border-radius: 2px;
+        
+        &:hover {
+          background: $dark-gray;
+        }
+      }
+      
+      ::ng-deep .ant-picker-calendar {
+        .ant-picker-calendar-header {
+          padding: 10px 0;
+          position: sticky;
+          top: 0;
+          background: $white;
+          z-index: 10;
+          
+          .ant-picker-calendar-year-select,
+          .ant-picker-calendar-month-select {
+            color: $text-color;
+            font-size: 15px;
+          }
+        }
+        
+        .ant-picker-body {
+          padding: 0;
+        }
+        
+        .ant-picker-content {
+          th, td {
+            padding: 3px;
+            font-size: 12px;
+          }
+          
+          th {
+            color: $dark-gray;
+            font-weight: 500;
+          }
+        }
+        
+        .ant-picker-cell {
+          &:hover .ant-picker-cell-inner {
+            background-color: $tavola-amarelo-claro;
+          }
+          
+          &.ant-picker-cell-selected .ant-picker-cell-inner {
+            background-color: $tavola-amarelo;
+            color: $text-color;
+            font-weight: 600;
+          }
+          
+          &.ant-picker-cell-disabled .ant-picker-cell-inner {
+            color: $medium-gray;
+            background-color: transparent;
+          }
+          
+          .ant-picker-cell-inner {
+            width: 32px;
+            height: 32px;
+            line-height: 32px;
+            font-size: 12px;
+            border-radius: 4px;
+            margin: 0 auto;
+          }
+        }
+      }
+    }
+    
+    // Horários estilo Tavola
+    .periodo-horario {
+      margin-bottom: 24px;
+      
+      h4 {
+        font-size: 15px;
+        font-weight: 600;
+        margin: 0 0 14px;
+        color: $text-color;
+      }
+      
+      .slots-horario {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 8px;
+        
+        .slot-horario {
+          position: relative;
+          padding: 10px 6px;
+          font-size: 12px;
+          font-weight: 500;
+          border-radius: 6px;
+          transition: all 0.2s ease;
+          border: 1px solid $medium-gray;
+          background: $white;
+          
+          &:hover:not(:disabled) {
+            background-color: $tavola-amarelo;
+            border-color: $tavola-amarelo;
+            color: $text-color;
+          }
+          
+          &.limitado {
+            border-color: $warning-color;
+            background-color: rgba(250, 173, 20, 0.1);
+            
+            .percentual {
+              position: absolute;
+              top: -6px;
+              right: -6px;
+              background-color: $warning-color;
+              color: $white;
+              font-size: 8px;
+              padding: 1px 3px;
+              border-radius: 3px;
+              font-weight: 600;
+            }
+          }
+          
+          &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            background-color: $light-gray;
+          }
+        }
+      }
+    }
+    
+    // Seleção de pessoas estilo Tavola
+    .grid-pessoas {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 24px;
+      
+      .botao-pessoa {
+        aspect-ratio: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 15px;
+        font-weight: 600;
+        border-radius: 8px;
+        transition: all 0.2s ease;
+        border: 1px solid $medium-gray;
+        background: $white;
+        
+        &:hover {
+          border-color: $tavola-amarelo;
+          background-color: $tavola-amarelo-claro;
+        }
+        
+        &.selecionado {
+          background-color: $tavola-amarelo;
+          border-color: $tavola-amarelo;
+          color: $text-color;
+        }
+      }
+    }
+    
+    // Resumo da reserva
+    .resumo-reserva {
+      background-color: $tavola-amarelo-claro;
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 24px;
+      
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 16px;
+        color: $text-color;
+      }
+      
+      .resumo-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 8px;
+        
+        .label {
+          font-weight: 500;
+          color: rgba(59, 34, 27, 0.8);
+        }
+        
+        .value {
+          font-weight: 600;
+          color: $text-color;
+        }
+      }
+    }
+    
+    // Comentários
+    .comentarios-section {
+      margin-bottom: 24px;
+      
+      h4 {
+        font-size: 16px;
+        font-weight: 600;
+        margin: 0 0 8px;
+        color: $text-color;
+      }
+      
+      .comentarios-desc {
+        font-size: 14px;
+        color: rgba(59, 34, 27, 0.7);
+        margin-bottom: 16px;
+      }
+      
+      .mat-mdc-form-field {
+        width: 100%;
+        display: block;
+      }
+      
+      .sugestoes-rapidas {
+        margin-top: 16px;
+        
+        .sugestoes-label {
+          display: block;
+          font-size: 14px;
+          font-weight: 500;
+          margin-bottom: 8px;
+          color: $text-color;
+        }
+        
+        .sugestoes-chips {
+          display: flex;
+          flex-wrap: wrap;
+          gap: 8px;
+          
+          .sugestao-chip {
+            font-size: 12px;
+            padding: 4px 8px;
+            height: auto;
+            border-color: $medium-gray;
+            
+            &:hover {
+              border-color: $tavola-amarelo;
+              color: $tavola-amarelo;
+            }
+          }
+        }
+      }
+    }
+    
+    // Confirmação
+    .confirmacao-section {
+      text-align: center;
+      padding-bottom: 24px;
+      
+      .botao-confirmar {
+        width: 100%;
+        height: 48px;
+        font-size: 16px;
+        font-weight: 600;
+        background-color: $tavola-amarelo;
+        border-color: $tavola-amarelo;
+        color: $text-color;
+        
+        &:hover {
+          background-color: color.adjust($tavola-amarelo, $lightness: -10%);
+          border-color: color.adjust($tavola-amarelo, $lightness: -10%);
+        }
+        
+        mat-icon {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+}
+
+// Estilos globais para o dialog (já definidos no componente pai)

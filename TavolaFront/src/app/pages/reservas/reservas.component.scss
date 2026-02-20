@@ -1,0 +1,1804 @@
+@use 'sass:color';
+@use '../../../styles/variables.scss' as *;
+@use '../../../styles/shared/_mesas-shared.scss' as mesas;
+
+:root {
+  --reservas-spacing: 16px;
+  --reservas-border-radius: 12px;
+  --reservas-transition: all 0.3s ease;
+}
+
+// Container principal
+.reservas-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #ebe8e2;
+  overflow-x: hidden;
+  color: $text-color;
+}
+
+// Cabeçalho
+.reservas-header {
+  height: $header-height;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 20px;
+  background-color: white;
+  border-bottom: 1px solid #e8e8e8;
+  border-radius: $border-radius $border-radius 0 0;
+  
+  .restaurante-info {
+    h2 {
+      margin: 0;
+      font-size: 18px;
+      font-weight: 500;
+      color: $text-color;
+      
+      .restaurante-nome {
+        color: $primary-color;
+        font-weight: 600;
+      }
+    }
+  }
+  
+  .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    
+    .data-picker {
+      width: 180px;
+      margin-bottom: -22px; // Compensar o padding do mat-form-field
+    }
+    
+    button {
+      color: $text-color;
+    }
+    
+    button.mat-raised-button.mat-primary {
+      color: white;
+    }
+  }
+}
+
+// Conteúdo principal com layout de duas colunas
+.reservas-content-columns {
+  display: flex;
+  min-height: calc(100vh - #{$header-height});
+  overflow-x: hidden;
+  flex: 1;
+}
+
+// CLASSE UNIFICADA PARA TODOS OS TABS TAVOLA
+::ng-deep .mat-mdc-tab-group {
+  // Variáveis CSS do Material Design Components para customização
+  --mdc-tab-indicator-active-indicator-color: #{$primary-color} !important;
+  --mat-mdc-tab-indicator-active-indicator-height: 3px !important;
+  --mat-tab-header-active-label-text-color: #{$primary-color} !important;
+  --mat-tab-header-inactive-label-text-color: #{$text-color} !important;
+  --mat-tab-header-inactive-hover-label-text-color: #{$primary-color} !important;
+  --mat-tab-header-active-focus-indicator-color: #{$primary-color} !important;
+  --mat-tab-header-inactive-focus-indicator-color: transparent !important;
+  --mat-tab-header-active-ripple-color: rgba(246, 189, 56, 0.1) !important;
+  --mat-tab-header-inactive-ripple-color: rgba(59, 34, 27, 0.1) !important;
+
+  .mat-mdc-tab-header {
+    border-bottom: none !important;
+    justify-content: center;
+    border-radius: $border-radius $border-radius 0 0;
+  }
+  
+  .mat-mdc-tab {
+    background-color: transparent !important;
+    margin: 0 2px;
+    border-radius: 8px 8px 0 0;
+    
+    .mdc-tab__text-label {
+      font-weight: 500;
+      transition: color 0.3s ease;
+      color: #{$text-color} !important; // Força cor padrão
+    }
+    
+    // Força hover amarelo
+    &:hover .mdc-tab__text-label {
+      color: #{$primary-color} !important;
+    }
+    
+    // Força cor ativa amarela
+    &.mat-mdc-tab-active .mdc-tab__text-label {
+      color: #{$primary-color} !important;
+    }
+    
+    &.mat-mdc-tab-active {
+      .tab-badge {
+        margin-left: 6px;
+        background-color: $primary-color;
+        color: $text-color;
+        font-size: 11px;
+        font-weight: 600;
+        padding: 2px 6px;
+        border-radius: 10px;
+        line-height: 1;
+        transition: background-color 0.3s, color 0.3s;
+      }
+    }
+  }
+  
+  // Remover ripple azul se persistir
+  .mat-mdc-tab-ripple {
+    display: none !important;
+  }
+
+  // Força a cor do indicador para todos os casos
+  .mat-ink-bar,
+  .mdc-tab-indicator__content--underline {
+    background-color: $primary-color !important;
+    border-color: $primary-color !important;
+  }
+}
+
+// Coluna Esquerda: Lista de Reservas
+.reservas-list-column {
+  width: $sidebar-width;
+  background-color: white;
+  border-right: 1px solid #e8e8e8;
+  overflow-y: auto;
+  flex-shrink: 0;
+  border-radius: $border-radius;
+  
+  // Estilização específica para abas da lista de reservas
+  ::ng-deep .mat-mdc-tab-group {
+    .mat-mdc-tab-header {
+      border-bottom: 1px solid #e8e8e8 !important;
+    }
+    
+    .mat-mdc-tab {
+      min-width: 120px;
+    }
+  }
+  
+  .tab-label {
+    margin-right: 8px;
+  }
+  
+  .tab-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #e0e0e0;
+    color: $text-color;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  
+  // Barra de pesquisa
+  .search-bar {
+    display: flex;
+    align-items: center;
+    padding: 16px;
+    gap: 8px;
+
+    mat-form-field {
+      flex: 1;
+      ::ng-deep {
+        .mdc-notched-outline {
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            border-color: $text-color !important;
+            border-width: 1px !important;
+          }
+        }
+        
+        .mat-mdc-form-field-input-control::placeholder {
+          color: $text-color-lighter !important;
+          opacity: 1;
+        }
+        
+        .mat-mdc-input-element {
+          color: $text-color !important;
+        }
+
+        &:hover .mdc-notched-outline__leading,
+        &:hover .mdc-notched-outline__notch,
+        &:hover .mdc-notched-outline__trailing {
+          border-color: $primary-color !important;
+        }
+        
+        &.mat-focused {
+          .mdc-notched-outline__leading,
+          .mdc-notched-outline__notch,
+          .mdc-notched-outline__trailing {
+            border-color: $primary-color !important;
+            border-width: 2px !important;
+          }
+          .mat-mdc-form-field-label, .mdc-floating-label {
+             color: $primary-color !important;
+          }
+        }
+        
+        .mat-mdc-form-field-icon-suffix .mat-icon {
+            color: $text-color-light !important;
+        }
+      }
+    }
+  }
+  
+  // Lista de reservas
+  .reservas-list {
+    padding: 0 16px 16px;
+    
+    .periodo-section {
+      margin-bottom: 24px;
+      
+      h3 {
+        font-size: 18px;
+        font-weight: 500;
+        margin: 16px 0 12px;
+        color: $text-color;
+      }
+    }
+    
+    .reserva-cards {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    
+    .reserva-card {
+      padding: 12px;
+      border-radius: $border-radius;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      background-color: white;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+      
+      &:hover {
+        background-color: #f9f9f9;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-color: $primary-color;
+      }
+      
+      &.selected {
+        border-color: $primary-color;
+        background-color: color.adjust($primary-color, $lightness: 40%);
+      }
+      
+      .reserva-info {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        
+        .cliente-info {
+          h4 {
+            margin: 0 0 4px;
+            font-size: 16px;
+            font-weight: 500;
+            color: $text-color;
+          }
+          
+          .reserva-detalhes {
+            display: flex;
+            gap: 16px;
+            color: rgba(59, 34, 27, 0.7);
+            font-size: 14px;
+            flex-wrap: wrap;
+            
+            .pessoas-info, .mesa-info, .data-info {
+              display: flex;
+              align-items: center;
+              gap: 4px;
+              
+              mat-icon {
+                font-size: 16px;
+                height: 16px;
+                width: 16px;
+                line-height: 16px;
+              }
+            }
+          }
+        }
+        
+        .reserva-acoes {
+          display: flex;
+          flex-direction: column;
+          align-items: flex-end;
+          gap: 4px;
+          
+          button.confirmada {
+            color: #4CAF50;
+          }
+          
+          button.pendente {
+            color: #F6BD38;
+          }
+          
+          button.cancelada {
+            color: #DA4A24;
+          }
+          
+          .reatribuir-btn {
+            color: $primary-color;
+            
+            &:hover {
+              background-color: rgba(246, 189, 56, 0.1);
+            }
+          }
+          
+          .horario {
+            font-size: 14px;
+            font-weight: 500;
+            color: $text-color;
+          }
+        }
+      }
+    }
+    
+    .sem-reservas {
+      padding: 20px 0;
+      text-align: center;
+    }
+  }
+}
+
+// Coluna Direita: Detalhes da Reserva e Mesas
+.reserva-details-tables-column {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background-color: #ebe8e2;
+  padding: 16px;
+  
+  .mensagem-selecione {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    
+    nz-empty {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+  
+  // Detalhes da reserva (Exibição direta)
+  .reserva-detalhes-container {
+    background-color: white;
+    border-radius: $border-radius;
+    padding: 16px;
+    margin-bottom: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    
+    .detalhes-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e8e8e8;
+      
+      h2 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+        color: $text-color;
+      }
+      
+      button[mat-icon-button] {
+        color: $text-color;
+        margin-right: 8px;
+      }
+    }
+    
+    // Informações do cliente
+    .cliente-detalhes {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e8e8e8;
+      
+      .cliente-header {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+        
+        nz-avatar {
+          flex-shrink: 0;
+        }
+        
+        .cliente-info-principal {
+          flex: 1;
+          
+          h3 {
+            margin: 0 0 4px;
+            font-size: 18px;
+            font-weight: 500;
+            color: $text-color;
+          }
+          
+          .cliente-contato {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            
+            .contato-item {
+              display: flex;
+              align-items: center;
+              gap: 8px;
+              color: rgba(59, 34, 27, 0.7);
+              font-size: 14px;
+              
+              mat-icon {
+                font-size: 16px;
+                height: 16px;
+                width: 16px;
+                line-height: 16px;
+              }
+            }
+          }
+        }
+        
+        .cliente-id {
+          color: $primary-color;
+          font-weight: 500;
+        }
+      }
+    }
+    
+    // Estatísticas
+    .estatisticas {
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e8e8e8;
+      
+      h3 {
+        margin: 0 0 16px;
+        font-size: 18px;
+        font-weight: 500;
+        color: $text-color;
+      }
+      
+      .estatisticas-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+        gap: 16px;
+        
+        .estatistica-item {
+          text-align: center;
+          
+          .estatistica-valor {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 4px;
+            color: $text-color;
+          }
+          
+          .estatistica-label {
+            font-size: 12px;
+            color: rgba(59, 34, 27, 0.7);
+          }
+        }
+      }
+    }
+    
+    // Abas de detalhes da reserva - agora usa a classe global
+    .detalhes-tabs {
+      margin-top: 0;
+      
+      .detalhes-content {
+        padding: 16px 0;
+        
+        .secao-detalhes {
+          .secao-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            
+            h4 {
+              margin: 0;
+              font-size: 16px;
+              font-weight: 500;
+              color: $text-color;
+            }
+          }
+          
+          .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+            
+            .info-row {
+              .info-label {
+                font-size: 12px;
+                color: rgba(59, 34, 27, 0.7);
+                margin-bottom: 4px;
+              }
+              
+              .info-valor {
+                font-size: 14px;
+                font-weight: 500;
+                color: $text-color;
+                
+                .data-com-icone {
+                  display: flex;
+                  align-items: center;
+                  justify-content: space-between;
+                  
+                  mat-icon {
+                    font-size: 16px;
+                    height: 16px;
+                    width: 16px;
+                    line-height: 16px;
+                    color: rgba(59, 34, 27, 0.7);
+                  }
+                }
+              }
+            }
+            
+            // Centralizar dropdowns
+            .info-row-centered {
+              display: flex;
+              flex-direction: column;
+              align-items: center;
+              text-align: center;
+              
+              .info-label {
+                font-size: 12px;
+                color: rgba(59, 34, 27, 0.7);
+                margin-bottom: 8px;
+                font-weight: normal;
+              }
+              
+              .info-valor {
+                display: flex;
+                justify-content: center;
+                width: 100%;
+              }
+              
+              // Botão grande de reatribuir
+              .reatribuir-btn-grande {
+                background-color: $primary-color;
+                color: $text-color;
+                padding: 8px 16px;
+                border-radius: 8px;
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                
+                mat-icon {
+                  font-size: 18px; // Tamanho do ícone
+                  height: 20px;
+                  width: 20px;
+                  line-height: 20px; // Garante que o ícone não cause altura extra
+                  margin-right: 8px; 
+                }
+                
+                &:hover {
+                  background-color: color.adjust($primary-color, $lightness: -5%);
+                }
+              }
+            }
+          }
+          
+          .comentarios-notas {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin-top: 24px;
+            padding-top: 16px;
+            border-top: 1px solid #e8e8e8;
+            
+            h5 {
+              margin: 0 0 8px;
+              font-size: 14px;
+              font-weight: 500;
+              color: rgba(59, 34, 27, 0.7);
+            }
+            
+            p {
+              margin: 0;
+              font-size: 14px;
+              line-height: 1.5;
+              color: $text-color;
+            }
+          }
+          
+          .mesas-associadas-chips {
+            margin-top: 16px;
+            
+            mat-chip-listbox {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 8px;
+              margin-bottom: 16px;
+            }
+            
+            mat-chip {
+              background-color: $primary-color;
+              color: white;
+              .mat-chip-remove {
+                color: rgba(255, 255, 255, 0.8);
+              }
+            }
+            
+            .adicionar-mesa-input {
+              flex: 1;
+              margin-right: 8px;
+            }
+          }
+        }
+      }
+    }
+  }
+  
+ 
+  
+  // Container para o grid de mesas
+  .mesas-grid-container {
+    padding: 0;
+    overflow-y: auto;
+    flex: 1;
+  }
+
+  // 3. Estilos para o novo Grid de Mesas (substituindo nz-row/col)
+  .mesas-grid-css {
+    display: grid;
+    // Cria colunas responsivas. Mínimo de 110px, máximo de 1fr (distribui igual)
+    grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+    gap: 16px; // Espaçamento entre as mesas (desktop)
+  }
+
+  // O .mesa-wrapper-css é o novo item do grid (o antigo nz-col)
+  .mesa-wrapper-css {
+    display: flex;
+    width: 100%;
+  }
+
+  // Estilos da mesa dentro do grid NG-Zorro
+  .mesa {
+    width: 100%;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    gap: 8px;
+    
+    .mesa-visual {
+      width: 100%;
+      max-width: 100px;
+      height: 80px;
+      background-color: #f0f0f0;
+      border: 2px solid #d0d0d0;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      transition: all 0.2s ease;
+      
+      .mesa-capacidade {
+        font-size: 14px;
+        color: rgba(59, 34, 27, 0.8);
+        font-weight: 600;
+      }
+      
+      &.mesa-circular {
+        border-radius: 50% !important;
+      }
+    }
+    
+    .mesa-etiqueta {
+      padding: 4px 8px;
+      background-color: $text-color;
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      min-width: 60px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+      
+      &.mesa-vip {
+        background-color: $primary-color;
+        color: $text-color;
+      }
+    }
+    
+    &.mesa-ocupada {
+      .mesa-visual {
+        border: 2px solid #F44336 !important;
+        background-color: rgba(244, 67, 54, 0.1) !important;
+      }
+      
+      .mesa-etiqueta {
+        color: #F44336 !important;
+        font-weight: bold;
+      }
+    }
+    
+    &.mesa-atribuida-reserva-atual {
+      .mesa-visual {
+        background-color: color.adjust($primary-color, $lightness: 30%);
+        border: 3px solid $primary-color;
+        box-shadow: 0 0 12px rgba($primary-color, 0.5);
+        
+        .mesa-capacidade {
+          color: $text-color;
+          font-weight: 700;
+        }
+      }
+      
+      .mesa-etiqueta {
+        background-color: $primary-color;
+        color: $text-color;
+        font-weight: 700;
+      }
+    }
+    
+    &:not(.mesa-ocupada):not(.mesa-atribuida-reserva-atual):hover {
+      .mesa-visual {
+        background-color: color.adjust($primary-color, $lightness: 40%);
+        border-color: $primary-color;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+      
+      .mesa-etiqueta {
+        background-color: $primary-color;
+        color: $text-color;
+      }
+    }
+
+    .mesa-menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 32px;
+      width: 32px;
+      background: none;
+      
+      button {
+        width: 32px;
+        height: 32px;
+        min-height: 32px;
+        background: none;
+        color: $primary-color;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: none;
+        
+        mat-icon {
+          font-size: 22px;
+          width: 22px;
+          height: 22px;
+          line-height: 22px;
+          color: $primary-color;
+        }
+      }
+    }
+  }
+  }
+
+
+// Estilos para o modal de adicionar/editar mesa
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+// Estilos para o Seletor de Visualização Mobile
+.view-switcher {
+  display: none; // Escondido por padrão no desktop
+  width: calc(100% - 32px); // Para alinhar com o padding de 16px
+  margin: 0 auto 16px auto;
+  
+  ::ng-deep {
+    .mat-button-toggle-group {
+      width: 100%;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(59, 34, 27, 0.1);
+    }
+    
+    .mat-button-toggle {
+      flex: 1;
+      height: 48px;
+      border: none;
+      background-color: white;
+      color: rgba(59, 34, 27, 0.7);
+      font-weight: 500;
+      transition: all 0.3s ease;
+      
+      .mat-button-toggle-label-content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 0 16px;
+        
+        mat-icon {
+          font-size: 20px;
+          width: 20px;
+          height: 20px;
+          line-height: 20px;
+        }
+        
+        span {
+          font-size: 14px;
+          font-weight: 500;
+        }
+      }
+      
+      &:hover {
+        background-color: rgba(246, 189, 56, 0.1);
+        color: rgba(59, 34, 27, 0.9);
+      }
+    }
+    
+    .mat-button-toggle-checked {
+      background-color: #F6BD38 !important;
+      color: #3B221B !important;
+      font-weight: 600;
+      
+      .mat-button-toggle-label-content {
+        mat-icon, span {
+          color: #3B221B !important;
+        }
+      }
+    }
+  }
+}
+
+// Responsividade
+@media (max-width: 1200px) {
+  .reservas-list-column {
+    width: 300px;
+  }
+  
+  .estatisticas-grid {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)) !important;
+  }
+  
+  .info-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)) !important;
+  }
+  
+  .mesas-grid {
+    grid-template-columns: repeat(auto-fill, minmax(60px, 1fr));
+    gap: 8px;
+  }
+}
+
+@media (max-width: 700px) {
+  .view-switcher {
+    display: flex !important;
+  }
+  
+  .reservas-content-columns {
+    flex-direction: column;
+    overflow-y: auto;
+    height: auto;
+    min-height: auto;
+  }
+  
+  .reservas-list-column {
+    width: 100%;
+    margin: 0 0 16px 0;
+    padding: 0;
+    border-right: none;
+    border-bottom: 1px solid #e8e8e8;
+    border-radius: 16px;
+    max-height: none;
+    overflow-y: visible;
+    height: auto;
+    flex-shrink: 0;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
+  
+  .reserva-details-tables-column {
+    flex: none;
+    width: 100%;
+    padding: 0 16px 16px 16px;
+    height: auto;
+    overflow-y: visible;
+  }
+  
+  .reserva-detalhes-container.mobile-fullscreen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+    margin: 0;
+    border-radius: 0;
+    overflow-y: auto;
+    animation: slideInUp 0.3s ease-out;
+    
+    .detalhes-header {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      z-index: 10;
+      padding: 16px;
+      border-bottom: 1px solid #e8e8e8;
+      
+      .back-button-details {
+        width: 40px;
+        height: 40px;
+        background-color: rgba(246, 189, 56, 0.1);
+        
+        mat-icon {
+          color: $primary-color;
+        }
+      }
+    }
+  }
+  
+  .mesas-container {
+    padding: 0; // Remove padding duplo - o pai já tem padding de 16px
+    
+    .areas-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding-bottom: 12px;
+    }
+
+    .ambientes-nav-wrapper {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px; // Adicionado gap para espaçamento entre setas e scroll
+      overflow: hidden;
+      
+      .ambientes-scroll-container {
+        flex: 1;
+        min-width: 0;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-behavior: smooth;
+        scrollbar-width: none;
+        -webkit-overflow-scrolling: touch;
+        
+        &::-webkit-scrollbar {
+          display: none; // Esconde scrollbar no Chrome/Safari
+        }
+        
+        .ambientes-list {
+          display: flex;
+          gap: 8px;
+          padding: 8px 4px 12px 4px;
+          min-width: min-content;
+          
+          .ambiente-btn-wrapper {
+            flex-shrink: 0;
+            min-width: fit-content;
+            
+            .ambiente-btn {
+              white-space: nowrap;
+              padding: 10px 18px;
+              font-size: 14px;
+              font-weight: 500;
+              min-width: 80px;
+              text-align: center;
+            }
+            
+            .more-options-btn {
+              width: 32px;
+              height: 32px;
+              
+              mat-icon {
+                font-size: 20px;
+              }
+            }
+          }
+        }
+      }
+      
+      .nav-arrow {
+        display: flex !important;
+        flex-shrink: 0;
+        width: 36px;
+        height: 36px;
+        background-color: white;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+        z-index: 2;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        border-radius: 50%;
+        
+        &:hover {
+          background-color: $primary-color;
+          color: white;
+          transform: scale(1.1);
+          box-shadow: 0 4px 12px rgba(246, 189, 56, 0.4);
+          
+          mat-icon {
+            color: white;
+          }
+        }
+        
+        &:active {
+          transform: scale(0.95);
+        }
+        
+        mat-icon {
+          transition: all 0.3s ease;
+          color: $text-color;
+          font-size: 20px;
+        }
+      }
+    }
+
+    .add-area-container {
+      width: 100%;
+      padding: 0 12px;
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+      
+      .add-area-btn {
+        width: 100%;
+        max-width: 300px;
+        height: 44px;
+        font-size: 14px;
+      }
+      
+      .add-area-input {
+        width: 100%;
+        max-width: 300px;
+      }
+    }
+  }
+  
+  .mesas-grid-css {
+    grid-template-columns: repeat(3, 1fr) !important;
+    gap: 6px !important; // Reduzido de 10px para 6px
+    padding: 6px !important; // Reduzido de 8px para 6px
+  }
+  
+  .mesa {
+    .mesa-visual {
+      max-width: 80px !important; // Reduzido de 85px
+      height: 60px !important; // Reduzido de 70px
+      
+      .mesa-capacidade {
+        font-size: 12px !important; // Reduzido de 13px
+      }
+    }
+    
+    .mesa-etiqueta {
+      font-size: 10px !important; // Reduzido de 11px
+      padding: 2px 5px !important; // Reduzido de 3px 6px
+      min-width: 45px !important; // Reduzido de 50px
+    }
+  }
+}
+
+// Media queries removidas - NG-Zorro grid cuida da responsividade
+
+@media (max-width: 576px) {
+  .reservas-header {
+    flex-direction: column;
+    height: auto;
+    padding-bottom: 10px;
+  }
+  
+  .header-actions {
+    flex-direction: column;
+    width: 100%;
+    
+    .data-picker, button {
+      width: 100%;
+    }
+  }
+  
+  .cliente-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    text-align: center;
+    
+    nz-avatar {
+      align-self: center;
+    }
+    
+    .cliente-info-principal {
+      width: 100%;
+      text-align: center;
+    }
+    
+    .cliente-id {
+      align-self: center;
+      margin-top: 8px;
+    }
+  }
+  
+  .estatisticas-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+  
+  .info-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  .mesas-container {
+    .areas-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding-bottom: 12px;
+    }
+
+    .ambientes-nav-wrapper {
+      gap: 6px; // Gap menor para telas pequenas
+      
+      .ambientes-scroll-container {
+        .ambientes-list {
+          padding: 6px 4px 10px 4px;
+          gap: 6px;
+          
+          .ambiente-btn-wrapper {
+            .ambiente-btn {
+              padding: 8px 14px;
+              font-size: 13px;
+              min-width: 70px;
+            }
+            
+            .more-options-btn {
+              width: 28px;
+              height: 28px;
+              
+              mat-icon {
+                font-size: 18px;
+              }
+            }
+          }
+        }
+      }
+      
+      .nav-arrow {
+        width: 32px !important;
+        height: 32px !important;
+        
+        mat-icon {
+          font-size: 18px !important;
+        }
+      }
+    }
+    
+    .add-area-container {
+      .add-area-btn {
+        height: 40px;
+        font-size: 13px;
+      }
+    }
+  }
+  
+  .mesas-grid-container {
+    padding: 0 4px 4px 4px; // Padding para a grelha não colar nas bordas
+  }
+  
+  .mesas-grid-css {
+    grid-template-columns: repeat(3, 1fr) !important; // Alterado de 2 para 3 colunas
+    gap: 4px !important; // Reduzido de 8px para 4px
+    // padding removido - agora está no container pai
+  }
+  
+  .mesa {
+    .mesa-visual {
+      max-width: 70px !important; // Reduzido de 75px
+      height: 55px !important; // Reduzido de 65px
+      
+      .mesa-capacidade {
+        font-size: 11px !important; // Reduzido de 12px
+      }
+    }
+    
+    .mesa-etiqueta {
+      font-size: 9px !important; // Reduzido de 10px
+      padding: 2px 4px !important; // Reduzido de 2px 5px
+      min-width: 40px !important; // Reduzido de 45px
+    }
+  }
+}
+
+::ng-deep .ant-modal-content {
+  .mat-mdc-form-field-appearance-outline {
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(59, 34, 27, 0.2) !important;
+    }
+    &:hover .mdc-notched-outline__leading,
+    &:hover .mdc-notched-outline__notch,
+    &:hover .mdc-notched-outline__trailing {
+      border-color: $primary-color !important;
+    }
+    .mat-mdc-input-element, .mat-mdc-select-value-text, .mdc-floating-label {
+        color: $text-color !important;
+    }
+  }
+
+  .mat-mdc-checkbox .mdc-checkbox__native-control:enabled:not(:checked):not(:indeterminate) ~ .mdc-checkbox__background {
+    border-color: $text-color !important;
+  }
+  .mat-mdc-checkbox.mat-accent .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+  .mat-mdc-checkbox.mat-accent .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+    background-color: $primary-color !important;
+    border-color: $primary-color !important;
+  }
+}
+
+// Estilos para a seção de detalhes da reserva
+.reserva-detalhes-container {
+  .detalhes-header {
+    button[mat-icon-button] {
+      color: $text-color;
+      margin-right: 8px;
+    }
+  }
+}
+// Estilos para mesas atribuídas
+.mesas-atribuidas-header {
+  margin-top: 24px;
+}
+
+// Novo estilo para mesas atribuídas em formato de chips
+.mesas-atribuidas-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+
+  .mesa-chip {
+    display: inline-flex;
+    align-items: center;
+    background-color: color.adjust($primary-color, $lightness: 45%);
+    border: 1px solid $primary-color;
+    border-radius: 20px;
+    padding: 4px 8px 4px 12px;
+    gap: 6px;
+    font-size: 12px;
+    
+    .mesa-nome {
+      color: $text-color;
+      font-weight: 500;
+    }
+    
+    .remove-mesa-btn {
+      width: 20px;
+      height: 20px;
+      min-height: 20px;
+      padding: 0;
+      background-color: transparent;
+      color: $accent-color;
+      
+      mat-icon {
+        font-size: 16px;
+        width: 16px;
+        height: 16px;
+        line-height: 16px;
+      }
+      
+      &:hover {
+        background-color: rgba(218, 74, 36, 0.1);
+        border-radius: 50%;
+      }
+    }
+  }
+}
+
+.info-placeholder {
+  color: rgba(59, 34, 27, 0.6);
+  font-style: italic;
+  text-align: center;
+  padding: 16px;
+}
+
+.status-dropdown,
+.mesas-dropdown {
+  width: 200px;
+
+  ::ng-deep {
+    .mat-mdc-form-field-flex {
+      height: 40px;
+    }
+    
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(59, 34, 27, 0.2) !important;
+    }
+    
+    &:hover .mdc-notched-outline__leading,
+    &:hover .mdc-notched-outline__notch,
+    &:hover .mdc-notched-outline__trailing {
+      border-color: $primary-color !important;
+    }
+    
+    .mat-mdc-select-value,
+    .mat-mdc-select-arrow {
+      color: $text-color !important;
+    }
+  }
+}
+
+.status-dropdown {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  .mat-mdc-select {
+    min-width: 160px;
+    text-align: center;
+    font-weight: normal; // Remover negrito
+    border-radius: 8px;
+    &.status-confirmada .mat-mdc-select-value {
+      background: #e6f9e6;
+      color: #4CAF50;
+      border: 1.5px solid #4CAF50;
+      border-radius: 8px;
+      padding: 2px 16px;
+    }
+    &.status-pendente .mat-mdc-select-value {
+      background: #fff7e0;
+      color: #F6BD38;
+      border: 1.5px solid #F6BD38;
+      border-radius: 8px;
+      padding: 2px 16px;
+    }
+    &.status-cancelada .mat-mdc-select-value {
+      background: #ffeaea;
+      color: #DA4A24;
+      border: 1.5px solid #DA4A24;
+      border-radius: 8px;
+      padding: 2px 16px;
+    }
+    &.status-finalizada .mat-mdc-select-value,
+    &.status-ausente .mat-mdc-select-value {
+      background: #f5f5f5;
+      color: #3B221B;
+      border: 1.5px solid #bdbdbd;
+      border-radius: 8px;
+      padding: 2px 16px;
+    }
+    &.status-espera .mat-mdc-select-value {
+      background: #fffbe6;
+      color: #F6BD38;
+      border: 1.5px solid #F6BD38;
+      border-radius: 8px;
+      padding: 2px 16px;
+    }
+  }
+}
+
+// Estilos para o modal do calendário
+.calendario-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .calendario-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(2px);
+  }
+  
+  app-calendario-reservas {
+    position: relative;
+    z-index: 1001;
+    max-width: 95vw;
+    max-height: 95vh;
+    width: 95vw;
+    height: 95vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+// Container do botão de adicionar área
+.add-area-container {
+  flex-shrink: 0;
+  
+  .add-area-btn {
+    border-style: dashed;
+    border-radius: 8px;
+    color: $text-color !important;
+    border-color: rgba(59, 34, 27, 0.4);
+    background-color: white !important;
+    height: 36px;
+    line-height: 34px;
+    
+    &:hover {
+      color: $primary-color !important;
+      border-color: $primary-color !important;
+      background-color: rgba(246, 189, 56, 0.05) !important;
+    }
+  }
+}
+
+// Regra consolidada - ver definição completa abaixo
+
+#input-nova-area {
+  border-color: rgba(59, 34, 27, 0.4);
+  &:focus {
+    border-color: $primary-color;
+    box-shadow: 0 0 0 2px rgba(246, 189, 56, 0.2);
+  }
+}
+
+// Estilos para o input de nova área no container - Tema Tavola melhorado
+.add-area-container {
+  .add-area-input {
+    ::ng-deep {
+      .mat-mdc-form-field-subscript-wrapper {
+        display: none;
+      }
+      
+      .mat-mdc-form-field-flex {
+        height: 48px;
+        padding: 8px 16px;
+        align-items: center;
+        background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%) !important;
+        border: 2px solid rgba(246, 189, 56, 0.3) !important;
+        border-radius: 12px !important;
+        box-shadow: 
+          0 4px 16px rgba(246, 189, 56, 0.15),
+          inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+        transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+        
+        &:hover {
+          border-color: rgba(246, 189, 56, 0.5) !important;
+          box-shadow: 
+            0 6px 20px rgba(246, 189, 56, 0.2),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+          transform: translateY(-1px);
+        }
+      }
+      
+      .mat-mdc-form-field-input-control {
+        background: transparent !important;
+      }
+      
+      .mat-mdc-input-element {
+        color: $text-color !important;
+        font-weight: 600;
+        font-size: 16px;
+        padding: 8px 0;
+        
+        &::placeholder {
+          color: rgba(59, 34, 27, 0.5) !important;
+          font-weight: 500;
+        }
+      }
+      
+      .mat-mdc-form-field-label,
+      .mdc-floating-label {
+        color: rgba(59, 34, 27, 0.7) !important;
+        font-weight: 600;
+      }
+      
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border: none !important; // Remove bordas padrão
+      }
+      
+      &.mat-focused {
+        .mat-mdc-form-field-flex {
+          border-color: $primary-color !important;
+          box-shadow: 
+            0 8px 24px rgba(246, 189, 56, 0.25),
+            inset 0 1px 0 rgba(255, 255, 255, 0.9),
+            0 0 0 3px rgba(246, 189, 56, 0.1) !important;
+          transform: translateY(-2px);
+        }
+        
+        .mat-mdc-form-field-label,
+        .mdc-floating-label {
+          color: $primary-color !important;
+        }
+      }
+    }
+  }
+}
+
+::ng-deep .aviso-remocao {
+  color: #DA4A24;
+  background-color: #ffeaea;
+  border-left: 3px solid #DA4A24;
+  padding: 8px;
+  border-radius: 4px;
+  margin-top: 8px;
+}
+
+.custom-tab-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 8px;
+  position: relative;
+
+  // Indicativo de edição ativo - Tema Tavola melhorado
+  &.editing-mode {
+    background: linear-gradient(135deg, rgba(246, 189, 56, 0.1) 0%, rgba(246, 189, 56, 0.05) 100%) !important;
+    border: 2px dashed $primary-color !important;
+    border-radius: 12px;
+    padding: 8px 12px;
+    animation: pulse-edit 2s infinite;
+    box-shadow: 
+      0 4px 16px rgba(246, 189, 56, 0.2),
+      inset 0 1px 0 rgba(255, 255, 255, 0.5);
+    
+    .edit-area-input {
+      ::ng-deep {
+        .mat-mdc-form-field-flex {
+          background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%) !important;
+          border: 2px solid rgba(246, 189, 56, 0.4) !important;
+          border-radius: 8px !important;
+          box-shadow: 
+            0 2px 8px rgba(246, 189, 56, 0.15),
+            inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+          transition: all 0.3s ease;
+          
+          &:hover {
+            border-color: rgba(246, 189, 56, 0.6) !important;
+            box-shadow: 
+              0 4px 12px rgba(246, 189, 56, 0.2),
+              inset 0 1px 0 rgba(255, 255, 255, 0.9) !important;
+          }
+        }
+        
+        .mat-mdc-form-field-input-control {
+          background: transparent !important;
+        }
+        
+        .mat-mdc-input-element {
+          color: $text-color !important;
+          font-weight: 600;
+          font-size: 14px;
+          
+          &::placeholder {
+            color: rgba(59, 34, 27, 0.5) !important;
+            font-weight: 500;
+          }
+        }
+
+        .mat-mdc-form-field-label,
+        .mdc-floating-label {
+          color: rgba(59, 34, 27, 0.7) !important;
+          font-weight: 600;
+        }
+
+        .mdc-notched-outline__leading,
+        .mdc-notched-outline__notch,
+        .mdc-notched-outline__trailing {
+          border: none !important;
+        }
+        
+        &.mat-focused {
+          .mat-mdc-form-field-flex {
+            border-color: $primary-color !important;
+            box-shadow: 
+              0 6px 16px rgba(246, 189, 56, 0.25),
+              inset 0 1px 0 rgba(255, 255, 255, 0.9),
+              0 0 0 2px rgba(246, 189, 56, 0.1) !important;
+          }
+          
+          .mat-mdc-form-field-label,
+          .mdc-floating-label {
+            color: $primary-color !important;
+          }
+        }
+      }
+    }
+  }
+
+  .more-options-btn {
+    opacity: 1;
+    transition: opacity 0.2s ease;
+    color: $text-color !important;
+    
+    &:hover {
+      color: $primary-color !important;
+      background-color: rgba(246, 189, 56, 0.1);
+    }
+  }
+}
+
+// Animação de pulsação para indicar edição
+@keyframes pulse-edit {
+  0% {
+    box-shadow: 0 0 0 0 rgba(246, 189, 56, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 8px rgba(246, 189, 56, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(246, 189, 56, 0);
+  }
+}
+
+// Estilos adicionais para o input no container (complementando os estilos já definidos acima)
+.add-area-container .add-area-input {
+  ::ng-deep {
+    // Estilos para a borda (no foco)
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: $primary-color !important;
+      border-width: 2px !important;
+    }
+    
+    // Estilos para o label
+    .mat-mdc-form-field-label,
+    .mdc-floating-label {
+      color: $text-color !important;
+    }
+
+    // Estilos para o placeholder
+    .mat-mdc-form-field-input-control::placeholder {
+      color: $text-color-lighter !important;
+      opacity: 1;
+    }
+  }
+}
+
+// Regra consolidada - ver definição completa acima
+
+// Regra removida - já definida dentro de .mesa
+
+::ng-deep {
+  .mat-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    
+    mat-icon {
+      margin-right: 8px;
+    }
+  }
+}
+
+::ng-deep {
+  // Estilos globais para todos os mat-form-field dentro deste componente
+  .mat-mdc-form-field {
+    .mat-mdc-form-field-flex {
+      background-color: white !important;
+      .mat-mdc-text-field-wrapper {
+        background-color: white !important;
+        .mat-mdc-form-field-input-control {
+          background-color: white !important;
+        }
+      }
+    }
+    .mat-mdc-input-element {
+      color: $text-color !important; // Cor do texto digitado
+      background-color: white !important; // Fundo do input
+    }
+    .mat-mdc-form-field-label,
+    .mdc-floating-label {
+      color: $text-color !important; // Cor do label
+    }
+    .mdc-notched-outline__leading,
+    .mdc-notched-outline__notch,
+    .mdc-notched-outline__trailing {
+      border-color: rgba(59, 34, 27, 0.4) !important;
+    }
+    &.mat-focused {
+      .mdc-notched-outline__leading,
+      .mdc-notched-outline__notch,
+      .mdc-notched-outline__trailing {
+        border-color: $primary-color !important;
+        border-width: 2px !important;
+      }
+    }
+  }
+}
+
+// Cores consolidadas para status de reservas
+.status-confirmada { color: #4CAF50; }
+.status-pendente { color: #FFC107; }
+.status-cancelada { color: #F44336; }
+.status-concluida { color: #2196F3; }
+.status-nao-compareceu { color: #9E9E9E; }
+.status-ativa { color: #673AB7; }
+.status-lista-espera { color: #FF9800; }
+
+/* Exemplo no reservas.component.scss */
+.status-dropdown .mat-mdc-select-trigger[aria-disabled="true"],
+.mesas-dropdown .mat-mdc-select-trigger[aria-disabled="true"] {
+  opacity: 0.6; /* Torna mais transparente */
+  cursor: not-allowed; /* Altera o cursor */
+}
+
+/* Pode ser necessário ajustar o input também se for um form-field */
+.mat-mdc-form-field-disabled {
+  .mat-mdc-form-field-flex {
+    background-color: #f0f0f0 !important; /* Exemplo de cor de fundo */
+  }
+}
+
+// Animações simplificadas para setas de navegação
+@keyframes slideInLeft {
+  0% { opacity: 0; transform: translateX(-20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes slideInRight {
+  0% { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
+// Botão Flutuante (Estilo Equipe)
+.tavola-fab {
+  position: fixed !important;
+  bottom: 24px !important;
+  right: 24px !important;
+  z-index: 100 !important;
+  background-color: var(--tavola-amarelo, #F6BD38) !important;
+  color: var(--tavola-marrom-escuro, #3B221B) !important;
+  border-radius: 8px !important; // Raio do seu tema global
+  width: 56px !important;
+  height: 56px !important;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: all 0.3s ease;
+
+  &:hover {
+    transform: scale(1.15) rotate(90deg);
+    box-shadow: 0 8px 24px rgba(246, 189, 56, 0.4);
+  }
+
+  mat-icon {
+    font-size: 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+  }
+}
+
+@keyframes slideInUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}

@@ -1,0 +1,290 @@
+@use 'sass:color';
+@use '../../../styles/variables.scss' as *;
+
+// SPINNER PRINCIPAL DO TAVOLA - Versão Melhorada
+.chef-spinner-overlay {
+  position: fixed;
+  top: 0; 
+  left: 0; 
+  width: 100vw; 
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.chef-spinner-content {
+  background: #fff;
+  border-radius: 24px;
+  padding: 3rem 3.5rem;
+  box-shadow: 
+    0 25px 50px rgba(59, 34, 27, 0.4),
+    0 0 0 1px rgba(246, 189, 56, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 400px;
+  border: 3px solid $primary-color;
+  position: relative;
+  
+  // Efeito de brilho melhorado
+  &::before {
+    content: '';
+    position: absolute;
+    top: -3px;
+    left: -3px;
+    right: -3px;
+    bottom: -3px;
+    background: linear-gradient(45deg, 
+      $primary-color, 
+      color.adjust($primary-color, $lightness: 15%), 
+      $primary-color, 
+      color.adjust($primary-color, $lightness: -5%));
+    border-radius: 27px;
+    z-index: -1;
+    opacity: 0.8;
+    animation: tavola-glow 3s ease-in-out infinite;
+  }
+}
+
+.chef-spinner-anim {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.5rem;
+}
+
+.chef-spinner-circle {
+  position: absolute;
+  border-radius: 50%;
+  border: 6px solid transparent;
+}
+
+.chef-spinner-circle-1 {
+  width: 120px;
+  height: 120px;
+  border: 6px solid color.adjust($primary-color, $lightness: 35%);
+  border-top-color: $primary-color;
+  border-right-color: $primary-color;
+  animation: tavola-spin-1 2.5s linear infinite;
+  filter: drop-shadow(0 0 12px rgba(246, 189, 56, 0.4));
+}
+
+.chef-spinner-circle-2 {
+  width: 90px;
+  height: 90px;
+  border: 5px solid color.adjust($primary-color, $lightness: 45%);
+  border-bottom-color: $primary-color;
+  border-left-color: $primary-color;
+  animation: tavola-spin-2 2s linear infinite reverse;
+  filter: drop-shadow(0 0 8px rgba(246, 189, 56, 0.3));
+}
+
+.chef-spinner-circle-3 {
+  width: 60px;
+  height: 60px;
+  border: 4px solid color.adjust($primary-color, $lightness: 55%);
+  border-top-color: color.adjust($primary-color, $lightness: -10%);
+  border-right-color: color.adjust($primary-color, $lightness: -5%);
+  animation: tavola-spin-1 1.5s linear infinite;
+}
+
+.chef-spinner-icon {
+  position: absolute;
+  left: 50%; 
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  animation: tavola-float 3s ease-in-out infinite;
+  
+  svg {
+    filter: drop-shadow(0 4px 8px rgba(59, 34, 27, 0.2));
+  }
+}
+
+.chef-spinner-text {
+  margin-top: 2rem;
+  font-size: 1.5rem;
+  color: $text-color;
+  font-weight: 600;
+  text-align: center;
+  animation: tavola-fadeInOut 2.5s infinite;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  letter-spacing: 0.5px;
+  
+  .highlight {
+    color: $primary-color;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(246, 189, 56, 0.3);
+  }
+}
+
+.chef-spinner-subtitle {
+  margin-top: 0.75rem;
+  font-size: 1.1rem;
+  color: lighten($text-color, 15%);
+  font-weight: 400;
+  text-align: center;
+  opacity: 0.85;
+  line-height: 1.4;
+}
+
+.chef-spinner-dots {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2.5rem;
+  justify-content: center;
+}
+
+.chef-spinner-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, $primary-color, darken($primary-color, 10%));
+  opacity: 0.4;
+  animation: tavola-bounce 1.8s infinite;
+  box-shadow: 0 3px 6px rgba(246, 189, 56, 0.4);
+}
+
+.chef-spinner-dot-2 { 
+  animation-delay: 0.3s; 
+  background: linear-gradient(135deg, darken($primary-color, 5%), darken($primary-color, 15%));
+}
+
+.chef-spinner-dot-3 { 
+  animation-delay: 0.6s; 
+  background: linear-gradient(135deg, darken($primary-color, 10%), darken($primary-color, 20%));
+}
+
+// Animações melhoradas do Tavola
+@keyframes tavola-spin-1 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes tavola-spin-2 {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+
+@keyframes tavola-fadeInOut {
+  0%, 100% { opacity: 0.7; }
+  50% { opacity: 1; }
+}
+
+@keyframes tavola-bounce {
+  0%, 100% { 
+    transform: scale(1) translateY(0); 
+    opacity: 0.4; 
+  }
+  50% { 
+    transform: scale(1.4) translateY(-10px); 
+    opacity: 1; 
+  }
+}
+
+@keyframes tavola-glow {
+  0%, 100% { 
+    opacity: 0.8; 
+    transform: scale(1);
+  }
+  50% { 
+    opacity: 1; 
+    transform: scale(1.03);
+  }
+}
+
+@keyframes tavola-float {
+  0%, 100% { 
+    transform: translate(-50%, -50%) translateY(0px); 
+  }
+  50% { 
+    transform: translate(-50%, -50%) translateY(-3px); 
+  }
+}
+
+// Responsividade melhorada
+@media (max-width: 480px) {
+  .chef-spinner-content {
+    min-width: 340px;
+    padding: 2.5rem 2rem;
+    margin: 1rem;
+    border-radius: 20px;
+  }
+  
+  .chef-spinner-anim {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .chef-spinner-circle-1 {
+    width: 100px;
+    height: 100px;
+    border-width: 5px;
+  }
+  
+  .chef-spinner-circle-2 {
+    width: 75px;
+    height: 75px;
+    border-width: 4px;
+  }
+  
+  .chef-spinner-circle-3 {
+    width: 50px;
+    height: 50px;
+    border-width: 3px;
+  }
+  
+  .chef-spinner-icon svg {
+    width: 65px;
+    height: 65px;
+  }
+  
+  .chef-spinner-text {
+    font-size: 1.3rem;
+  }
+  
+  .chef-spinner-subtitle {
+    font-size: 1rem;
+  }
+}
+
+// Variação para loading rápido
+.chef-spinner-content.fast {
+  .chef-spinner-circle-1 {
+    animation-duration: 1.2s;
+  }
+  
+  .chef-spinner-circle-2 {
+    animation-duration: 1s;
+  }
+  
+  .chef-spinner-circle-3 {
+    animation-duration: 0.8s;
+  }
+  
+  .chef-spinner-dot {
+    animation-duration: 1.2s;
+  }
+}
+
+// Tema escuro (opcional)
+.chef-spinner-content.dark-theme {
+  background: #2a2a2a;
+  color: #ffffff;
+  
+  .chef-spinner-text {
+    color: #ffffff;
+  }
+  
+  .chef-spinner-subtitle {
+    color: rgba(255, 255, 255, 0.8);
+  }
+}

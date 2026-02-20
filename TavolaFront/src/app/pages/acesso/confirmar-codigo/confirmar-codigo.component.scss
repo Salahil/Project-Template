@@ -1,0 +1,370 @@
+@import '../../../../styles/variables.scss';
+
+.codigo-content {
+  text-align: center;
+  width: 100%;
+  padding: 0 1rem 2rem;
+  max-width: 480px;
+  margin: 0 auto;
+
+  .header-icon {
+    margin-bottom: 2rem;
+    position: relative;
+    
+    .icon-container {
+      position: relative;
+      display: inline-block;
+      
+      i {
+        font-size: 3.5rem;
+        color: $primary-color;
+        transition: all 0.3s ease;
+        filter: drop-shadow(0 4px 8px rgba(246, 189, 56, 0.3));
+      }
+      
+      .loading-spinner {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        
+        i {
+          font-size: 2rem;
+          color: $primary-color;
+          animation: pulse 2s infinite;
+        }
+      }
+    }
+    
+    &.loading .icon-container > i:first-child {
+      opacity: 0.3;
+      transform: scale(0.9);
+    }
+  }
+
+  .content-header {
+    margin-bottom: 2.5rem;
+    
+    .main-title {
+      color: $primary-color;
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.75rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .description {
+      color: #E8E8E8;
+      font-size: 1rem;
+      line-height: 1.6;
+      margin: 0;
+      
+      strong {
+        color: $primary-color;
+        font-weight: 600;
+      }
+    }
+  }
+
+  .codigo-inputs-wrapper {
+    display: flex;
+    justify-content: center;
+    margin: 2.5rem 0;
+    padding: 1.5rem;
+    border-radius: 16px;
+    background: rgba(90, 74, 63, 0.3);
+    border: 2px solid transparent;
+    transition: all 0.4s ease;
+    
+    &.success {
+      border-color: #52c41a;
+      background: rgba(82, 196, 26, 0.1);
+      box-shadow: 0 0 0 4px rgba(82, 196, 26, 0.1);
+    }
+    
+    &.error {
+      border-color: #ff4d4f;
+      background: rgba(255, 77, 79, 0.1);
+      box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.1);
+      animation: shake 0.5s ease-in-out;
+    }
+
+    // ESTILIZANDO O COMPONENTE DO NG-ZORRO
+    ::ng-deep {
+      .ant-input-otp {
+        gap: 0.75rem;
+        display: flex;
+        justify-content: center;
+      }
+      
+      .ant-input-otp-input {
+        width: 56px !important;
+        height: 64px !important;
+        min-width: 56px !important;
+        min-height: 64px !important;
+        max-width: 56px !important;
+        max-height: 64px !important;
+        font-size: 1.75rem !important;
+        font-weight: 700 !important;
+        border: 2px solid #666 !important;
+        border-radius: 12px !important;
+        background: #5A4A3F !important;
+        color: $primary-color !important;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        text-align: center !important;
+        padding: 0 !important;
+        line-height: 1 !important;
+        
+        &:focus,
+        &.ant-input-otp-input-active {
+          border-color: $primary-color !important;
+          box-shadow: 0 0 0 3px rgba(246, 189, 56, 0.25) !important;
+          transform: translateY(-2px) scale(1.05);
+          background: #6B5A4F !important;
+        }
+        
+        &:disabled {
+          opacity: 0.6 !important;
+          cursor: not-allowed !important;
+        }
+      }
+    }
+  }
+
+  .status-feedback {
+    margin: 1.5rem 0;
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(90, 74, 63, 0.2);
+    border-left: 4px solid transparent;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+    
+    .status-icon {
+      font-size: 1.25rem;
+      
+      &.success { color: #52c41a; }
+      &.error { color: #ff4d4f; }
+      &.info { color: $primary-color; }
+    }
+    
+    .status-text {
+      margin: 0;
+      font-size: 0.9rem;
+      font-weight: 500;
+      
+      &.success { color: #52c41a; }
+      &.error { color: #ff4d4f; }
+      &.info { color: #E8E8E8; }
+    }
+  }
+
+  .checkbox-section {
+    margin: 2rem 0;
+    display: flex;
+    justify-content: center;
+    
+    .keep-connected-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: pointer;
+      
+      .checkbox-text {
+        color: #E8E8E8;
+        font-size: 0.9rem;
+        font-weight: 500;
+      }
+    }
+  }
+
+  .help-section {
+    margin-top: 2rem;
+    
+    .help-text {
+      margin-bottom: 1.5rem;
+      
+      .timer-text {
+        color: #C0C0C0;
+        font-size: 0.9rem;
+        margin-bottom: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        
+        .highlight {
+          color: $primary-color;
+          font-weight: 600;
+        }
+        
+        i { color: $primary-color; }
+      }
+      
+      .instruction-text {
+        color: #A0A0A0;
+        font-size: 0.85rem;
+        margin: 0;
+      }
+    }
+    
+    .resend-section {
+      .resend-btn {
+        color: $primary-color !important;
+        border-color: transparent !important;
+        font-size: 0.9rem;
+        font-weight: 500;
+        padding: 0.5rem 1rem;
+        height: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        
+        &:hover {
+          color: lighten($primary-color, 10%) !important;
+          background: rgba(246, 189, 56, 0.1) !important;
+          transform: translateY(-1px);
+        }
+        
+        &:focus {
+          box-shadow: 0 0 0 2px rgba(246, 189, 56, 0.2) !important;
+        }
+      }
+    }
+  }
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
+  20%, 40%, 60%, 80% { transform: translateX(4px); }
+}
+
+@media (max-width: 768px) {
+  .codigo-content {
+    padding: 0 0.5rem 1.5rem;
+    
+    .content-header .main-title {
+      font-size: 1.25rem;
+    }
+    
+    .codigo-inputs-wrapper {
+      padding: 0.75rem;
+      margin: 1.5rem 0;
+      
+      ::ng-deep {
+        .ant-input-otp {
+          gap: 0.3rem !important;
+        }
+        
+        .ant-input-otp-input {
+          width: 30px !important;
+          height: 36px !important;
+          min-width: 30px !important;
+          min-height: 36px !important;
+          max-width: 30px !important;
+          max-height: 36px !important;
+          font-size: 1rem !important;
+          border-radius: 8px !important;
+          padding: 0 !important;
+          border-width: 1.5px !important;
+          
+          &:focus,
+          &.ant-input-otp-input-active {
+            transform: translateY(-1px) scale(1.02) !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .codigo-content {
+    padding: 0 0.25rem 1rem;
+    
+    .content-header {
+      margin-bottom: 1.5rem;
+      
+      .main-title {
+        font-size: 1.1rem;
+      }
+      
+      .description {
+        font-size: 0.9rem;
+      }
+    }
+    
+    .codigo-inputs-wrapper {
+      padding: 0.5rem;
+      margin: 1rem 0;
+      
+      ::ng-deep {
+        .ant-input-otp {
+          gap: 0.2rem !important;
+        }
+        
+        .ant-input-otp-input {
+          width: 26px !important;
+          height: 32px !important;
+          min-width: 26px !important;
+          min-height: 32px !important;
+          max-width: 26px !important;
+          max-height: 32px !important;
+          font-size: 0.9rem !important;
+          border-radius: 6px !important;
+          border-width: 1.5px !important;
+          padding: 0 !important;
+          line-height: 1 !important;
+          
+          &:focus,
+          &.ant-input-otp-input-active {
+            transform: translateY(-1px) scale(1.02) !important;
+          }
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 360px) {
+  .codigo-content {
+    .codigo-inputs-wrapper {
+      padding: 0.4rem;
+      margin: 1rem 0;
+      
+      ::ng-deep {
+        .ant-input-otp {
+          gap: 0.15rem !important;
+        }
+        
+        .ant-input-otp-input {
+          width: 24px !important;
+          height: 30px !important;
+          min-width: 24px !important;
+          min-height: 30px !important;
+          max-width: 24px !important;
+          max-height: 30px !important;
+          font-size: 0.85rem !important;
+          border-radius: 6px !important;
+          padding: 0 !important;
+          border-width: 1.5px !important;
+          line-height: 1 !important;
+          
+          &:focus,
+          &.ant-input-otp-input-active {
+            transform: translateY(-1px) scale(1.01) !important;
+          }
+        }
+      }
+    }
+  }
+}

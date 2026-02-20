@@ -1,0 +1,70 @@
+<div class="tavola-dialog">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <div class="header-icon success-icon">
+        <mat-icon>check_circle</mat-icon>
+      </div>
+      <h1 mat-dialog-title>Reserva Confirmada!</h1>
+      <p class="subtitle">Sua reserva no <strong>{{ data.nomeRestaurante }}</strong> foi efetuada com sucesso.</p>
+    </div>
+  
+    <mat-dialog-content class="dialog-content">
+      <div class="detalhes-section">
+        <div class="detalhes-lista">
+          <div class="detalhe-card">
+            <div class="card-icon"><mat-icon>restaurant</mat-icon></div>
+            <div class="card-content">
+              <span class="card-label">Restaurante</span>
+              <span class="card-value">{{ data.nomeRestaurante }}</span>
+            </div>
+          </div>
+          <div class="detalhe-card">
+            <div class="card-icon"><mat-icon>calendar_today</mat-icon></div>
+            <div class="card-content">
+              <span class="card-label">Data e Horário</span>
+              <span class="card-value">{{ data.data | date:'dd/MM/yyyy' }} às {{ data.horario }}</span>
+            </div>
+          </div>
+          <div class="detalhe-card">
+            <div class="card-icon"><mat-icon>group</mat-icon></div>
+            <div class="card-content">
+              <span class="card-label">Pessoas</span>
+              <span class="card-value">{{ data.quantidadePessoas }} {{ data.quantidadePessoas > 1 ? 'pessoas' : 'pessoa' }}</span>
+            </div>
+          </div>
+          <div *ngIf="data.endereco" class="detalhe-card">
+            <div class="card-icon"><mat-icon>location_on</mat-icon></div>
+            <div class="card-content">
+              <span class="card-label">Endereço</span>
+              <span class="card-value">{{ data.endereco }}</span>
+            </div>
+          </div>
+          <div *ngIf="data.comentarios" class="detalhe-card">
+            <div class="card-icon"><mat-icon>comment</mat-icon></div>
+            <div class="card-content">
+              <span class="card-label">Observações</span>
+              <span class="card-value">{{ data.comentarios }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-dialog-content>
+  
+    <mat-dialog-actions class="dialog-actions">
+      <div class="secondary-actions-wrapper">
+        <button mat-stroked-button class="action-btn secondary-btn" (click)="adicionarAoGoogleCalendar()">
+          <mat-icon>event</mat-icon>
+          Calendário
+        </button>
+        <button mat-stroked-button class="action-btn secondary-btn" *ngIf="canShare" (click)="compartilharReserva()">
+          <mat-icon>share</mat-icon>
+          Compartilhar
+        </button>
+      </div>
+      <button mat-flat-button color="primary" class="action-btn primary-btn" (click)="concluir()">
+        <mat-icon>home</mat-icon>
+        Concluir
+      </button>
+    </mat-dialog-actions>
+  </div>
+</div>

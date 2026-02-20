@@ -1,0 +1,10 @@
+0.Comida deliciosa
+1.Muito bom isso aí
+2.Lugar Bacana
+3.Tudo uma delícia
+4.Recomendo bastante!
+5.Muito bem feito
+6.Me apaixonei por esse lugar!
+7.Quero namorar os garçons!
+8.Comida maravilhosa!
+9.Me senti excitado!

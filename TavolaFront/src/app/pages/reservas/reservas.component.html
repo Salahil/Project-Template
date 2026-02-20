@@ -1,0 +1,583 @@
+<div class="reservas-container">
+  <!-- Page Header -->
+  <div class="tavola-page-header reservas">
+    <div class="header-content">
+      <div class="header-icon">
+        <mat-icon>event_seat</mat-icon>
+      </div>
+      <div class="header-text">
+        <h1>Gerenciar Reservas</h1>
+        <p>Visualize e gerencie todas as reservas do seu restaurante de forma organizada e eficiente.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Seletor de Visualização Mobile -->
+  <div class="view-switcher" *ngIf="isMobile()">
+    <mat-button-toggle-group [(value)]="visualizacaoAtiva" (change)="onViewChange($event)">
+      <mat-button-toggle value="lista">
+        <mat-icon>list</mat-icon>
+        <span>Lista</span>
+      </mat-button-toggle>
+      <mat-button-toggle value="mapa">
+        <mat-icon>map</mat-icon>
+        <span>Mapa</span>
+      </mat-button-toggle>
+    </mat-button-toggle-group>
+  </div>
+
+  <!-- Navegador de Data Mobile -->
+  <div class="date-navigator-area" *ngIf="isMobile()">
+    <div class="date-navigator">
+      <button mat-icon-button (click)="diaAnterior()" aria-label="Dia anterior">
+        <mat-icon>chevron_left</mat-icon>
+      </button>
+      <nz-date-picker
+        nzFormat="dd/MM/yyyy"
+        [(ngModel)]="dataAtual"
+        (ngModelChange)="nzDatePickerChange($event)"
+        nzAllowClear="false"
+      ></nz-date-picker>
+      <button mat-icon-button (click)="proximoDia()" aria-label="Próximo dia">
+        <mat-icon>chevron_right</mat-icon>
+      </button>
+      <button mat-icon-button (click)="abrirCalendario()" class="calendario-btn" matTooltip="Ver calendário de reservas" matTooltipClass="tavola-tooltip" [matTooltipDisabled]="isMobile()">
+        <mat-icon>calendar_month</mat-icon>
+      </button>
+    </div>
+  </div>
+
+  <div class="reservas-content-columns">
+    <!-- Lista agora centralizada no mobile -->
+    <div class="reservas-list-column" *ngIf="visualizacaoAtiva === 'lista' || !isMobile()">
+      <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="center" (selectedTabChange)="mudarAba($event)" [selectedIndex]="selectedTabIndex">
+        <mat-tab>
+          <ng-template mat-tab-label>
+            <span class="tab-label">Reservas</span>
+            <span class="tab-badge">{{ reservasVisiveis.length }}</span>
+          </ng-template>
+
+          <div class="search-bar">
+            <mat-form-field appearance="outline">
+              <input matInput placeholder="Buscar por nome do cliente" [(ngModel)]="pesquisa" (input)="aplicarFiltros()">
+              <button mat-icon-button matSuffix *ngIf="pesquisa" (click)="limparPesquisa()" aria-label="Limpar pesquisa">
+                <mat-icon>close</mat-icon>
+              </button>
+              <button mat-icon-button matSuffix *ngIf="!pesquisa" aria-label="Buscar">
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+
+          <div class="reservas-list">
+            <div class="periodo-section" *ngIf="reservasAlmocoVisiveis.length > 0">
+              <h3>Almoço</h3>
+              <div class="reserva-cards">
+                <mat-card *ngFor="let reserva of reservasAlmocoVisiveis" class="reserva-card" [class.selected]="reservaSelecionada?.id === reserva.id" (click)="selecionarReserva(reserva)">
+                  <div class="reserva-info">
+                    <div class="cliente-info">
+                      <h4>{{ reserva.cliente }}</h4>
+                      <div class="reserva-detalhes">
+                        <span class="pessoas-info">
+                          <mat-icon>person</mat-icon>
+                          {{ reserva.pessoas }} Pessoa(s)
+                        </span>
+                        <span class="mesa-info" *ngIf="reserva.nomesMesas && reserva.nomesMesas.length > 0">
+                           <mat-icon>table_restaurant</mat-icon>
+                           {{ getMesasFormatadas(reserva) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="reserva-acoes">
+                      <button mat-icon-button 
+                        [ngClass]="{
+                          'status-confirmada': reserva.status === 'CONFIRMADA',
+                          'status-pendente': reserva.status === 'PENDENTE',
+                          'status-cancelada': reserva.status === 'CANCELADA_RESTAURANTE',
+                          'status-concluida': reserva.status === 'CONCLUIDA',
+                          'status-nao-compareceu': reserva.status === 'NAO_COMPARECEU',
+                          'status-ativa': reserva.status === 'ATIVA',
+                          'status-lista-espera': reserva.status === 'LISTA_ESPERA'
+                        }" 
+                        [matTooltip]="getTooltipStatus(reserva.status)" 
+                        matTooltipClass="tavola-tooltip"
+                        [matTooltipDisabled]="isMobile()"
+                        aria-label="Status da reserva">
+                        <mat-icon>{{ getStatusIcon(reserva.status) }}</mat-icon>
+                      </button>
+                      <div class="horario">
+                        {{ reserva.horario }}
+                      </div>
+                    </div>
+                  </div>
+                </mat-card>
+              </div>
+            </div>
+            <div *ngIf="reservasAlmocoVisiveis.length === 0 && (periodoFiltro === 'todos' || periodoFiltro === 'Almoço') && (pesquisa.trim() === '' || (pesquisa.trim() !== '' && !temReservasParaPesquisaNoPeriodo('Almoço')))" class="sem-reservas">
+              <nz-empty nzDescription="Sem reservas para o almoço nesta data com os filtros aplicados"
+                        matTooltip="Sem reservas para o almoço nesta data com os filtros aplicados"
+                        matTooltipClass="tavola-tooltip"
+                        [matTooltipDisabled]="isMobile()"></nz-empty>
+            </div>
+
+            <div class="periodo-section" *ngIf="reservasJantarVisiveis.length > 0">
+              <h3>Jantar</h3>
+              <div class="reserva-cards">
+                <mat-card *ngFor="let reserva of reservasJantarVisiveis" class="reserva-card" [class.selected]="reservaSelecionada?.id === reserva.id" (click)="selecionarReserva(reserva)">
+                   <div class="reserva-info">
+                    <div class="cliente-info">
+                      <h4>{{ reserva.cliente }}</h4>
+                      <div class="reserva-detalhes">
+                        <span class="pessoas-info">
+                          <mat-icon>person</mat-icon>
+                          {{ reserva.pessoas }} Pessoa(s)
+                        </span>
+                         <span class="mesa-info" *ngIf="reserva.nomesMesas && reserva.nomesMesas.length > 0">
+                           <mat-icon>table_restaurant</mat-icon>
+                           {{ getMesasFormatadas(reserva) }}
+                        </span>
+                      </div>
+                    </div>
+                    <div class="reserva-acoes">
+                      <button mat-icon-button 
+                        [ngClass]="{
+                          'status-confirmada': reserva.status === 'CONFIRMADA',
+                          'status-pendente': reserva.status === 'PENDENTE',
+                          'status-cancelada': reserva.status === 'CANCELADA_RESTAURANTE',
+                          'status-concluida': reserva.status === 'CONCLUIDA',
+                          'status-nao-compareceu': reserva.status === 'NAO_COMPARECEU',
+                          'status-ativa': reserva.status === 'ATIVA',
+                          'status-lista-espera': reserva.status === 'LISTA_ESPERA'
+                        }" 
+                        [matTooltip]="getTooltipStatus(reserva.status)" 
+                        matTooltipClass="tavola-tooltip"
+                        [matTooltipDisabled]="isMobile()"
+                        aria-label="Status da reserva">
+                         <mat-icon>{{ getStatusIcon(reserva.status) }}</mat-icon>
+                      </button>
+                      <div class="horario">
+                        {{ reserva.horario }}
+                      </div>
+                    </div>
+                  </div>
+                </mat-card>
+              </div>
+            </div>
+            <div *ngIf="reservasJantarVisiveis.length === 0 && (periodoFiltro === 'todos' || periodoFiltro === 'Jantar') && (pesquisa.trim() === '' || (pesquisa.trim() !== '' && !temReservasParaPesquisaNoPeriodo('Jantar')))" class="sem-reservas">
+              <nz-empty nzDescription="Sem reservas para o jantar nesta data com os filtros aplicados"
+                        matTooltip="Sem reservas para o jantar nesta data com os filtros aplicados"
+                        matTooltipClass="tavola-tooltip"
+                        [matTooltipDisabled]="isMobile()"></nz-empty>
+            </div>
+
+            <div *ngIf="reservasVisiveis.length === 0 && pesquisa.trim() !== ''" class="sem-reservas">
+                <nz-empty nzDescription="Nenhuma reserva encontrada para sua busca."
+                          matTooltip="Nenhuma reserva encontrada para sua busca."
+                          matTooltipClass="tavola-tooltip"
+                          [matTooltipDisabled]="isMobile()"></nz-empty>
+            </div>
+             <div *ngIf="reservasAlmocoVisiveis.length === 0 && reservasJantarVisiveis.length === 0 && pesquisa.trim() === '' && !existemReservasParaDataAtual()" class="sem-reservas">
+                 <nz-empty nzDescription="Nenhuma reserva para a data selecionada."
+                           matTooltip="Nenhuma reserva para a data selecionada."
+                           matTooltipClass="tavola-tooltip"
+                           [matTooltipDisabled]="isMobile()"></nz-empty>
+            </div>
+          </div>
+        </mat-tab>
+        <mat-tab label="Lista de Espera">
+          <div class="search-bar">
+            <mat-form-field appearance="outline">
+              <input matInput placeholder="Buscar por nome do cliente" [(ngModel)]="pesquisaEspera" (input)="aplicarFiltrosEspera()">
+              <button mat-icon-button matSuffix *ngIf="pesquisaEspera" (click)="limparPesquisaEspera()" aria-label="Limpar pesquisa">
+                <mat-icon>close</mat-icon>
+              </button>
+              <button mat-icon-button matSuffix *ngIf="!pesquisaEspera" aria-label="Buscar">
+                <mat-icon>search</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+          
+          <div class="tab-content-placeholder" *ngIf="reservasEsperaVisiveis.length === 0">
+            <nz-empty nzDescription="Lista de espera vazia"
+                      matTooltip="Lista de espera vazia"
+                      matTooltipClass="tavola-tooltip"
+                      [matTooltipDisabled]="isMobile()"></nz-empty>
+          </div>
+          <div class="reservas-list" *ngIf="reservasEsperaVisiveis.length > 0">
+            <div class="reserva-cards">
+              <mat-card *ngFor="let reserva of reservasEsperaVisiveis" class="reserva-card" [class.selected]="reservaSelecionada?.id === reserva.id" (click)="selecionarReserva(reserva)">
+                <div class="reserva-info">
+                  <div class="cliente-info">
+                    <h4>{{ reserva.cliente }}</h4>
+                    <div class="reserva-detalhes">
+                      <span class="pessoas-info">
+                        <mat-icon>person</mat-icon>
+                        {{ reserva.pessoas }} Pessoa(s)
+                      </span>
+                      <span class="mesa-info" *ngIf="reserva.nomesMesas && reserva.nomesMesas.length > 0">
+                        <mat-icon>table_restaurant</mat-icon>
+                        {{ getMesasFormatadas(reserva) }}
+                      </span>
+                      <span class="data-info">
+                        <mat-icon>calendar_today</mat-icon>
+                        {{ formatarData(reserva.data) }}
+                      </span>
+                    </div>
+                  </div>
+                  <div class="reserva-acoes">
+                    <span class="horario">{{ reserva.horario }}</span>
+                    <button mat-icon-button 
+                      class="reatribuir-btn"
+                      (click)="reatribuirReserva(reserva, $event)"
+                      matTooltip="Reatribuir para data atual" 
+                      matTooltipClass="tavola-tooltip"
+                      [matTooltipDisabled]="isMobile()"
+                      aria-label="Reatribuir reserva">
+                      <mat-icon>pending_actions</mat-icon>
+                    </button>
+                  </div>
+                </div>
+              </mat-card>
+            </div>
+          </div>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+
+    <!-- Mapa agora com scroll horizontal no mobile e detalhes em fullscreen -->
+    <div class="reserva-details-tables-column" *ngIf="visualizacaoAtiva === 'mapa' || !isMobile()">
+      <div class="right-column-header">
+        <div class="date-navigator-area" *ngIf="!isMobile()">
+          <div class="date-navigator">
+            <button mat-icon-button (click)="diaAnterior()" aria-label="Dia anterior">
+              <mat-icon>chevron_left</mat-icon>
+            </button>
+            <nz-date-picker
+              nzFormat="dd/MM/yyyy"
+              [(ngModel)]="dataAtual"
+              (ngModelChange)="nzDatePickerChange($event)"
+              nzAllowClear="false"
+            ></nz-date-picker>
+            <button mat-icon-button (click)="proximoDia()" aria-label="Próximo dia">
+              <mat-icon>chevron_right</mat-icon>
+            </button>
+            <button mat-icon-button (click)="abrirCalendario()" class="calendario-btn" matTooltip="Ver calendário de reservas" matTooltipClass="tavola-tooltip" [matTooltipDisabled]="isMobile()">
+              <mat-icon>calendar_month</mat-icon>
+            </button>
+          </div>
+          <div class="table-actions">
+            <button
+              mat-fab
+              color="primary"
+              class="tavola-fab"
+              aria-label="Gerenciar Mesas"
+              matTooltip="Adicionar, Editar ou Remover Mesas"
+              matTooltipClass="tavola-tooltip"
+              [matTooltipDisabled]="isMobile()"
+              (click)="abrirModalGerenciarMesas('criar')">
+              <mat-icon>add</mat-icon>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <ng-container *ngIf="reservaSelecionada; else mapaDeMesas">
+        <!-- Detalhes agora em fullscreen no mobile -->
+        <div class="reserva-detalhes-container" [class.mobile-fullscreen]="isMobile()">
+          <div class="detalhes-header">
+            <button mat-icon-button (click)="fecharDetalhes()" class="back-button-details" matTooltip="Voltar para o mapa de mesas" matTooltipClass="tavola-tooltip" [matTooltipDisabled]="isMobile()" aria-label="Voltar para mapa de mesas">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <h2>Detalhes da Reserva #{{ reservaSelecionada.id.slice(-4) }}</h2>
+          </div>
+  
+          <ng-container *ngIf="reservaSelecionada">
+             <div class="cliente-detalhes">
+               <div class="cliente-header">
+                 <nz-avatar [nzSize]="64" [nzSrc]="reservaSelecionada.imagemPerfilCliente || 'assets/png/avatar-padrao-tavola-cordeirinho.png'" nzIcon="user"></nz-avatar>
+                 <div class="cliente-info-principal">
+                   <h3>{{ reservaSelecionada.cliente }}</h3>
+                   <div class="cliente-contato">
+                     <div class="contato-item">
+                       <mat-icon>email</mat-icon>
+                       <span>{{ reservaSelecionada.emailCliente }}</span>
+                     </div>
+                     <div class="contato-item">
+                       <mat-icon>phone</mat-icon>
+                       <span>{{ reservaSelecionada.telefoneCliente }}</span>
+                     </div>
+                   </div>
+                 </div>
+                 <div class="cliente-id">
+                   <span>ID Cliente: #{{ reservaSelecionada.clienteId.slice(-5) }}</span>
+                 </div>
+               </div>
+             </div>
+             
+              <mat-tab-group mat-stretch-tabs="false" mat-align-tabs="start" class="detalhes-tabs">
+                 <mat-tab label="Detalhes">
+                   <div class="detalhes-content">
+                     <div class="secao-detalhes">
+                       <div class="secao-header">
+                         <h4>Detalhes da Reserva</h4>
+                       </div>
+                       <div class="info-grid">
+                         <div class="info-row">
+                          <div class="info-label">Data</div>
+                          <div class="info-valor">
+                            <div class="data-com-icone">
+                              <span>{{ formatarData(reservaSelecionada.data) }}</span>
+                              <mat-icon>calendar_today</mat-icon>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="info-row">
+                          <div class="info-label">Horário</div>
+                          <div class="info-valor">
+                            <div class="data-com-icone">
+                              <span>{{ reservaSelecionada.horario }}</span>
+                              <mat-icon>access_time</mat-icon>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="info-row">
+                          <div class="info-label">Pessoas</div>
+                          <div class="info-valor">{{ reservaSelecionada.pessoas }}</div>
+                        </div>
+                        
+                        <!-- Status sempre visível para edição -->
+                        <div class="info-row-centered">
+                          <div class="info-label">Status</div>
+                          <div class="info-valor">
+                            <mat-form-field appearance="outline" class="status-dropdown">
+                              <mat-select [(value)]="reservaSelecionada.status" (selectionChange)="atualizarStatusReserva($event.value)"
+                                [ngClass]="getStatusClasses(reservaSelecionada.status)"
+                                [disabled]="reservaSelecionada.status === 'CANCELADA_RESTAURANTE'">
+                                <mat-option value="PENDENTE">Pendente</mat-option>
+                                <mat-option value="CONFIRMADA">Confirmada</mat-option>
+                                <mat-option value="ATIVA">Ativa</mat-option>
+                                <mat-option value="CANCELADA_RESTAURANTE">Cancelada</mat-option>
+                                <mat-option value="CONCLUIDA">Concluída</mat-option>
+                                <mat-option value="NAO_COMPARECEU">Não Compareceu</mat-option>
+                                <mat-option value="LISTA_ESPERA">Lista de Espera</mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                          </div>
+                        </div>
+                        
+                        <!-- Associar Mesas apenas para reservas normais, não para lista de espera -->
+                        <ng-container *ngIf="reservaSelecionada.status !== 'LISTA_ESPERA'">
+                          <div class="info-row-centered">
+                            <div class="info-label">Associar Mesas</div>
+                            <div class="info-valor">
+                              <mat-form-field appearance="outline" class="mesas-dropdown">
+                                <mat-select multiple [(value)]="reservaSelecionada.mesaIds" (selectionChange)="atualizarMesasReserva($event.value)"
+                                  [disabled]="reservaSelecionada.status === 'CANCELADA_RESTAURANTE'">
+                                  <mat-option *ngFor="let mesa of getMesasDisponiveis()" [value]="mesa.id">
+                                    {{ mesa.nome }} - {{ getAmbientePorMesa(mesa.id)?.nome }} ({{ mesa.capacidade }}P)
+                                  </mat-option>
+                                </mat-select>
+                              </mat-form-field>
+                            </div>
+                          </div>
+                        </ng-container>
+                        
+                        <!-- Botão de reatribuir para lista de espera -->
+                        <div class="info-row-centered" *ngIf="reservaSelecionada.status === 'LISTA_ESPERA'">
+                          <button mat-flat-button class="reatribuir-btn-grande" (click)="reatribuirReserva(reservaSelecionada, $event)">
+                            <mat-icon>event_available</mat-icon>
+                            Reatribuir para {{ formatarDataSimples(dataAtual) }}
+                          </button>
+                        </div>
+                       </div>
+ 
+                       <div class="secao-header mesas-atribuidas-header">
+                           <h4>Mesas Atribuídas</h4>
+                       </div>
+                       <div class="mesas-atribuidas-chips" *ngIf="reservaSelecionada.nomesMesas && reservaSelecionada.nomesMesas.length > 0; else nenhumaMesaAtribuida">
+                           <div class="mesa-chip" *ngFor="let mesaNome of reservaSelecionada.nomesMesas">
+                               <span class="mesa-nome">{{ mesaNome }}</span>
+                               <button mat-icon-button class="remove-mesa-btn" (click)="removerMesaDaReserva(reservaSelecionada!.id, getMesaIdPorNome(mesaNome)!)" 
+                                       matTooltip="Desassociar mesa" matTooltipClass="tavola-tooltip" [matTooltipDisabled]="isMobile()" aria-label="Desassociar mesa">
+                                   <mat-icon>close</mat-icon>
+                               </button>
+                           </div>
+                       </div>
+                       <ng-template #nenhumaMesaAtribuida>
+                           <p class="info-placeholder">Nenhuma mesa atribuída. Selecione mesas no mapa abaixo.</p>
+                       </ng-template>
+ 
+                       <div class="comentarios-notas">
+                         <div class="comentarios">
+                           <h5>Preferências</h5>
+                           <p>{{ reservaSelecionada.preferencias || 'Nenhuma preferência.' }}</p>
+                         </div>
+                       </div>
+                     </div>
+                   </div>
+                 </mat-tab>
+                  <mat-tab label="Mensagens"> <div class="tab-content-placeholder"><nz-empty nzDescription="Sem mensagens"></nz-empty></div> </mat-tab>
+                  <mat-tab label="Pagamento"> <div class="tab-content-placeholder"><nz-empty nzDescription="Sem dados de pagamento"></nz-empty></div> </mat-tab>
+                  <mat-tab label="PDV"> <div class="tab-content-placeholder"><nz-empty nzDescription="Sem dados de PDV"></nz-empty></div> </mat-tab>
+              </mat-tab-group>
+           </ng-container>
+        </div>
+      </ng-container>
+
+      <!-- Template para exibir o mapa de mesas (quando nenhuma reserva está selecionada) -->
+      <ng-template #mapaDeMesas>
+        <div class="mesas-container">
+          <!-- HEADER COM AS ABAS DE AMBIENTE -->
+          <div class="areas-header">
+            
+            <div class="ambientes-nav-wrapper">
+              <!-- Setas de navegação -->
+              <button mat-icon-button class="nav-arrow left-arrow" *ngIf="mostrarSetaEsquerda" (click)="scrollAmbientes('left')">
+                <mat-icon>chevron_left</mat-icon>
+              </button>
+              
+              <div class="ambientes-scroll-container" #ambientesScroll (scroll)="verificarVisibilidadeSetas()">
+                <div class="ambientes-list">
+                  <div 
+                    *ngFor="let ambiente of ambientes; let i = index" 
+                    class="ambiente-btn-wrapper custom-tab-label" 
+                    [class.active]="ambiente.id === ambienteAtivo?.id"
+                    [class.editing-mode]="editandoIndex === i">
+                    
+                    <button class="ambiente-btn" *ngIf="editandoIndex !== i" (click)="selecionarAmbiente(ambiente)">
+                      <span>{{ ambiente.nome }}</span>
+                    </button>
+
+                    <mat-form-field *ngIf="editandoIndex === i" (click)="$event.stopPropagation()" class="edit-area-input">
+                      <input matInput [(ngModel)]="valorEditado" (keydown.enter)="salvarEdicao(i)" (keydown.escape)="cancelarEdicao()" (blur)="salvarEdicao(i)" cdkFocusInitial>
+                    </mat-form-field>
+                    
+                    <button mat-icon-button class="more-options-btn" [matMenuTriggerFor]="areaMenu" #areaMenuTrigger="matMenuTrigger" (click)="$event.stopPropagation()">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+
+                    <mat-menu #areaMenu="matMenu" class="tavola-menu-bar" (menuClosed)="onMenuClosed($event)">
+                      <button mat-menu-item (click)="areaMenuTrigger.closeMenu()" class="close-menu-mobile" *ngIf="isMobile()">
+                        <mat-icon>close</mat-icon>
+                        <span>Fechar</span>
+                      </button>
+                      <button mat-menu-item (click)="iniciarEdicao($event, i)">
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar Nome</span>
+                      </button>
+                      <button mat-menu-item (click)="confirmarRemocaoArea($event, ambiente)">
+                        <mat-icon>delete</mat-icon>
+                        <span>Remover Área</span>
+                      </button>
+                    </mat-menu>
+                  </div>
+                </div>
+              </div>
+              
+              <button mat-icon-button class="nav-arrow right-arrow" *ngIf="mostrarSetaDireita" (click)="scrollAmbientes('right')">
+                <mat-icon>chevron_right</mat-icon>
+              </button>
+            </div>
+            <div class="add-area-container">
+              <button *ngIf="!adicionandoArea" mat-stroked-button class="add-area-btn" (click)="ativarModoAdicionar()">
+                <mat-icon>add</mat-icon> Nova Área
+              </button>
+              <mat-form-field *ngIf="adicionandoArea" class="add-area-input">
+                <input matInput 
+                  placeholder="Nome da Área" 
+                  [(ngModel)]="nomeNovaArea" 
+                  (keydown.enter)="salvarNovaArea()" 
+                  (keydown.escape)="cancelarAdicionar()" 
+                  (blur)="salvarNovaArea()" 
+                  cdkFocusInitial>
+              </mat-form-field>
+            </div>
+          </div>
+
+          <!-- Grid de mesas -->
+          <div *ngIf="ambienteAtivo" class="mesas-grid-container">
+            
+            <div class="mesas-grid-css">
+              
+              <div *ngFor="let mesa of ambienteAtivo.mesas" class="mesa-wrapper-css">
+                
+                <div 
+                  class="mesa" 
+                  [ngClass]="{ 'mesa-ocupada': mesa.ocupada, 'mesa-selecionada-reserva': isMesaAtribuidaAReservaAtual(mesa.id) }" 
+                  (click)="toggleMesaParaReserva(mesa)"
+                  [matTooltip]="getTooltipMesa(mesa)" 
+                  matTooltipClass="tavola-tooltip"
+                  [matTooltipDisabled]="isMobile()">
+                  
+                  <div class="mesa-menu" (click) = "$event.stopPropagation()">
+                    <button mat-icon-button [matMenuTriggerFor]="mesaMenu" #mesaMenuTrigger="matMenuTrigger">
+                      <mat-icon>more_vert</mat-icon>
+                    </button>
+                    <mat-menu #mesaMenu="matMenu" class="tavola-menu-bar" (menuClosed)="onMenuClosed($event)">
+                      <button mat-menu-item (click)="mesaMenuTrigger.closeMenu()" class="close-menu-mobile" *ngIf="isMobile()">
+                        <mat-icon>close</mat-icon>
+                        <span>Fechar</span>
+                      </button>
+                      <button mat-menu-item (click)="abrirModalGerenciarMesas('editar', mesa)">
+                        <mat-icon>edit</mat-icon>
+                        <span>Editar</span>
+                      </button>
+                      <button mat-menu-item (click)="confirmarRemocaoMesa($event, mesa)">
+                        <mat-icon>delete</mat-icon>
+                        <span>Remover</span>
+                      </button>
+                    </mat-menu>
+                  </div>
+                  <div class="mesa-visual" [ngClass]="{'mesa-circular': mesa.tipo === 'circular'}">
+                      <span class="mesa-capacidade">
+                        {{ mesa.capacidade }}
+                        <mat-icon class="person-icon">person</mat-icon>
+                      </span>
+                  </div>
+                  <div class="mesa-etiqueta" [ngClass]="{'mesa-vip': mesa.vip}">
+                    <nz-icon *ngIf="mesa.vip" nzType="crown" nzTheme="outline" class="vip-icon"></nz-icon>
+                    <span>{{ mesa.nome }}</span>
+                  </div>
+                </div>
+                
+              </div>
+              
+            </div>
+          </div>
+          
+          <div *ngIf="!ambienteAtivo && !isLoading.ambientes" class="empty-state">
+            <nz-empty nzNotFoundContent="Nenhum ambiente encontrado. Crie um para começar a adicionar mesas."></nz-empty>
+          </div>
+
+            <div *ngIf="isLoading.ambientes" class="loading-state">
+              <mat-spinner diameter="50"></mat-spinner>
+            </div>
+        </div>
+      </ng-template>
+    </div>
+  </div>
+  
+  <!-- Modal do Calendário -->
+  <div class="calendario-modal" *ngIf="mostrarCalendario">
+    <div class="calendario-overlay" (click)="mostrarCalendario = false"></div>
+    <app-calendario-reservas 
+      [reservas]="getReservasParaCalendario()" 
+      (dataSeleccionada)="selecionarDataDoCalendario($event)"
+      (fechar)="mostrarCalendario = false">
+    </app-calendario-reservas>
+  </div>
+
+  <!-- Botão FAB Mobile -->
+  <button 
+    *ngIf="isMobile() && visualizacaoAtiva === 'mapa'"
+    mat-fab 
+    color="primary" 
+    class="tavola-fab" 
+    (click)="abrirModalGerenciarMesas('criar')"
+    matTooltip="Adicionar nova mesa"
+    matTooltipClass="tavola-tooltip"
+    [matTooltipDisabled]="isMobile()"
+    aria-label="Adicionar nova mesa">
+    <mat-icon>add</mat-icon>
+  </button>
+</div>

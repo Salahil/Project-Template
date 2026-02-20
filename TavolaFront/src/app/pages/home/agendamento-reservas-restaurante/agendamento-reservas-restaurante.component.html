@@ -1,0 +1,661 @@
+<div class="container-rounded" [class.drawer-open]="isDietOptionsVisible">
+  <!-- Breadcrumb -->
+  <nz-breadcrumb class="breadcrumb">
+    <nz-breadcrumb-item>
+      <a routerLink="/home">
+        <i nz-icon nzType="home" nzTheme="outline"></i>
+      </a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>
+      <a routerLink="/restaurantes">Restaurantes</a>
+    </nz-breadcrumb-item>
+    <nz-breadcrumb-item>{{ restaurante?.nome }}</nz-breadcrumb-item>
+  </nz-breadcrumb>
+
+  <!-- Cabeçalho do Restaurante -->
+  <div class="restaurant-header">
+    <div class="title-row">
+      <h1 class="restaurant-title">{{ restaurante?.nome }}</h1>
+      <button 
+        nz-button 
+        nzType="default" 
+        nzShape="circle" 
+        class="favorite-button" 
+        (click)="toggleFavorite()" 
+        [nz-tooltip]="isMobile ? null : (isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos')">
+        <i nz-icon [nzType]="'heart'" [nzTheme]="isFavorite ? 'fill' : 'outline'"></i>
+      </button>
+    </div>
+    
+    <div class="restaurant-info">
+      <div class="info-item">
+        <i nz-icon nzType="environment" nzTheme="outline"></i>
+        <span>{{ getEnderecoResumido() }}</span>
+      </div>
+      
+      <div class="info-item">
+        <i nz-icon nzType="flag" nzTheme="outline"></i>
+        <span>{{ restaurante?.tipoCozinha }} · Preço médio {{ getPrecoMedio() | currency:'BRL' }}</span>
+      </div>
+      
+      <div class="info-item rating">
+        <nz-rate [ngModel]="restaurante?.mediaAvaliacao" nzDisabled [nzCount]="5"></nz-rate>
+        <span class="rating-value">{{ restaurante?.mediaAvaliacao }}</span>
+        <span class="reviews-count" *ngIf="restaurante?.totalDeAvaliacoes">({{ restaurante?.totalDeAvaliacoes }} avaliações)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Galeria de Fotos com NzImageModule -->
+  <div class="photo-gallery">
+    <nz-image-group>
+      <!-- Layout Desktop - Grid -->
+      <div class="gallery-grid desktop-gallery">
+        <!-- Foto Principal (Grande) -->
+        <div class="main-photo">
+          <img nz-image [nzSrc]="restaurantImages[0]" alt="Interior do restaurante">
+        </div>
+        
+        <!-- Foto Média -->
+        <div class="medium-photo">
+          <img nz-image [nzSrc]="restaurantImages[1]" alt="Prato do restaurante">
+        </div>
+        
+        <!-- Foto Pequena Superior -->
+        <div class="small-photo-top">
+          <img nz-image [nzSrc]="restaurantImages[2]" alt="Detalhe do restaurante">
+        </div>
+        
+        <!-- Foto Pequena Inferior -->
+        <div class="small-photo-bottom">
+          <img nz-image [nzSrc]="restaurantImages[3]" alt="Ambiente do restaurante">
+        </div>
+        
+        <!-- Botão Ver Mais Fotos -->
+        <div class="more-photos" (click)="openGallery()">
+          <img [src]="restaurantImages[4]" alt="Mais fotos">
+          <div class="more-overlay">
+            <span>Veja outras {{ totalPhotos }} fotos</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Layout Mobile - Slider Horizontal -->
+      <div class="gallery-grid-irregular mobile-gallery">
+        <div 
+          *ngFor="let img of restaurantImages.slice(0, 4); let i = index" 
+          class="mobile-gallery-item"
+          (click)="openGallery()">
+          <img nz-image [nzSrc]="img" alt="Foto do restaurante {{i+1}}" class="gallery-image">
+          
+          <div class="more-overlay" *ngIf="i === 3 && totalPhotos > 0">
+            <span>Veja outras {{ totalPhotos }} fotos</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Indicador de scroll para mobile -->
+      <div class="scroll-indicator mobile-gallery" *ngIf="restaurantImages.length > 1">
+        <span>Deslize para ver mais fotos</span>
+      </div>
+    </nz-image-group>
+  </div>
+
+  <!-- Abas de Navegação -->
+  <div #tabsContainer class="navigation-tabs" [class.fixed]="tabFixo">
+    <mat-tab-group (selectedIndexChange)="onTabChange($event)" [selectedIndex]="activeTabIndex">
+      <mat-tab label="Sobre"></mat-tab>
+      <mat-tab label="Menu"></mat-tab>
+      <mat-tab label="Avaliações"></mat-tab>
+    </mat-tab-group>
+  </div>
+
+  <!-- Área de Conteúdo -->
+  <div class="content-area">
+    <!-- Coluna de Conteúdo -->
+    <div class="content-column">
+      <!-- Conteúdo da aba Sobre -->
+      <div *ngIf="activeTabIndex === 0" class="sobre-content">
+        <!-- Descrição do Restaurante -->
+        <div class="descricao-section">
+          <h2>Sobre o restaurante</h2>
+          <p class="descricao-restaurante">{{ getDescricaoFormatada() }}</p>
+        </div>
+        
+        <!-- Localização -->
+        <div class="localizacao-section">
+          <h2>Localização</h2>
+          <div class="mapa-container">
+            <google-map 
+              *ngIf="markerPosition"
+              [center]="center" 
+              [zoom]="zoom" 
+              height="300px" 
+              width="100%">
+              
+              <!-- Apenas o marcador do restaurante -->
+              <map-marker 
+                [position]="markerPosition" 
+                [options]="markerOptions">
+              </map-marker>
+            </google-map>
+          </div>
+          <div class="endereco-completo">
+            <div class="endereco-copy">
+              <p> <i nz-icon nzType="environment" nzTheme="outline"></i> {{ getEnderecoFormatado() }}</p>
+              <button 
+                nz-button 
+                nzType="text" 
+                class="tavola-copy-btn" 
+                [class.copied]="copiado"
+                (click)="copiarEndereco()" 
+                [nz-tooltip]="isMobile ? null : (copiado ? 'Copiado!' : 'Copiar endereço')"
+              >
+                <nz-icon [nzType]="copiado ? 'check' : 'copy'" nzTheme="outline"></nz-icon>
+              </button>
+            </div>
+            <button 
+              mat-stroked-button 
+              color="primary" 
+              (click)="mostrarComoChegar()"
+              [disabled]="carregandoRota"
+              class="como-chegar-btn">
+              <mat-icon>{{ carregandoRota ? 'hourglass_empty' : 'directions' }}</mat-icon>
+              {{ carregandoRota ? 'Abrindo...' : 'Como chegar' }}
+            </button>
+          </div>
+        </div>
+        
+        <!-- Mais Detalhes -->
+        <div class="mais-detalhes-section">
+          <h2>Mais detalhes</h2>
+          
+          <!-- Horários de Funcionamento -->
+          <div class="horarios-section">
+            <h3>Horário de funcionamento</h3>
+            <div class="horarios-lista">
+              <div *ngFor="let horario of horariosFuncionamento.slice(0, 3)" class="horario-item">
+                <span class="dia">{{ getDiaSemanaPt(horario.diaSemana) }}</span>
+                <span class="horas">{{ horario.abertura }} - {{ horario.fechamento }}</span>
+              </div>
+            </div>
+            <button mat-button color="primary" class="mostrar-mais" (click)="openHorarios()">
+              Mostre mais
+            </button>
+          </div>
+          
+          <!-- Recursos e Serviços -->
+          <div class="recursos-section">
+            <h3>Recursos e serviços</h3>
+            <div class="recursos-lista">
+              <div *ngFor="let recurso of recursos" class="recurso-item">
+                <mat-icon>{{ recurso.icone }}</mat-icon>
+                <span>{{ recurso.nome }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Conteúdo da aba Menu -->
+      <div *ngIf="activeTabIndex === 1" class="menu-content">
+        <div class="menu-intro">
+          <h2>Experimente este menu</h2>
+          <p>Explore a oferta gastronômica deste restaurante e deixe-se inspirar.</p>
+          
+          <div class="menu-info">
+            <div class="opcoes-dieteticas" (click)="openDietOptions()">
+              <i nz-icon nzType="check-circle" nzTheme="outline"></i>
+              <div>
+                <span>Opções dietéticas</span>
+                <p>{{ dietOptions.join(', ') }}</p>
+              </div>
+              <i nz-icon nzType="right" nzTheme="outline"></i>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Categorias de navegação com setas e comportamento sticky -->
+        <div #categoriasNavContainer class="categorias-nav-container">
+          <div class="categorias-nav" [class.fixed]="categoriasFixas">
+            <div class="categorias-wrapper">
+              <!-- Seta Esquerda -->
+              <button 
+                class="nav-arrow left-arrow" 
+                (click)="scrollCategorias('left')" 
+                [class.hidden]="!mostrarSetaEsquerda">
+                <i nz-icon nzType="left" nzTheme="outline"></i>
+              </button>
+              
+              <!-- Container de Scroll -->
+              <div class="categorias-scroll" #categoriasScrollContainer (scroll)="onCategoriaScroll($event)">
+                <button 
+                  *ngFor="let categoria of categorias" 
+                  class="categoria-btn" 
+                  [class.active]="categoriaAtiva === categoria"
+                  (click)="selecionarCategoria(categoria)">
+                  {{ categoria }}
+                </button>
+              </div>
+              
+              <!-- Seta Direita -->
+              <button 
+                class="nav-arrow right-arrow" 
+                (click)="scrollCategorias('right')" 
+                [class.hidden]="!mostrarSetaDireita">
+                <i nz-icon nzType="right" nzTheme="outline"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Seções de categorias com galeria de imagens -->
+        <nz-image-group>
+          <div class="categorias-content">
+            <div *ngFor="let categoria of categorias" class="categoria-section" [id]="'categoria-' + categoria.toLowerCase().replace(' ', '-')">
+              <h3 class="categoria-titulo">{{ categoria }}</h3>
+              
+              <div class="itens-lista">
+                <div *ngFor="let item of getItensPorCategoria(categoria)" class="item-card">
+                  <div class="item-content">
+                    <div class="item-image">
+                      <img nz-image [nzSrc]="getImagemCompleta(item.imagem)" [alt]="item.nome">
+                    </div>
+                    <div class="item-info">
+                      <h4 class="item-nome">{{ item.nome }}</h4>
+                      <p class="item-descricao">{{ item.descricao }}</p>
+                      <div class="item-tags" *ngIf="item.tags && item.tags.length > 0">
+                        <span *ngFor="let tag of item.tags" class="tag-chip">{{ tag }}</span>
+                      </div>
+                    </div>
+                    <div class="item-preco">
+                      {{ item.preco | currency:'BRL' }}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </nz-image-group>
+      </div>
+      
+      <!-- Conteúdo da aba Avaliações -->
+      <div *ngIf="activeTabIndex === 2" class="avaliacoes-content">
+        <div *ngIf="carregandoAvaliacoes" class="loading-container">
+          <mat-spinner diameter="40"></mat-spinner>
+          <p>Carregando avaliações...</p>
+        </div>
+
+        <div *ngIf="!carregandoAvaliacoes && avaliacoesData" class="avaliacoes-container">
+          <!-- Título Avaliações -->
+          <h2 class="avaliacoes-titulo">Avaliações</h2>
+
+          <!-- Card de Resumo de Avaliações -->
+          <div class="resumo-avaliacoes-card">
+            <div class="resumo-header">
+              <div class="resumo-left">
+              <div class="circulo-avaliacao">
+                <svg class="progress-circle" width="120" height="120" viewBox="0 0 120 120">
+                  <circle
+                    class="progress-circle-bg"
+                    cx="60"
+                    cy="60"
+                    r="52"
+                    fill="none"
+                    stroke="#E5E5E5"
+                    stroke-width="12"
+                  />
+                  <circle
+                    class="progress-circle-fill"
+                    [attr.stroke-dasharray]="calcularStrokeDasharray(avaliacoesData.mediaAvaliacao)"
+                    [attr.stroke-dashoffset]="0"
+                    cx="60"
+                    cy="60"
+                    r="52"
+                    fill="none"
+                    stroke="#00B26B"
+                    stroke-width="12"
+                    transform="rotate(-90 60 60)"
+                  />
+                </svg>
+                <div class="nota-overlay">
+                  <span class="nota-valor">{{ avaliacoesData.mediaAvaliacao | number:'1.1-1' }}</span>
+                  <span class="nota-max">de 5</span>
+                </div>
+              </div>
+            </div>
+            <div class="resumo-right">
+              <div class="badge-avaliacao" [class.excelente]="avaliacoesData.mediaAvaliacao >= 4.5"
+                   [class.muito-bom]="avaliacoesData.mediaAvaliacao >= 4.0 && avaliacoesData.mediaAvaliacao < 4.5"
+                   [class.bom]="avaliacoesData.mediaAvaliacao >= 3.5 && avaliacoesData.mediaAvaliacao < 4.0"
+                   [class.regular]="avaliacoesData.mediaAvaliacao >= 3.0 && avaliacoesData.mediaAvaliacao < 3.5"
+                   [class.ruim]="avaliacoesData.mediaAvaliacao >= 2.5 && avaliacoesData.mediaAvaliacao < 3.0"
+                   [class.pessimo]="avaliacoesData.mediaAvaliacao < 2.5">
+                {{ getTextoAvaliacao(avaliacoesData.mediaAvaliacao) }}
+              </div>
+              <p class="total-avaliacoes">{{ avaliacoesData.totalAvaliacoes }} {{ avaliacoesData.totalAvaliacoes === 1 ? 'avaliação' : 'avaliações' }}</p>
+              </div>
+            </div>
+
+            <!-- Card Informativo dentro do resumo -->
+            <div class="card-informativo-avaliacoes">
+              <div class="informativo-content">
+                <mat-icon class="informativo-icon">check_circle</mat-icon>
+                <div class="informativo-texto">
+                  <p class="informativo-titulo">Experiências reais de clientes reais</p>
+                  <p class="informativo-descricao">As classificações e as avaliações só podem ser deixadas por clientes que tenham reservado com o Tavola.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        
+
+          <!-- Lista de Avaliações -->
+          <div class="lista-avaliacoes" *ngIf="avaliacoesData.avaliacoes && avaliacoesData.avaliacoes.length > 0">
+            <div class="comentario-item" *ngFor="let avaliacao of avaliacoesData.avaliacoes; let i = index">
+              <nz-comment>
+                <nz-avatar nz-comment-avatar [nzSrc]="getAvatarCliente(avaliacao.imagemCliente)" nzIcon="user"></nz-avatar>
+                <nz-comment-content>
+                  <div class="avaliacao-header-custom">
+                    <div class="nome-data-wrapper">
+                      <span class="nome-cliente">{{ avaliacao.nomeCliente }}</span>
+                      <span class="data-reserva">{{ avaliacao.dataReservaPorExtenso ?? formatarDataReserva(avaliacao.dataReserva) }}</span>
+                    </div>
+                    <div class="avaliacao-rating">
+                      <nz-rate [ngModel]="avaliacao.nota" nzDisabled [nzCount]="5" class="rating-stars-comment"></nz-rate>
+                      <span class="nota-numero">{{ avaliacao.nota }}/5</span>
+                    </div>
+                  </div>
+                  <p class="comentario-texto">{{ avaliacao.comentario }}</p>
+                </nz-comment-content>
+              </nz-comment>
+            </div>
+          </div>
+
+          <!-- Mensagem quando não há avaliações -->
+          <div *ngIf="!avaliacoesData.avaliacoes || avaliacoesData.avaliacoes.length === 0" class="sem-avaliacoes">
+            <mat-icon>rate_review</mat-icon>
+            <p>Ainda não há avaliações para este restaurante.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Coluna de Reserva - Estilo Tavola -->
+    <div class="coluna-reserva">
+      <div class="card-reserva-fixo">
+        <div class="card-reserva-tavola">
+          <!-- Cabeçalho estilo Tavola -->
+          <div class="cabecalho-reserva">
+            <h2 class="titulo-reserva">Reserve uma mesa</h2>
+            <p class="texto-gratis">Grátis</p>
+          </div>
+
+          <!-- Navegação Horizontal estilo Tavola -->
+          <div class="navegacao-reserva">
+            <button 
+              class="etapa-nav" 
+              [class.active]="bookingStep === 1" 
+              [class.completed]="bookingStep > 1"
+              (click)="setBookingStep(1)">
+              <div class="conteudo-etapa">
+                <i nz-icon nzType="calendar" nzTheme="outline"></i>
+                <span>{{ bookingStep > 1 ? getFormattedDate() : 'Data' }}</span>
+              </div>
+            </button>
+            
+            <button 
+              class="etapa-nav" 
+              [class.active]="bookingStep === 2" 
+              [class.completed]="bookingStep > 2"
+              [disabled]="bookingStep < 2"
+              (click)="setBookingStep(2)">
+              <div class="conteudo-etapa">
+                <i nz-icon nzType="clock-circle" nzTheme="outline"></i>
+                <span>{{ bookingStep > 2 ? selectedTime : 'Horário' }}</span>
+              </div>
+            </button>
+            
+            <button 
+              class="etapa-nav" 
+              [class.active]="bookingStep === 3" 
+              [class.completed]="bookingStep > 3"
+              [disabled]="bookingStep < 3"
+              (click)="setBookingStep(3)">
+              <div class="conteudo-etapa">
+                <nz-icon nzType="team" nzTheme="outline" />
+                <span>{{ bookingStep > 3 ? selectedGuests + ' pessoas' : 'Pessoas' }}</span>
+              </div>
+            </button>
+            
+            <button 
+              class="etapa-nav" 
+              [class.active]="bookingStep === 4" 
+              [class.completed]="bookingStep > 4"
+              [disabled]="bookingStep < 4"
+              (click)="setBookingStep(4)">
+              <div class="conteudo-etapa">
+                <nz-icon nzType="check-circle" nzTheme="outline" />
+                <span>Confirmar</span>
+              </div>
+            </button>
+          </div>
+
+          <!-- Container de Conteúdo com Scroll -->
+          <div class="conteudo-reserva">
+            <!-- Etapa 1: Seleção de Data -->
+            <div *ngIf="bookingStep === 1" class="etapa-reserva">
+              <nz-calendar 
+                *ngIf="!isLoading"
+                [(ngModel)]="selectedDate" 
+                [nzDisabledDate]="disabledDate"
+                (nzSelectChange)="onDateSelect($event)"
+                nzMode="month"
+                class="calendario-tavola">
+              </nz-calendar>
+            </div>
+
+            <!-- Etapa 2: Seleção de Horário -->
+            <div *ngIf="bookingStep === 2" class="etapa-reserva">
+              <div class="cabecalho-etapa">
+                <button nz-button nzType="text" (click)="goBackStep()" class="botao-voltar">
+                  <i nz-icon nzType="left" nzTheme="outline"></i>
+                </button>
+                <h3>Escolha seu horário</h3>
+              </div>
+
+              <div *ngFor="let period of availableSlots" class="periodo-horario">
+                <h4>{{ period.period }}</h4>
+                <div class="slots-horario">
+                  <button 
+                    *ngFor="let slot of period.slots" 
+                    nz-button 
+                    [nzType]="slot.availability === 'available' ? 'default' : 'dashed'"
+                    [disabled]="slot.availability === 'unavailable'"
+                    class="slot-horario"
+                    [class.limitado]="slot.availability === 'limited'"
+                    (click)="onTimeSelect(slot.time)">
+                    {{ slot.time }}
+                    <span *ngIf="slot.percentage" class="percentual">{{ slot.percentage }}%</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Etapa 3: Seleção de Pessoas -->
+            <div *ngIf="bookingStep === 3" class="etapa-reserva">
+              <div class="cabecalho-etapa">
+                <button nz-button nzType="text" (click)="goBackStep()" class="botao-voltar">
+                  <i nz-icon nzType="left" nzTheme="outline"></i>
+                </button>
+                <h3>Número de pessoas</h3>
+              </div>
+
+              <div class="grid-pessoas">
+                <button 
+                  *ngFor="let num of [1,2,3,4,5,6,7,8,9,10,11,12]" 
+                  nz-button 
+                  nzType="default"
+                  class="botao-pessoa"
+                  [class.selecionado]="selectedGuests === num"
+                  (click)="onGuestsSelect(num)">
+                  {{ num }}
+                </button>
+              </div>
+            </div>
+
+            <!-- Etapa 4: Confirmação e Comentários -->
+            <div *ngIf="bookingStep === 4" class="etapa-reserva">
+              <div class="cabecalho-etapa">
+                <button nz-button nzType="text" (click)="goBackStep()" class="botao-voltar">
+                  <i nz-icon nzType="left" nzTheme="outline"></i>
+                </button>
+                <h3>Confirmar Reserva</h3>
+              </div>
+
+              <!-- Resumo da Reserva -->
+              <div class="resumo-reserva">
+                <h4>Resumo da sua reserva</h4>
+                <div class="resumo-item">
+                  <span class="label">Restaurante:</span>
+                  <span class="value">{{ bookingData?.restaurant }}</span>
+                </div>
+                <div class="resumo-item">
+                  <span class="label">Data:</span>
+                  <span class="value">{{ bookingData?.formattedDate }}</span>
+                </div>
+                <div class="resumo-item">
+                  <span class="label">Horário:</span>
+                  <span class="value">{{ bookingData?.time }}</span>
+                </div>
+                <div class="resumo-item">
+                  <span class="label">Pessoas:</span>
+                  <span class="value">{{ bookingData?.guests }} {{ bookingData?.guests === 1 ? 'pessoa' : 'pessoas' }}</span>
+                </div>
+              </div>
+
+              <!-- Campo de Comentários -->
+              <div class="comentarios-section">
+                <h4>Comentários ou preferências especiais</h4>
+                <p class="comentarios-desc">Adicione qualquer informação que possa nos ajudar a tornar sua experiência ainda melhor.</p>
+                
+                <mat-form-field appearance="outline" class="full-width">
+                  <mat-label>Comentários</mat-label>
+                  <textarea
+                    matInput
+                    [(ngModel)]="selectedComments"
+                    placeholder="Ex: Mesa perto da janela, aniversário, alergias alimentares..."
+                    rows="3"
+                    maxlength="200"
+                  ></textarea>
+                  <mat-hint align="end">{{ selectedComments.length }}/200</mat-hint>
+                </mat-form-field>
+
+                <!-- Sugestões rápidas -->
+                <div class="sugestoes-rapidas">
+                  <span class="sugestoes-label">Sugestões rápidas:</span>
+                  <div class="sugestoes-chips">
+                    <button 
+                      *ngFor="let sugestao of ['Mesa perto da janela', 'É aniversário', 'Mesa mais reservada', 'Primeira visita']"
+                      nz-button 
+                      nzType="dashed" 
+                      nzSize="small"
+                      class="sugestao-chip"
+                      (click)="selectedComments = selectedComments ? selectedComments + ', ' + sugestao : sugestao">
+                      {{ sugestao }}
+                    </button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Botão de Confirmação -->
+              <div class="confirmacao-section">
+                <button
+                  mat-raised-button
+                  color="primary"
+                  class="botao-confirmar mat-rounded-button"
+                  (click)="finalizarReserva()">
+                  <mat-icon>check</mat-icon>
+                  Confirmar Reserva
+                </button>
+              
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+  <!-- Modal de Galeria Completa -->
+  <nz-modal
+    [(nzVisible)]="isGalleryVisible"
+    nzTitle="Galeria de Fotos"
+    [nzFooter]="null"
+    (nzOnCancel)="closeGallery()"
+    nzWidth="80%"
+    nzCentered>
+    <ng-container *nzModalContent>
+      <div class="full-gallery">
+        <nz-image-group>
+          <div class="gallery-grid-modal">
+            <div class="gallery-item" *ngFor="let img of allImages">
+              <img nz-image [nzSrc]="img" alt="Foto do restaurante">
+            </div>
+          </div>
+        </nz-image-group>
+      </div>
+    </ng-container>
+  </nz-modal>
+  
+  <!-- Modal de Horários -->
+  <nz-modal
+    [(nzVisible)]="isHorariosVisible"
+    nzTitle="Horário de funcionamento"
+    [nzFooter]="null"
+    (nzOnCancel)="closeHorarios()"
+    nzWidth="500px"
+    nzCentered
+  >
+    <ng-container *nzModalContent>
+      <p class="horarios-descricao">Verifique a disponibilidade e reserve já a sua mesa para garantir o seu lugar.</p>
+      <div class="horarios-lista-completa">
+        <div *ngFor="let horario of horariosFuncionamento" class="horario-item">
+          <span class="dia">{{ getDiaSemanaPt(horario.diaSemana) }}</span>
+          <span class="horas">{{ horario.abertura }} - {{ horario.fechamento }}</span>
+        </div>
+      </div>
+    </ng-container>
+  </nz-modal>
+  
+  <!-- Drawer de Opções Dietéticas -->
+  <nz-drawer
+    [nzVisible]="isDietOptionsVisible"
+    nzPlacement="right"
+    nzTitle="Opções dietéticas"
+    (nzOnClose)="closeDietOptions()"
+    [nzWidth]="isMobile ? '60%' : '400px'"
+    [nzMaskClosable]="true"
+    class="opcoes-dieteticas-drawer-wrapper">
+    
+    <ng-container *nzDrawerContent>
+      <p class="drawer-description">Este restaurante informou-nos que oferece pratos com as seguintes opções dietéticas:</p>
+      <div class="opcoes-dieteticas-drawer">
+        <div *ngFor="let opcao of dietOptions" class="opcao-item">
+          <i nz-icon nzType="check" nzTheme="outline"></i>
+          <span>{{ opcao }}</span>
+        </div>
+      </div>
+    </ng-container>
+  </nz-drawer>
+
+</div>
+
+<!-- Footer Fixo para Reserva (Mobile) -->
+<div class="sticky-booking-footer" *ngIf="isMobile && !isReservaDialogVisible">
+  <button class="botao-escolha-reserva" (click)="abrirDialogReservaEscolha()">
+    <mat-icon>calendar_today</mat-icon>
+    <span>Escolha sua reserva</span>
+  </button>
+</div>

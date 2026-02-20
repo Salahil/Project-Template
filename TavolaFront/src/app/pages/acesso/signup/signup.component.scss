@@ -1,0 +1,296 @@
+@import "../../../../styles/variables.scss";
+
+:host {
+    display: block;
+    width: 100%;
+    height: 100vh;
+    overflow-y: auto;
+    background-color: #3B221B;
+    
+    // Estilo do scroll externo
+    &::-webkit-scrollbar {
+        width: 8px;
+    }
+    
+    &::-webkit-scrollbar-track {
+        background: #2a1812;
+        border-radius: 4px;
+    }
+    
+    &::-webkit-scrollbar-thumb {
+        background: #4e2e22;
+        border-radius: 4px;
+        
+        &:hover {
+            background: #D1495B;
+        }
+    }
+}
+
+.signup-tabs {
+    margin-top: -24px;
+    padding-bottom: 80px;
+    
+    ::ng-deep {
+        .mat-mdc-tab-header {
+            margin-bottom: 24px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+            position: sticky;
+            top: 0;
+            background: transparent;
+            z-index: 1;
+
+            .mat-mdc-tab {
+                color: rgba(255, 255, 255, 0.6);
+                min-height: 48px;
+                .mdc-tab__text-label {
+                    transition: color 0.2s;
+                }
+                &.mdc-tab--active .mdc-tab__text-label {
+                    color: #D1495B !important;
+                }
+                .mdc-tab-indicator__content--underline {
+                    border-color: #D1495B;
+                }
+            }
+        }
+
+        // Remove scroll interno
+        .mat-mdc-tab-body-wrapper {
+            height: auto;
+            overflow: visible;
+        }
+    }
+}
+
+.signup-form {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+    padding: 0 16px;
+    max-width: 800px;
+    margin: 0 auto;
+
+    .form-section {
+        background: rgba(255, 255, 255, 0.05);
+        border-radius: 8px;
+        padding: 24px;
+        margin-bottom: 16px;
+
+        .section-title {
+            color: #F6BD38;
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-left: 4px solid #F6BD38;
+            padding-left: 12px;
+        }
+
+        .form-row {
+            margin-bottom: 16px;
+
+            &.two-columns {
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 16px;
+            }
+
+            &:last-child {
+                margin-bottom: 0;
+            }
+
+            &.full-width {
+                grid-column: 1 / -1;
+            }
+        }
+    }
+}
+
+::ng-deep {
+    .mat-mdc-form-field {
+        width: 100%;
+
+        .mat-mdc-input-element,
+        .mat-mdc-select-value-text,
+        .mdc-floating-label,
+        .mat-mdc-select-arrow {
+            color: white !important;
+        }
+
+        // Remove o hover marrom
+        .mat-mdc-input-element:hover,
+        .mat-mdc-input-element:focus {
+            color: white !important;
+        }
+
+        .mdc-text-field--outlined {
+            --mdc-outlined-text-field-label-text-color: rgba(255, 255, 255, 0.6);
+            --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.3);
+            --mdc-outlined-text-field-hover-outline-color: #F6BD38;
+            --mdc-outlined-text-field-focus-outline-color: #F6BD38;
+        }
+
+        .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
+            color: #F6BD38 !important;
+        }
+
+        textarea {
+            min-height: 100px;
+        }
+    }
+
+    .mat-mdc-checkbox {
+        --mdc-checkbox-selected-checkmark-color: #fff;
+        --mdc-checkbox-selected-focus-icon-color: #F6BD38;
+        --mdc-checkbox-selected-hover-icon-color: #F6BD38;
+        --mdc-checkbox-selected-icon-color: #F6BD38;
+        --mdc-checkbox-selected-pressed-icon-color: #F6BD38;
+        --mdc-checkbox-unselected-focus-icon-color: #D1495B;
+        --mdc-checkbox-unselected-hover-icon-color: #D1495B;
+        --mdc-checkbox-unselected-icon-color: #D1495B;
+        --mdc-checkbox-unselected-pressed-icon-color: #D1495B;
+    }
+}
+
+.horarios-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+
+    .horario-row {
+        display: flex;
+        align-items: center;
+        gap: 16px;
+
+        .dia-semana {
+            min-width: 120px;
+            color: white;
+        }
+
+        .horarios-inputs {
+            display: flex;
+            gap: 16px;
+            flex: 1;
+        }
+    }
+}
+
+mat-error {
+    color: #D1495B !important;
+    font-size: 0.8rem;
+    font-weight: 500;
+    opacity: 1 !important;
+}
+
+.mat-mdc-form-field-error {
+    color: #D1495B !important;
+}
+
+@media (max-width: 768px) {
+    .signup-form {
+        padding: 0;
+
+        .form-section {
+            padding: 16px;
+
+            .form-row {
+                &.two-columns {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+    }
+
+    .horarios-grid {
+        .horario-row {
+            flex-direction: column;
+            align-items: flex-start;
+
+            .dia-semana {
+                min-width: auto;
+            }
+
+            .horarios-inputs {
+                width: 100%;
+            }
+        }
+    }
+}
+
+.horario-row-flex {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.add-horario-btn {
+    margin-top: 12px;
+    color: #3B221B !important;
+    border-color: #F6BD38 !important;
+    background: #F6BD38 !important;
+    font-weight: 600;
+}
+
+.add-horario-btn mat-icon {
+    color: #3B221B !important;
+}
+
+.actions {
+    margin-top: 2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 0 16px;
+
+    .primary-action {
+        width: 100%;
+        height: 50px;
+        background: linear-gradient(135deg, #F6BD38 0%, #FDD835 100%);
+        border: none;
+        color: #4A3429;
+        font-weight: 600;
+        font-size: 1rem;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(246, 189, 56, 0.4);
+        }
+
+        &:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        i {
+            margin-right: 0.5rem;
+        }
+    }
+
+    .secondary-action {
+        width: 100%;
+        height: 45px;
+        border: 1px solid rgba(246, 189, 56, 0.3);
+        color: #F6BD38;
+        background: transparent;
+        font-weight: 500;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+
+        &:hover {
+            background: rgba(246, 189, 56, 0.1);
+            border-color: #F6BD38;
+        }
+
+        i {
+            margin-right: 0.5rem;
+        }
+    }
+}

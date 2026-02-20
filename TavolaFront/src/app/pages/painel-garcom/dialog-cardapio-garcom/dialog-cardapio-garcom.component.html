@@ -1,0 +1,130 @@
+<div class="tavola-dialog">
+  <div class="dialog-container">
+    <div class="dialog-header">
+      <div class="header-icon">
+        <mat-icon>restaurant_menu</mat-icon>
+      </div>
+      <h1 mat-dialog-title>{{ data.pedidoId ? 'Editar Pedido' : 'Cardápio' }}</h1>
+      <p class="subtitle">{{ data.pedidoId ? 'Editar itens do pedido da Mesa ' + (data.mesaNome || data.mesaId) : 'Adicionar itens ao pedido da Mesa ' + (data.mesaNome || data.mesaId) }}</p>
+    </div>
+
+    <mat-dialog-content class="dialog-content" (scroll)="onDialogScroll($event)">
+      <!-- Loading indicator -->
+      <div *ngIf="isLoading" class="loading-container">
+        <mat-progress-spinner diameter="50"></mat-progress-spinner>
+        <p>Carregando cardápio...</p>
+      </div>
+      
+      <!-- Navegação de categorias -->
+      <div *ngIf="!isLoading">
+      <div #categoriasNavContainer class="categorias-nav-container">
+        <div class="categorias-nav" [class.fixed]="categoriasFixas">
+          <div class="categorias-wrapper">
+            <button
+              class="nav-arrow left-arrow"
+              (click)="scrollCategorias('left')"
+              [class.hidden]="!mostrarSetaEsquerda">
+              <i nz-icon nzType="left" nzTheme="outline"></i>
+            </button>
+
+            <div class="categorias-scroll" #categoriasScrollContainer (scroll)="onCategoriaScroll($event)">
+              <button
+                *ngFor="let categoria of categorias"
+                class="categoria-btn"
+                [class.active]="categoriaAtiva === categoria.nome"
+                (click)="selecionarCategoria(categoria.nome)">
+                {{ categoria.nome }}
+              </button>
+            </div>
+
+            <button
+              class="nav-arrow right-arrow"
+              (click)="scrollCategorias('right')"
+              [class.hidden]="!mostrarSetaDireita">
+              <i nz-icon nzType="right" nzTheme="outline"></i>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Conteúdo das categorias -->
+      <div class="categorias-content">
+        <div *ngFor="let categoria of categorias" class="categoria-section" [id]="'categoria-' + getCategoriaId(categoria.nome)">
+          <h3 class="categoria-titulo">{{ categoria.nome }}</h3>
+
+          <div class="itens-lista">
+            <div *ngFor="let item of categoria.itens" class="item-card">
+              <div class="item-content">
+                <div class="item-image" *ngIf="item.imagem">
+                  <img [src]="item.imagem" [alt]="item.nome" (error)="onImageError($event)">
+                </div>
+                <div class="item-info">
+                  <h4 class="item-nome">{{ item.nome }}</h4>
+                  <p class="item-descricao">{{ item.descricao }}</p>
+                  <div class="item-tags" *ngIf="item.tags && item.tags.length > 0">
+                    <span *ngFor="let tag of item.tags" class="tag-chip">{{ tag }}</span>
+                  </div>
+                  <div class="item-preco-mobile">
+                    {{ item.preco | currency:'BRL' }}
+                  </div>
+                </div>
+                <div class="item-preco-e-acao">
+                  <div class="item-preco">
+                    {{ item.preco | currency:'BRL' }}
+                  </div>
+                  <button mat-icon-button class="add-item-btn" (click)="adicionarItem(item)"
+                          [matTooltip]="!isMobile ? 'Adicionar ao carrinho' : null" 
+                          [matTooltipDisabled]="isMobile"
+                          matTooltipClass="tavola-tooltip">
+                    <mat-icon>add_circle</mat-icon>
+                    <span class="btn-text">Adicionar</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seção do carrinho -->
+      <div class="carrinho-section" *ngIf="carrinho.length > 0">
+        <h4>Carrinho ({{ getTotalItensCarrinho() }} itens)</h4>
+        <div class="carrinho-itens">
+          <div *ngFor="let item of carrinho" class="carrinho-item">
+            <div class="item-info">
+              <span class="item-nome">{{ item.nome }}</span>
+              <span class="item-preco">{{ item.preco | currency:'BRL' }}</span>
+            </div>
+            <div class="item-controls">
+              <button mat-icon-button (click)="ajustarQuantidade(item.id, getQuantidadeItem(item.id) - 1)">
+                <mat-icon>remove</mat-icon>
+              </button>
+              <span class="quantidade">{{ getQuantidadeItem(item.id) }}</span>
+              <button mat-icon-button (click)="ajustarQuantidade(item.id, getQuantidadeItem(item.id) + 1)">
+                <mat-icon>add</mat-icon>
+              </button>
+              <button mat-icon-button (click)="removerItem(item.id)" class="remove-btn">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="carrinho-total">
+          <strong>Total: {{ getTotalCarrinho() | currency:'BRL' }}</strong>
+        </div>
+      </div>
+      </div>
+    </mat-dialog-content>
+
+    <mat-dialog-actions class="dialog-actions">
+      <button mat-button (click)="fechar()" class="cancel-btn">
+        <mat-icon>close</mat-icon>
+        Cancelar
+      </button>
+      <button mat-raised-button color="primary" [disabled]="carrinho.length === 0 || isLoading" (click)="finalizarPedido()" class="submit-btn">
+        <mat-icon>shopping_cart</mat-icon>
+        {{ data.pedidoId ? 'Adicionar ao Pedido' : 'Criar Pedido' }} ({{ getTotalItensCarrinho() }} itens)
+      </button>
+    </mat-dialog-actions>
+  </div>
+</div>
