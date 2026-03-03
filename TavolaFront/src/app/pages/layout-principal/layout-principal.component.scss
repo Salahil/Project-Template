@@ -1,382 +1,129 @@
+/* Final minimal SCSS for layout-principal (single block) */
+.layout-container { display:flex; flex-direction:column; height:100vh; margin:0 }
+.toolbar { display:flex; align-items:center; justify-content:space-between; padding:0 12px; height:64px; background:#c22523; color:#fff }
+.main-wrapper { display:flex; flex:1; min-height:0 }
+.desktop-sidebar { width:240px; background:#fafafa; border-right:1px solid #eee; padding:12px; box-sizing:border-box }
+.desktop-sidebar.fechada { width:80px }
+.menu button { display:flex; align-items:center; gap:10px; width:100%; padding:8px 10px; border:none; background:transparent }
+.content { flex:1; padding:16px; box-sizing:border-box }
+@media (max-width:700px) { .desktop-sidebar { display:none } }
+/* Minimal cleaned SCSS for layout-principal */
 .layout-container {
   display: flex;
   flex-direction: column;
   height: 100vh;
-  position: relative;
-  background: #eae7e1;
-  overflow: hidden;
+  margin: 0;
 }
 
 .toolbar {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 0 32px;
-  height: 80px;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 64px;
   background: #c22523;
-  backdrop-filter: blur(20px);
-  border-bottom: 3px solid rgba(255, 255, 255, 0.2);
-  color: white;
-  z-index: 1000;
-  position: sticky;
-  top: 0;
-  box-shadow: 0 8px 32px rgba(194, 37, 35, 0.25);
-  transition: all 0.3s ease;
+  color: #fff;
+}
 
-  // Ajuste para mobile quando estiver na home
-  @media (max-width: 700px) {
-    &.home-page {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 1001;
-    }
-  }
+.main-wrapper {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
 
-  .search-icon-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 52px;
-    height: 52px;
-    background: rgba(255, 255, 255, 0.15);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    color: white;
-    cursor: pointer;
-    border-radius: 16px;
-    transition: all 0.3s ease;
-    backdrop-filter: blur(10px);
-    margin-right: 12px; // Adiciona espaçamento para ficar próximo ao sino
-    
-    mat-icon {
-      font-size: 24px;
-      width: 24px;
-      height: 24px;
-      color: white;
-    }
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: scale(1.05);
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-    }
+.desktop-sidebar {
+  width: 240px;
+  background: #fafafa;
+  border-right: 1px solid #eee;
+  padding: 12px;
+  box-sizing: border-box;
+}
 
-    // Ajuste para mobile - posicionamento à esquerda do sino
-    @media (max-width: 700px) {
-      margin-right: 8px;
-      width: 48px;
-      height: 48px;
-      
-      mat-icon {
-        font-size: 22px;
-        width: 22px;
-        height: 22px;
-      }
-    }
-  }
+.desktop-sidebar.fechada {
+  width: 80px;
+}
 
-  .expanded-search-container {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    flex: 1;
-    max-width: 800px;
-    background: rgba(255, 255, 255, 0.95);
-    border-radius: 20px;
-    padding: 8px 12px;
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(246, 189, 56, 0.3);
-    position: relative;
-    animation: expandSearch 0.3s ease;
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+}
 
-    .city-chip {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      background: #f8f9fa;
-      border: 2px solid #e9ecef;
-      border-radius: 12px;
-      padding: 10px 14px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      white-space: nowrap;
-      
-      mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-        color: #c22523;
-      }
-      
-      span {
-        font-size: 14px;
-        font-weight: 600;
-        color: #495057;
-      }
-      
-      .dropdown-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        color: #6c757d;
-      }
-      
-      &:hover {
-        background: #e9ecef;
-        border-color: #c22523;
-        transform: translateY(-1px);
-      }
-    }
+.content {
+  flex: 1;
+  padding: 16px;
+  box-sizing: border-box;
+}
 
-    .search-divider {
-      width: 2px;
-      height: 32px;
-      background: #e9ecef;
-    }
+@media (max-width: 700px) {
+  .desktop-sidebar { display: none; }
+}
 
-    .search-input {
-      flex: 1;
-      border: none;
-      outline: none;
-      background: transparent;
-      font-size: 15px;
-      color: #212529;
-      padding: 10px 8px;
-      font-weight: 500;
-      
-      &::placeholder {
-        color: #6c757d;
-        font-style: italic;
-      }
-    }
+/* Minimal styles for layout-principal (kept intentionally small) */
+.layout-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  margin: 0;
+}
 
-    .filter-button,
-    .close-search-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background: #f8f9fa;
-      border: 2px solid #e9ecef;
-      border-radius: 10px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      
-      mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-        color: #495057;
-      }
-      
-      &:hover {
-        background: #e9ecef;
-        border-color: #c22523;
-        transform: scale(1.05);
-        
-        mat-icon {
-          color: #c22523;
-        }
-      }
-    }
+.toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 12px;
+  height: 64px;
+  background: #c22523;
+  color: #fff;
+}
 
-    .city-dropdown-expanded {
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      width: 320px;
-      background: white;
-      border-radius: 16px;
-      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-      border: 2px solid #e9ecef;
-      z-index: 1001;
-      max-height: 400px;
-      overflow-y: auto;
-      animation: slideDown 0.2s ease;
+.main-wrapper {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+}
 
-      .dropdown-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        padding: 14px 20px;
-        cursor: pointer;
-        transition: all 0.2s ease;
-        
-        mat-icon {
-          font-size: 18px;
-          width: 18px;
-          height: 18px;
-          color: #c22523;
-        }
-        
-        span {
-          font-size: 14px;
-          font-weight: 500;
-          color: #495057;
-        }
-        
-        &:hover {
-          background: #f8f9fa;
-          
-          span {
-            color: #c22523;
-            font-weight: 600;
-          }
-        }
-      }
+.desktop-sidebar {
+  width: 240px;
+  background: #fafafa;
+  border-right: 1px solid #eee;
+  padding: 12px;
+  box-sizing: border-box;
+}
 
-      .dropdown-divider {
-        height: 1px;
-        background: #e9ecef;
-        margin: 8px 0;
-      }
+.desktop-sidebar.fechada {
+  width: 80px;
+}
 
-      .dropdown-title {
-        padding: 12px 20px 8px 20px;
-        font-size: 12px;
-        font-weight: 700;
-        color: #6c757d;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-      }
-    }
-  }
+.menu button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  padding: 8px 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+}
 
-  .menu-toggle {
-    display: flex !important;
-    align-items: center !important;
-    justify-content: center !important;
-    width: 52px !important;
-    height: 52px !important;
-    background: rgba(255, 255, 255, 0.15) !important;
-    border: 2px solid rgba(255, 255, 255, 0.3) !important;
-    color: white !important;
-    cursor: pointer !important;
-    border-radius: 16px !important;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-    backdrop-filter: blur(10px) !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    
-    mat-icon {
-      font-size: 26px !important;
-      width: 26px !important;
-      height: 26px !important;
-      line-height: 26px !important;
-      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-      color: white !important;
-    }
-    
-    &:hover {
-      background: rgba(255, 255, 255, 0.25) !important;
-      border-color: rgba(255, 255, 255, 0.5) !important;
-      transform: scale(1.05) !important;
-      box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3) !important;
-      
-      mat-icon {
-        color: white !important;
-        transform: rotate(90deg) !important;
-      }
-    }
-  }
+.content {
+  flex: 1;
+  padding: 16px;
+  box-sizing: border-box;
+}
 
-  .mobile-menu-toggle {
-    mat-icon.rotated {
-      transform: rotate(180deg);
-    }
-  }
+/* small responsive tweak */
+@media (max-width: 700px) {
+  .desktop-sidebar { display: none; }
+}
 
-  .notifications {
-      .notification-btn {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 52px;
-        height: 52px;
-        background: rgba(255, 255, 255, 0.15);
-        border: 2px solid rgba(255, 255, 255, 0.3);
-        color: white;
-        cursor: pointer;
-        border-radius: 16px;
-        transition: all 0.3s ease;
-        backdrop-filter: blur(10px);
-        
-        &:hover {
-          background: rgba(255, 255, 255, 0.25);
-          border-color: rgba(255, 255, 255, 0.5);
-          transform: scale(1.05);
-          box-shadow: 0 4px 20px rgba(255, 255, 255, 0.3);
-          
-          mat-icon {
-            color: white !important;
-            transform: scale(1.1);
-          }
-        }
 
-        mat-icon {
-          font-size: 24px;
-          width: 24px;
-          height: 24px;
-          color: white !important;
-          transition: all 0.3s ease;
-        }
-
-        ::ng-deep .ant-badge-dot {
-          width: 10px;
-          height: 10px;
-          background: #ff4757;
-          border: 2px solid white;
-        }
-      }
-  }
-
-  .user-menu {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    cursor: pointer;
-    padding: 12px 20px;
-    border-radius: 20px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(10px);
-
-    &:hover {
-      background: rgba(255, 255, 255, 0.25);
-      border-color: rgba(255, 255, 255, 0.5);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.3);
-    }
-
-    .user-info {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-
-      .avatar {
-        width: 56px; // Aumentado de 48px para 56px
-        height: 56px; // Aumentado de 48px para 56px
-        border-radius: 50%;
-        overflow: hidden;
-        border: 3px solid rgba(255, 255, 255, 0.5);
-        box-shadow: 0 4px 15px rgba(255, 255, 255, 0.3);
-
-        img {
-          width: 100%;
-          height: 100%;
-          object-fit: cover;
-        }
-      }
-
-      .user-details {
-        display: flex;
         flex-direction: column;
-        
+
         .user-name {
           font-size: 16px;
           font-weight: 700;
@@ -473,7 +220,7 @@
     .sidebar-header {
       justify-content: center;
       padding: 28px 20px;
-      
+
       .logo {
         width: 36px;
       }
@@ -487,11 +234,11 @@
       height: 56px;
       border-radius: 12px;
       margin: 0 auto 12px auto;
-      
+
       span {
         display: none;
       }
-      
+
       mat-icon {
         margin: 0;
         font-size: 24px;
@@ -504,14 +251,14 @@
         justify-content: flex-start;
         padding: 16px 20px;
         border-radius: 16px;
-        
+
         span {
           display: block;
           opacity: 1;
           margin-left: 16px;
           animation: fadeInLeft 0.3s ease;
         }
-        
+
         mat-icon {
           margin-right: 0;
         }
@@ -586,11 +333,11 @@
         border-color: #F6BD38;
         transform: translateX(6px);
         box-shadow: 0 8px 25px rgba(246, 189, 56, 0.3);
-        
+
         &::before {
           left: 100%;
         }
-        
+
         mat-icon {
           color: #2c1810;
           transform: scale(1.15);
@@ -601,7 +348,7 @@
         &:nth-child(even) {
           border-color: rgba(246, 189, 56, 0.7);
           color: rgba(246, 189, 56, 0.8);
-          
+
           mat-icon {
             color: rgba(246, 189, 56, 0.8);
           }
@@ -631,7 +378,7 @@
     width: 100%;
     max-width: 100%;
     box-sizing: border-box;
-    
+
     &::-webkit-scrollbar {
       width: 10px;
     }
@@ -644,7 +391,7 @@
     &::-webkit-scrollbar-thumb {
       background: linear-gradient(135deg, #F6BD38 0%, #f4b942 100%);
       border-radius: 6px;
-      
+
       &:hover {
         background: linear-gradient(135deg, #f4b942 0%, #F6BD38 100%);
       }
@@ -657,7 +404,7 @@
   max-width: 650px;
   margin: 0 40px;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  
+
   &.sidebar-fechada {
     margin-left: 20px;
   }
@@ -666,7 +413,7 @@
     max-width: none;
     margin: 0;
     width: 100%;
-    
+
     ::ng-deep .input-group {
       flex-direction: column;
       gap: 10px;
@@ -682,12 +429,12 @@
       max-width: 100%;
       margin-right: 0;
       height: 48px;
-      
+
       .mat-form-field {
         background: #f8f9fa;
         border-radius: 10px;
         border: 2px solid #e9ecef;
-        
+
         &:focus-within {
           border-color: #F6BD38;
           box-shadow: 0 0 0 3px rgba(246, 189, 56, 0.1);
@@ -709,23 +456,23 @@
       font-size: 13px;
       border-radius: 10px;
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
-      
+
       .btn-text {
         font-size: 12px;
       }
-      
+
       mat-icon {
         font-size: 18px;
         width: 18px;
         height: 18px;
       }
     }
-    
+
     ::ng-deep .filtros-btn {
       background: #6c757d;
       color: white;
     }
-    
+
     ::ng-deep .search-btn {
       background: #F6BD38;
       color: #3B221B;
@@ -742,7 +489,7 @@
     border: 2px solid rgba(194, 37, 35, 0.3) !important;
     overflow: hidden !important;
     backdrop-filter: blur(20px) !important;
-    
+
     .mat-mdc-menu-content {
       padding: 12px !important;
       background: #fffefb !important;
@@ -758,13 +505,13 @@
       transition: all 0.3s ease !important;
       font-weight: 600 !important;
       font-size: 15px !important;
-      
+
       &:hover {
         background: rgba(194, 37, 35, 0.12) !important;
         transform: translateX(6px) !important;
         box-shadow: 0 4px 15px rgba(194, 37, 35, 0.2) !important;
       }
-      
+
       mat-icon {
         margin: 0 !important;
         color: #c22523 !important;
@@ -772,7 +519,7 @@
       }
     }
   }
-  
+
   // Menu de notificações - herda o visual do user-dropdown
   .notifications-menu {
     margin-top: 12px;
@@ -781,12 +528,12 @@
     border: 2px solid rgba(194, 37, 35, 0.3) !important;
     overflow: hidden !important;
     backdrop-filter: blur(20px) !important;
-    
+
     .mat-mdc-menu-content {
       padding: 12px !important;
       background: #fffefb !important;
     }
-    
+
     .mat-mdc-menu-item {
       display: flex;
       align-items: center;
@@ -799,20 +546,20 @@
       font-size: 15px !important;
       width: 100%;
       min-width: 280px;
-      
+
       &:hover {
         background: rgba(194, 37, 35, 0.12) !important;
         transform: translateX(6px) !important;
         box-shadow: 0 4px 15px rgba(194, 37, 35, 0.2) !important;
       }
-      
+
       mat-icon {
         margin: 0 !important;
         color: #c22523 !important;
         font-size: 22px !important;
         flex-shrink: 0;
       }
-      
+
       &.notification-item {
         .notification-content {
           display: flex;
@@ -820,7 +567,7 @@
           gap: 4px;
           flex: 1;
           min-width: 0;
-          
+
           .notification-title {
             color: #3B221B !important;
             font-weight: 600;
@@ -829,7 +576,7 @@
             overflow: hidden;
             text-overflow: ellipsis;
           }
-          
+
           .notification-date {
             font-size: 13px;
             color: rgba(59, 34, 27, 0.6) !important;
@@ -838,7 +585,7 @@
         }
       }
     }
-    
+
     // Estados de loading e empty
     .notifications-loading,
     .notifications-empty {
@@ -848,7 +595,7 @@
       justify-content: center;
       padding: 40px 24px;
       text-align: center;
-      
+
       mat-icon {
         font-size: 48px;
         width: 48px;
@@ -856,14 +603,14 @@
         color: rgba(194, 37, 35, 0.3) !important;
         margin-bottom: 16px;
       }
-      
+
       span {
         font-size: 16px;
         font-weight: 600;
         color: #3B221B;
         margin-bottom: 8px;
       }
-      
+
       p {
         font-size: 14px;
         color: rgba(59, 34, 27, 0.6);
@@ -871,22 +618,22 @@
       }
     }
   }
-  
+
   // Estilo para botão de fechar no mobile
   .close-menu-mobile {
     background: rgba(194, 37, 35, 0.1) !important;
     border-bottom: 2px solid rgba(194, 37, 35, 0.2) !important;
     margin-bottom: 8px !important;
-    
+
     &:hover {
       background: rgba(194, 37, 35, 0.2) !important;
     }
-    
+
     mat-icon {
       color: #c22523 !important;
     }
   }
-  
+
   // Ajuste para mobile - menus aparecem abaixo dos ícones
   @media (max-width: 768px) {
     // Menu do usuário - posiciona abaixo do avatar
@@ -901,7 +648,7 @@
         margin-top: 8px !important;
       }
     }
-    
+
     // Menu de notificações - posiciona abaixo do sino
     .notifications-menu {
       .cdk-overlay-pane {
@@ -925,7 +672,7 @@
       &[style*="transform"] {
         transform: translateY(0) !important;
       }
-      
+
       // Força posicionamento relativo ao botão trigger para menus
       &.mat-mdc-menu-panel {
         position: fixed !important;
@@ -937,17 +684,17 @@
       }
     }
   }
-  
+
   // Estilo global para botão de fechar menu no mobile
   ::ng-deep .close-menu-mobile {
     background: rgba(194, 37, 35, 0.1) !important;
     border-bottom: 2px solid rgba(194, 37, 35, 0.2) !important;
     margin-bottom: 8px !important;
-    
+
     &:hover {
       background: rgba(194, 37, 35, 0.2) !important;
     }
-    
+
     mat-icon {
       color: #c22523 !important;
     }
@@ -957,25 +704,25 @@
 ::ng-deep .mobile-drawer {
   // Z-index alto para ficar acima do toolbar (que tem z-index 1000-1001)
   z-index: 1002 !important;
-  
+
   .ant-drawer-body {
     padding: 0;
     background: linear-gradient(135deg, #e5e2dc 0%, #ddd9d3 100%);
     backdrop-filter: blur(20px);
   }
-  
+
   .ant-drawer-content {
     background: linear-gradient(135deg, #e5e2dc 0%, #ddd9d3 100%);
     backdrop-filter: blur(20px);
     border-left: 4px solid #F6BD38;
   }
-  
+
   .ant-drawer-mask {
     background: rgba(194, 37, 35, 0.2);
     backdrop-filter: blur(8px);
     z-index: 1001 !important;
   }
-  
+
   .ant-drawer-content-wrapper {
     z-index: 1002 !important;
     position: fixed !important;
@@ -983,7 +730,7 @@
     left: 0 !important;
     height: 100vh !important;
   }
-  
+
   // Garante que o drawer ocupe 75% no mobile
   @media (max-width: 768px) {
     .ant-drawer-content-wrapper {
@@ -991,7 +738,7 @@
       max-width: 75vw !important;
     }
   }
-  
+
   // Desktop mantém 340px
   @media (min-width: 769px) {
     .ant-drawer-content-wrapper {
@@ -1005,7 +752,7 @@
   display: flex;
   flex-direction: column;
   padding: 32px 24px;
-  
+
   .sidebar-header {
     display: flex;
     justify-content: center;
@@ -1013,19 +760,19 @@
     margin-bottom: 32px;
     padding-bottom: 24px;
     border-bottom: 2px solid rgba(246, 189, 56, 0.3);
-    
+
     .logo {
       width: 52px;
       height: auto;
       filter: drop-shadow(0 6px 20px rgba(246, 189, 56, 0.5));
     }
   }
-  
+
   .menu {
     display: flex;
     flex-direction: column;
     gap: 12px;
-    
+
     button {
       display: flex;
       align-items: center;
@@ -1042,7 +789,7 @@
       transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       min-height: 64px; // Altura aumentada para todos os botões
       box-sizing: border-box;
-      
+
       mat-icon {
         font-size: 24px; // Ícone maior para todos
         width: 24px;
@@ -1054,7 +801,7 @@
         justify-content: center;
         flex-shrink: 0; // Evita que o ícone encolha
       }
-      
+
       span {
         white-space: nowrap; // Evita quebra de linha
         overflow: hidden;
@@ -1062,7 +809,7 @@
         flex: 1; // Permite que o texto ocupe o espaço disponível
         min-width: 0; // Permite que o texto encolha se necessário
       }
-      
+
       // Botão de configurações específico - ícone mais visível
       &.config-button {
         mat-icon {
@@ -1070,14 +817,14 @@
           filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1)); // Sombra sutil para melhor visibilidade
         }
       }
-      
+
       &:hover, &.active {
         background: linear-gradient(135deg, #F6BD38 0%, #f4b942 100%);
         color: #2c1810;
         border-color: #F6BD38;
         transform: translateX(8px);
         box-shadow: 0 8px 24px rgba(246, 189, 56, 0.4);
-        
+
         mat-icon {
           color: #2c1810;
           transform: scale(1.15);
@@ -1100,7 +847,7 @@
     height: auto;
     min-height: 72px;
     flex-wrap: wrap;
-    
+
     .expanded-search-container {
       order: 3;
       width: 100%;
@@ -1111,16 +858,16 @@
       align-items: stretch;
       gap: 10px;
       padding: 12px;
-      
+
       .city-chip {
         width: 100%;
         justify-content: space-between;
       }
-      
+
       .search-divider {
         display: none;
       }
-      
+
       .search-input {
         width: 100%;
         padding: 12px;
@@ -1128,7 +875,7 @@
         border-radius: 10px;
         border: 2px solid #e9ecef;
       }
-      
+
       .filter-button,
       .close-search-button {
         position: absolute;
@@ -1136,11 +883,11 @@
         width: 36px;
         height: 36px;
       }
-      
+
       .filter-button {
         right: 52px;
       }
-      
+
       .close-search-button {
         right: 12px;
       }
@@ -1150,19 +897,19 @@
         left: 12px;
       }
     }
-    
+
     .search-icon-btn {
       margin-left: auto;
     }
   }
-  
+
   .content .router-container {
     // Padding padrão para TODAS as páginas (exceto home)
     // Como o header é sticky (não fixed) em outras páginas, não precisa de padding-top extra
     // Mas mantemos um pequeno padding-top para espaçamento visual
-    padding: 20px 20px 80px 20px !important; 
+    padding: 20px 20px 80px 20px !important;
     margin-top: 0;
-    
+
     // Padding específico APENAS para a Home (para o banner colar no header)
     // Na home, o header é fixed no mobile, então o banner precisa colar
     &.home-padding {
@@ -1287,14 +1034,14 @@
     justify-content: flex-start;
     padding: 0 20px;
     border-radius: 16px;
-    
+
     span {
       display: block;
       opacity: 1;
       margin-left: 16px;
       animation: fadeInLeft 0.3s ease;
     }
-    
+
     mat-icon {
       margin-right: 0;
     }

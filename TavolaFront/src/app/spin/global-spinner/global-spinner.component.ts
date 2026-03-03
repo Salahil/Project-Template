@@ -15,7 +15,7 @@ export class GlobalSpinnerComponent {
   @Input() darkTheme = false
 
   constructor(private spinnerService: GlobalSpinnerService) {
-    this.spinnerService.visibilidade$.subscribe((v) => (this.visivel = v))
+    this.spinnerService.visibilidade$.subscribe((v: boolean) => (this.visivel = v))
   }
 
   get spinnerClasses() {

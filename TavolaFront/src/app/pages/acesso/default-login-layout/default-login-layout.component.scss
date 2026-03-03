@@ -1,240 +1,67 @@
-@import "../../../../styles/variables.scss";
+@use "../../../../styles/variables.scss" as vars;
 
-main {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
+/* Centered layout: full-page subtle visual background + centered card */
+.login-layout {
+  position: relative;
   min-height: 100vh;
-  background-color: #3B221B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-page);
   overflow: hidden;
-
-  &::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  &::-webkit-scrollbar-track {
-    background: #2a1812;
-    border-radius: 4px;
-  }
-  
-  &::-webkit-scrollbar-thumb {
-    background: #4e2e22;
-    border-radius: 4px;
-    &:hover {
-      background: #D1495B;
-    }
-  }
-
-  section {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .main-section {
-    flex: 1;
-    background: url('/assets/png/logo-tavola-inicial.png') center center/cover no-repeat;
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    overflow: hidden;
-
-    img {
-      width: 80%;
-      height: auto;
-      max-width: 400px;
-      max-height: 80vh;
-      object-fit: contain;
-      object-position: center;
-      margin: 0 auto;
-      display: block;
-    }
-  }
-
-  .form-section {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    padding: 32px;
-    background-color: #3B221B;
-    position: relative;
-    overflow-y: auto;
-    max-height: 100vh;
-
-    img {
-      align-self: center;
-      width: 60px;
-      height: auto;
-      margin-bottom: 24px;
-    }
-
-    h2 {
-      color: #F6BD38;
-      font-size: 24px;
-      font-weight: 600;
-      text-align: center;
-      margin-bottom: 32px;
-    }
-
-    .form-content {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-start;
-      padding: 0 16px;
-      margin-bottom: 24px;
-      overflow: visible;
-    }
-
-    .action-buttons {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin-top: 24px;
-      padding: 0 16px;
-
-      .primary-btn {
-        width: 100%;
-        height: 50px;
-        background: linear-gradient(135deg, #F6BD38 0%, #FDD835 100%);
-        border: none;
-        color: #4A3429;
-        font-weight: 600;
-        font-size: 1rem;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-
-        &:hover:not(:disabled) {
-          transform: translateY(-2px);
-          box-shadow: 0 8px 25px rgba(246, 189, 56, 0.4);
-        }
-
-        &:disabled {
-          opacity: 0.6;
-          cursor: not-allowed;
-          transform: none;
-        }
-      }
-
-      .secondary-btn {
-        width: 100%;
-        height: 45px;
-        border: 1px solid rgba(246, 189, 56, 0.3);
-        color: #F6BD38;
-        background: transparent;
-        font-weight: 500;
-        border-radius: 8px;
-        transition: all 0.3s ease;
-
-        &:hover {
-          background: rgba(246, 189, 56, 0.1);
-          border-color: #F6BD38;
-        }
-      }
-    }
-
-    .btn-wrapper {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      padding: 16px;
-      background-color: #3B221B;
-      position: sticky;
-      bottom: 0;
-
-      button.btn-primary {
-        width: 100%;
-        padding: 12px;
-        border-radius: 8px;
-        font-size: 16px;
-        font-weight: 500;
-        border: none;
-        cursor: pointer;
-        background-color: #F6BD38;
-        color: #3B221B;
-        transition: all 0.3s ease;
-
-        &:hover {
-          background-color: darken(#F6BD38, 5%);
-        }
-
-        &:disabled {
-          background-color: rgba(246, 189, 56, 0.5);
-          cursor: not-allowed;
-        }
-      }
-
-      .navigation-link {
-        color: #F6BD38;
-        text-decoration: none;
-        font-size: 14px;
-        cursor: pointer;
-        transition: all 0.3s ease;
-
-        &:hover {
-          color: lighten(#F6BD38, 10%);
-          text-decoration: underline;
-        }
-      }
-    }
-  }
 }
+
+.side-visual {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(1200px 400px at 10% 20%, rgba(246,189,56,0.06), transparent 20%),
+              radial-gradient(800px 300px at 90% 80%, rgba(10,102,194,0.04), transparent 20%),
+              linear-gradient(180deg, var(--bg-page), rgba(246,189,56,0.06));
+  background-size: cover;
+  background-position: center;
+  pointer-events: none;
+}
+
+.form-area {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.center-wrap { width: 100%; display:flex; flex-direction:column; align-items:center; gap:14px; }
+
+.theme-toggle { position:absolute; top:18px; left:50%; transform:translateX(-50%); display:flex; gap:8px; align-items:center; z-index:3;
+  background: rgba(255,255,255,0.85); padding:6px 12px; border-radius:22px; box-shadow: 0 8px 24px rgba(0,0,0,0.09); align-items:center; }
+.theme-label { font-size:13px; color:var(--text-muted); margin-left:6px }
+
+/* Dark-mode variant for toggle pill */
+.theme-dark .theme-toggle { background: rgba(0,0,0,0.45); }
+
+/* Simple switch */
+.switch { position: relative; display:inline-block; width:44px; height:24px; }
+.switch input { opacity:0; width:0; height:0; }
+.slider { position:absolute; cursor:pointer; inset:0; background:var(--bg-surface); border-radius:24px; box-shadow: inset 0 0 0 1px var(--border); }
+.slider:before { content:''; position:absolute; height:18px; width:18px; left:3px; top:3px; background:var(--bg-page); border-radius:50%; transition:0.2s; }
+.switch input:checked + .slider { background: var(--primary); }
+.switch input:checked + .slider:before { transform: translateX(20px); }
+
+.content { width:100%; display:flex; align-items:center; justify-content:center; padding:6px 0; }
+
+.action-buttons { width: 100%; display:flex; gap:8px; justify-content:center; margin-top:12px }
+.primary-btn { min-width: 140px }
+.secondary-btn { min-width: 120px }
 
 @media (max-width: 1024px) {
-  main {
-    flex-direction: column;
-    .main-section {
-      display: none;
-    }
-    .form-section {
-      flex: 1;
-      width: 100%;
-      max-width: none;
-      padding: 24px 16px;
-    }
-  }
+  .theme-toggle { position: absolute; top: 12px; left: 16px; transform: none; }
+  .side-visual { display: none; }
+  .form-area { padding: 20px; max-width: 600px; }
 }
 
-// Estilização de mensagens de erro
-mat-error {
-  color: #D1495B !important;
-  font-size: 0.8rem;
-  font-weight: 500;
-  opacity: 1 !important;
-}
-// login.component.scss e signup.component.scss
+mat-error { color: var(--danger) !important; }
 
-::ng-deep .mat-mdc-form-field {
-  width: 100%;
-  .mat-mdc-input-element,
-  .mat-mdc-select-value-text,
-  .mdc-floating-label,
-  .mat-mdc-select-arrow {
-      color: white !important;
-  }
-  .mat-mdc-input-element:hover,
-  .mat-mdc-input-element:focus {
-      color: white !important;
-  }
-
-  /* NOVO: Adicione este trecho para mudar a cor do ícone de visibilidade
-  */
-  .mat-mdc-icon-button mat-icon {
-      color: white !important;
-  }
-  /* FIM DA NOVIDADE */
-
-  .mdc-text-field--outlined {
-      --mdc-outlined-text-field-label-text-color: rgba(255, 255, 255, 0.6);
-      --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.3);
-      --mdc-outlined-text-field-hover-outline-color: #F6BD38;
-      --mdc-outlined-text-field-focus-outline-color: #F6BD38;
-  }
-  .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
-      color: #F6BD38 !important;
-  }
-  textarea {
-      min-height: 100px;
-  }
-}
+::ng-deep .mat-mdc-form-field { width: 100%; }

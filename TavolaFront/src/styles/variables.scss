@@ -1,42 +1,74 @@
-$primary-color: #F6BD38; // Amarelo
-$accent-color: #DA4A24; // Laranja
-$text-color: #3B221B; // Marrom escuro (substituindo o preto)
-$light-gray: #f5f5f5;
-$border-radius: 16px; // Bordas mais arredondadas
-$sidebar-width: 380px;
-$text-color-lighter: rgba(59, 34, 27, 0.5);
-$text-color-light: rgba(59, 34, 27, 0.7);
-$header-height: 70px;
+// Keep legacy SASS variables for compatibility, but expose CSS variables for runtime theme toggling.
+$primary-color: #F6BD38 !default; // Amarelo
+$accent-color: #DA4A24 !default; // Laranja
+$text-color: #3B221B !default; // Marrom escuro
+$light-gray: #f5f5f5 !default;
+$border-radius: 16px !default;
+$sidebar-width: 380px !default;
+$header-height: 70px !default;
 
-// Paleta de Cores Principal Tavola
-$tavola-amarelo-primario: #F6BD38;          // Amarelo principal para ações, destaques
-$tavola-vermelho-acento: #DA4A24;          // Laranja/Vermelho para acentos secundários, alertas
-$tavola-marrom-escuro: #3B221B;            // Cor de texto principal sobre fundos claros, e para fundos escuros
-$tavola-marrom-medio: #4e2e22;             // Ex: cor de scrollbar
-$tavola-marrom-claro-fundo-imagem: #5C7028; // Ex: fundo placeholder de imagem
+// Feedback
+$cor-erro: #D1495B !default;
+$cor-sucesso: #4CAF50 !default;
 
-// Cores de Texto
-$texto-principal-sobre-claro: $tavola-marrom-escuro;
-$texto-principal-sobre-escuro: #FFFFFF;
-$texto-secundario-sobre-claro: rgba($tavola-marrom-escuro, 0.7);
-$texto-placeholder-sobre-claro: rgba($tavola-marrom-escuro, 0.5); // <- Esta seria sua $text-color-lighter
+// Output CSS variables and a minimal theme system
+// These will be used by components: add the class `theme-dark` on body to switch to dark mode.
+:root {
+	--bg-page: #ebe8e2;
+	--bg-surface: #ffffff;
+	--text-primary: #3B221B;
+	--text-muted: rgba(59,34,27,0.6);
+	--primary: #F6BD38;
+	--accent: #DA4A24;
+	--success: #4CAF50;
+	--danger: #D1495B;
+	--border: rgba(59,34,27,0.12);
+	--radius: 8px;
+	--header-height: 70px;
+	--sidebar-width: 280px;
+	--glass: rgba(255,255,255,0.6);
+}
 
-// Cores de Fundo
-$fundo-pagina-geral: #ebe8e2;                 // Cinza claro para fundo de páginas
-$fundo-container-claro: #FFFFFF;             // Branco para cards, modais sobre fundo cinza
-$fundo-container-dialog-especial: #FFF8EE;   // Creme para dialogs específicos (como o .dialog-cardapio)
-$fundo-sidebar-escuro: $tavola-marrom-escuro;
-$fundo-toolbar-principal: $tavola-vermelho-acento; // Barra superior do layout principal
+/* Dark theme overrides */
+.theme-dark {
+	--bg-page: #0f1720;
+	--bg-surface: #0b1220;
+	--text-primary: #e6eef8;
+	--text-muted: rgba(230,238,248,0.6);
+	--primary: #6bd26b;
+	--accent: #8bd0ff;
+	--success: #2ecc71;
+	--danger: #ff6b6b;
+	--border: rgba(255,255,255,0.06);
+	--glass: rgba(255,255,255,0.04);
+}
 
-// Cores de Borda
-$borda-cor-base: rgba($tavola-marrom-escuro, 0.2); // Borda sutil para inputs, etc.
-$borda-cor-divisor: rgba($tavola-marrom-escuro, 0.1);
+// Small responsive helpers as mixins
+@mixin respond($break) {
+	@if $break == sm {
+		@media (max-width: 480px) { @content; }
+	} @else if $break == md {
+		@media (max-width: 768px) { @content; }
+	} @else if $break == lg {
+		@media (max-width: 1024px) { @content; }
+	}
+}
 
-// Cores de Feedback
-$cor-erro: #D1495B;
-$cor-sucesso: #4CAF50; // Mantendo um verde padrão para sucesso
-$cor-aviso: #faad14;   // Mantendo um amarelo/laranja padrão para aviso
+// Minimal reset utilities used across components
+html, body {
+	height: 100%;
+}
+body {
+	background-color: var(--bg-page);
+	color: var(--text-primary);
+	font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
 
-// Outras Constantes de UI
-$border-radius-base: 8px;
-$border-radius-forte: 16px;
+// Simple container utility
+.container {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 0 16px;
+}

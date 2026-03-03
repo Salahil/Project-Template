@@ -1,403 +1,68 @@
-@use '../variables' as *; // Ajuste o caminho se necessário
-@use 'sass:color';
+@use '../variables' as *; // keep reference for SASS variables if used
 
-// =======================================
-// ESTILOS COMPARTILHADOS DO MAPA DE MESAS
-// =======================================
+/* Minimal shared styles for 'mesas' (tables) area. Uses CSS variables from variables.scss */
 
-
-// Estilos para a área do navegador de data
 .date-navigator-area {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background-color: white;
-    border-radius: $border-radius;
-    padding: 8px 16px;
-    margin-bottom: 16px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
-  
-    .date-navigator {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-  
-      .current-date {
-        font-size: 16px;
-        font-weight: 500;
-        color: $text-color;
-        margin: 0 12px;
-      }
-  
-      button {
-        color: $text-color;
-  
-        &:hover {
-          color: $primary-color;
-        }
-      }
-      
-      .calendario-btn {
-        color: $primary-color;
-        
-        &:hover {
-          background-color: rgba(246, 189, 56, 0.1);
-        }
-      }
-    }
-  }
-  
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
 
 .mesas-container {
-    background-color: white;
-    border-radius: $border-radius;
-    padding: 16px;
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-    
-    // O cabeçalho que contém as abas e o botão "+ Nova Área"
-    .areas-header {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #e8e8e8;
-      margin-bottom: 16px;
-      gap: 16px;
-    }
-
-    // Wrapper principal para o navegador de ambientes
-    .ambientes-nav-wrapper {
-      flex: 1; // Ocupa o espaço disponível
-      display: flex;
-      align-items: center;
-      position: relative;
-      overflow: hidden; 
-      min-width: 0;
-      max-width: 360px; // <<< ADICIONADO (limite máximo de 360px)
-    }
-
-    // O container que realmente rola - responsivo
-    .ambientes-scroll-container {
-     max-width: 170px; 
-      overflow-x: auto;
-      scroll-behavior: smooth;
-      // Esconde a barra de rolagem
-      scrollbar-width: none; // Firefox
-      -webkit-overflow-scrolling: touch; // Scroll suave no iOS
-      
-      &::-webkit-scrollbar {
-        display: none; // Chrome, Safari, and Opera
-      }
-    }
-
-    // A lista interna que segura os botões
-    .ambientes-list {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 0 4px; // Pequeno padding para não cortar a sombra do foco
-    }
-    
-    // O wrapper de cada botão/aba de ambiente
-    .ambiente-btn-wrapper {
-      display: inline-flex;
-      align-items: center;
-      border-bottom: 3px solid transparent;
-      transition: all 0.2s ease-in-out;
-      padding: 8px 0;
-      
-      // Estilo da "aba" ativa
-      &.active {
-        border-bottom-color: $primary-color;
-        .ambiente-btn span {
-          color: $primary-color;
-        }
-      }
-    }
-
-    // O botão customizado que parece uma aba
-    .ambiente-btn {
-      background: none;
-      border: none;
-      cursor: pointer;
-      padding: 8px 16px;
-      font-size: 14px;
-      font-weight: 500;
-      font-family: inherit;
-      color: $text-color;
-      border-radius: 6px;
-      transition: all 0.2s ease-in-out;
-      white-space: nowrap; // Impede que o nome do ambiente quebre a linha
-
-      &:hover {
-        background-color: rgba(0, 0, 0, 0.04);
-      }
-    }
-
-    // As setas de navegação
-    .nav-arrow {
-      background-color: white;
-      box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-      z-index: 2;
-      transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-      border-radius: 50%;
-      
-      // Animação de hover suave
-      &:hover {
-        background-color: $primary-color;
-        color: white;
-        transform: scale(1.1);
-        box-shadow: 0 4px 12px rgba(246, 189, 56, 0.4);
-        
-        mat-icon {
-          color: white;
-        }
-      }
-      
-      // Animação de clique
-      &:active {
-        transform: scale(0.95);
-      }
-      
-      // Efeito de entrada/saída suave
-      opacity: 1;
-      animation: fadeInSlide 0.3s ease-out;
-      
-      &.left-arrow {
-        margin-right: 8px;
-        animation: slideInLeft 0.3s ease-out;
-      }
-      &.right-arrow {
-        margin-left: 8px;
-        animation: slideInRight 0.3s ease-out;
-      }
-      
-      mat-icon {
-        transition: all 0.3s ease;
-        color: $text-color;
-      }
-    }
-
-    // O container do botão "+ Nova Área" (O SEGUNDO FLEX ITEM)
-    .add-area-container {
-      flex-shrink: 0; // A REGRA MÁGICA #2: Impede que este item seja "empurrado" ou encolhido.
-    }
-
-  }// Mixin para o Container do Mapa de Mesas
-@mixin mapa-mesas-container {
-  background-color: white; // Fundo padrão, pode ser sobrescrito
-  border-radius: $border-radius;
-  padding: 16px;
-  flex: 1;
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); // Sombra suave
+  gap: 12px;
+}
 
-  // O cabeçalho que contém as abas/botões de ambiente
-  .areas-header {
-    display: flex;
-    align-items: center;
-    border-bottom: 1px solid #e8e8e8;
-    margin-bottom: 16px;
-    gap: 16px;
-  }
+.ambientes-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 4px;
+}
 
-  // Wrapper principal para o navegador de ambientes
-  .ambientes-nav-wrapper {
-    flex: 1; // Ocupa o espaço disponível
-    display: flex;
-    align-items: center;
-    position: relative;
-    overflow: hidden;
-    min-width: 0;
-    // Removido max-width: 360px; para maior flexibilidade
-  }
+.ambiente-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
 
-  // O container que realmente rola
-  .ambientes-scroll-container {
-    // max-width removido daqui também
-    overflow-x: auto;
-    scroll-behavior: smooth;
-    scrollbar-width: none; // Firefox
-    -webkit-overflow-scrolling: touch; // Scroll suave no iOS
+.mesas-grid-css {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
 
-    &::-webkit-scrollbar {
-      display: none; // Chrome, Safari, and Opera
-    }
-  }
+.mesa {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
 
-  // A lista interna que segura os botões
-  .ambientes-list {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 0 4px; // Pequeno padding para não cortar a sombra do foco
-  }
+@media (max-width: 768px) {
+  .mesas-grid-css { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+}
 
-  // O wrapper de cada botão/aba de ambiente
-  .ambiente-btn-wrapper {
-    display: inline-flex; // Garante que fiquem em linha
-    flex-shrink: 0; // Impede que encolham
-    align-items: center;
-    border-bottom: 3px solid transparent;
-    transition: all 0.2s ease-in-out;
-    padding-bottom: 8px; // Espaço para a borda inferior aparecer corretamente
-    margin-bottom: -1px; // Compensa a borda do .areas-header
-
-    // Estilo da "aba" ativa
-    &.active {
-      border-bottom-color: $primary-color;
-      .ambiente-btn span {
-        color: $primary-color;
-        font-weight: 600; // Destaca o ativo
-      }
-    }
-  }
-
-  // O botão customizado que parece uma aba
-  .ambiente-btn {
-    background: none;
-    border: none;
-    cursor: pointer;
-    padding: 8px 16px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: inherit;
-    color: $text-color-light; // Cor mais suave para inativos
-    border-radius: 6px 6px 0 0; // Cantos arredondados no topo
-    transition: all 0.2s ease-in-out;
-    white-space: nowrap; // Impede que o nome do ambiente quebre a linha
-
-    &:hover span {
-       color: $primary-color; // Hover sempre fica amarelo
-    }
-  }
-
-  // As setas de navegação
-  .nav-arrow {
-    background-color: white;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.15);
-    z-index: 2;
-    transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
-    border-radius: 50%;
-    flex-shrink: 0; // Impede que encolham
-
-    &:hover {
-      background-color: $primary-color;
-      color: white;
-      transform: scale(1.1);
-      box-shadow: 0 4px 12px rgba(246, 189, 56, 0.4);
-
-      mat-icon {
-        color: white;
-      }
-    }
-
-    &:active {
-      transform: scale(0.95);
-    }
-
-    mat-icon {
-      transition: all 0.3s ease;
-      color: $text-color;
-    }
-     // Animação de entrada/saída pode ser adicionada aqui se desejado
-  }
-
-  // Container do botão "+ Nova Área" (estilos base, podem ser sobrescritos)
-  .add-area-container {
-    flex-shrink: 0; // Não encolhe
-
-    .add-area-btn {
-      border-style: dashed;
-      border-radius: 8px;
-      color: $text-color !important;
-      border-color: rgba(59, 34, 27, 0.4);
-      background-color: white !important;
-      height: 36px;
-      line-height: 34px;
-      padding: 0 12px; // Ajuste para melhor aparência
-
-      &:hover {
-        color: $primary-color !important;
-        border-color: $primary-color !important;
-        background-color: rgba(246, 189, 56, 0.05) !important;
-      }
-    }
-     // Estilos para o input (se for usado em ambos)
-     .add-area-input {
-      // Estilos base do input... (copiar de reservas.component.scss se precisar)
-      // Atenção com ::ng-deep aqui, pode precisar ficar no componente específico
-      width: 100%;
-      max-width: 300px;
-     }
-  }
-
-  // Container para o grid de mesas
-  .mesas-grid-container {
-    padding: 16px 0 0 0; // Espaçamento acima do grid
-    overflow-y: auto; // Scroll apenas no grid
-    flex: 1; // Ocupa o espaço restante
-  }
-
-  // Grid de Mesas (CSS Grid)
-  .mesas-grid-css {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-    gap: 12px;
-    justify-items: center; // Centraliza as mesas no grid
-  }
-
-  // Wrapper de cada mesa no grid
-  .mesa-wrapper-css {
-    display: flex; // Para alinhar conteúdo interno se necessário
-    width: 100%;
-  }
-
-  // Estilos da MESA individual
-  .mesa {
-    width: 100%;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    gap: 8px; // Espaço entre visual e etiqueta
-
-    .mesa-visual {
-      width: 90px; // Largura fixa para evitar esticamento
-      max-width: 90px;
-      height: 75px;
-      background-color: #f0f0f0;
-      border: 2px solid #d0d0d0;
-      border-radius: 8px;
-      display: flex;
-      flex-direction: column; // Para empilhar ícone e número
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      transition: all 0.2s ease;
-      position: relative; // Para overlays
-      overflow: hidden; // Para conter elementos internos
-
-      .mesa-capacidade {
-        display: flex;
-        align-items: center;
-        gap: 4px;
-        font-size: 13px;
-        color: rgba(59, 34, 27, 0.7);
-        font-weight: 600;
-
-        .person-icon {
-          font-size: 16px;
-          width: 16px;
-          height: 16px;
-          line-height: 16px;
-          color: rgba(59, 34, 27, 0.7);
-        }
+@media (max-width: 480px) {
+  .ambientes-list .ambiente-btn { padding: 6px 10px; font-size: 13px; }
+  .mesas-grid-css { gap: 8px; }
+}
       }
 
       &.mesa-circular {
