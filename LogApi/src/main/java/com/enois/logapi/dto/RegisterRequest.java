@@ -2,16 +2,27 @@ package com.enois.logapi.dto;
 
 import java.util.Map;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
+
 public class RegisterRequest {
-    private String nome;
+	
+	@NotBlank(message = "O nome é obrigatório")
+	private String nome;
+	
+	@Email(message = "E-mail inválido")
+    @NotBlank(message = "O e-mail é obrigatório")
     private String email;
-    private String senha;
+    
+	@Size(min = 6, message = "A senha deve ter no mínimo 6 caracteres")
+	private String senha;
     private String telefone;
     
-    // O campo mágico para dados extras (ex: {"cargo": "gerente", "empresa": "Tavola"})
     private Map<String, Object> dadosExtras;
 
-    // Getters e Setters
+    // -- Getters e Setters --
+    
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public String getEmail() { return email; }

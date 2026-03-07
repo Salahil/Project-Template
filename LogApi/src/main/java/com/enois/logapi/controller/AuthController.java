@@ -5,9 +5,15 @@ import com.enois.logapi.dto.LoginRequest;
 import com.enois.logapi.dto.LoginResponse;
 import com.enois.logapi.dto.RegisterRequest;
 import com.enois.logapi.service.AuthService;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.Duration;
 
 @RestController
 @RequestMapping("/auth")
@@ -17,17 +23,41 @@ public class AuthController {
     private AuthService service;
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<String>> register(@RequestBody RegisterRequest request) {
-        // Se o e-mail já existir, o Service lança RuntimeException e o Handler Global trata!
-        var usuarioCriado = service.registrar(request);
-        return ResponseEntity.ok(new ApiResponse<>("Usuário criado com sucesso!", "Registro OK"));
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
+        service.registrar(request);
+        return ResponseEntity.ok(new ApiResponse<>("Sucesso", "Usuário criado com sucesso"));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request) {
-        // Se a senha estiver errada, o AuthenticationManager lança BadCredentialsException
-        // e o Handler Global devolve "Credenciais inválidas" automaticamente.
-        var response = service.login(request);
-        return ResponseEntity.ok(new ApiResponse<>(response, "Login realizado com sucesso"));
+    public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request, HttpServletResponse response) {
+        var loginResponse = service.login(request);
+        String token = loginResponse.getToken(); 
+
+        ResponseCookie cookie = ResponseCookie.from("logapi-token", token)
+                .httpOnly(true)      
+                .secure(true)        
+                .path("/")           
+                .maxAge(Duration.ofDays(1)) 
+                .sameSite("Lax")    
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new ApiResponse<>(loginResponse, "Login realizado com sucesso"));
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<?> logout(HttpServletResponse response) {
+        ResponseCookie cookie = ResponseCookie.from("logapi-token", "")
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new ApiResponse<>("Sucesso", "Logout realizado"));
+    }
+
 }
