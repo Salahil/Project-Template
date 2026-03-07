@@ -1,0 +1,10 @@
+0.Petiscos Diversos
+1.Espetos Veganos
+2.Bife a cavalo
+3.Entradas Quentes
+4.Bufê Japonês
+5.Frango Defumado
+6.Pizza de Cogumelos
+7.Ratatouille
+8.Feijoada
+9.Guacamole

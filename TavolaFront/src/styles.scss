@@ -1,0 +1,285 @@
+@use '@angular/material' as mat;
+@use 'sass:color';
+@use 'ngx-toastr/toastr';
+@use 'styles/variables' as *;
+@use 'styles/theme';
+@use 'styles/shared/pages-shared' as shared;
+@include mat.elevation-classes();
+@include shared.pages-shared;
+@include mat.app-background();
+@import 'ng-zorro-antd/ng-zorro-antd.min.css'; // Certifique-se que está importado
+
+// Compatibilidade NG-Zorro e MDC (tema principal vem de _theme.scss)
+:root {
+  --ant-primary-color: var(--primary);
+  --ant-link-color: var(--accent);
+  --ant-text-color: var(--text-primary);
+  --ant-heading-color: var(--text-primary);
+  --ant-component-background: var(--bg-surface);
+  --ant-body-background: var(--bg-page);
+  --ant-border-color-base: var(--border);
+  --ant-border-radius-base: var(--radius);
+  --ant-input-bg: var(--input-bg);
+  --ant-input-border-color: var(--input-border);
+  --ant-input-hover-border-color: var(--primary);
+  --ant-btn-primary-bg: var(--primary);
+  --ant-btn-default-bg: var(--bg-surface);
+  --ant-btn-default-color: var(--text-primary);
+  --ant-btn-default-border: var(--border);
+  --ant-error-color: var(--danger);
+  --ant-modal-content-bg: var(--bg-surface);
+  --ant-modal-header-bg: var(--bg-surface);
+  --ant-picker-bg: var(--bg-surface);
+  --ant-select-bg: var(--bg-surface);
+  --ant-card-background: var(--bg-surface);
+  --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--primary);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
+
+
+
+// Define as paletas de cores
+$primary-palette: mat.m2-define-palette(mat.$m2-indigo-palette);
+$accent-palette: mat.m2-define-palette(mat.$m2-pink-palette, A200, A100, A400);
+$warn-palette: mat.m2-define-palette(mat.$m2-red-palette);
+
+// Define o tema escuro
+$dark-theme: mat.m2-define-dark-theme((
+  color: (
+    primary: $primary-palette,
+    accent: $accent-palette,
+    warn: $warn-palette,
+  )
+));
+
+@include mat.all-component-themes($dark-theme);
+
+::ng-deep .ant-tooltip-inner {
+  background-color: var(--bg-surface-elevated, #1a1f26) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius) !important;
+  font-size: 12px !important;
+  padding: 6px 8px !important;
+}
+::ng-deep .ant-tooltip-arrow-content { background-color: var(--bg-surface-elevated, #1a1f26) !important; }
+
+.mat-mdc-select-panel, .mat-mdc-autocomplete-panel {
+  background-color: var(--bg-surface) !important;
+  .mat-mdc-option {
+    color: var(--text-primary) !important;
+    &.mdc-list-item--selected, &:hover { background-color: rgba(246, 189, 56, 0.15) !important; }
+    .mdc-list-item__primary-text { color: var(--text-primary) !important; }
+  }
+}
+
+// Estilo dos elementos no hover
+.mat-mdc-slide-toggle {
+  .mdc-switch {
+    &:hover {
+      .mdc-switch__track {
+        background-color: color.adjust(#F6BD38, $lightness: 10%) !important;
+      }
+      .mdc-switch__handle {
+        background-color: color.adjust(#DA4A24, $lightness: 10%) !important;
+      }
+    }
+  }
+}
+
+.mat-mdc-card {
+  &:hover {
+    background-color: rgba(246, 189, 56, 0.05) !important;
+    transition: background-color 0.3s ease;
+  }
+}
+
+.mat-mdc-button, .mat-mdc-raised-button, .mat-mdc-outlined-button {
+  &:hover {
+    opacity: 0.9;
+    background-color: rgba(246, 189, 56, 0.1) !important;
+  }
+}
+
+.mat-mdc-menu-panel:not(.notification-dropdown) {
+  background-color: var(--bg-surface) !important;
+  .mat-mdc-menu-item {
+    color: var(--text-primary) !important;
+    .mat-icon { color: var(--accent); }
+    &:hover { background-color: rgba(246, 189, 56, 0.1); }
+  }
+}
+
+.mat-mdc-form-field {
+  .mat-mdc-input-element, .mat-mdc-select-value-text, .mdc-floating-label, .mat-mdc-select-arrow { color: var(--text-primary); }
+  .mdc-text-field--filled { background-color: transparent; }
+  &:hover .mdc-floating-label, &.mat-focused .mdc-floating-label { color: var(--primary) !important; }
+  .mat-mdc-form-field-hint, .mat-mdc-form-field-error { color: var(--text-muted) !important; }
+  .mdc-text-field--outlined {
+    --mdc-outlined-text-field-hover-outline-color: var(--primary);
+    --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  }
+}
+
+.mat-mdc-chip.mat-mdc-standard-chip {
+  background-color: var(--primary) !important;
+  .mdc-evolution-chip__text-label, .mat-mdc-chip-remove { color: var(--text-primary) !important; }
+  &:hover { background-color: var(--primary-hover) !important; }
+}
+
+// Força cor marrom nos inputs, labels, placeholder e hover globalmente
+.mat-mdc-input-element,
+.mat-mdc-select-value-text,
+.mdc-floating-label,
+.mat-mdc-form-field-label,
+.mat-mdc-form-field-infix::placeholder {
+  color: #3B221B !important;
+  opacity: 1 !important;
+}
+
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__leading,
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__notch,
+.mat-mdc-form-field-appearance-outline .mdc-notched-outline__trailing {
+  border-color: #3B221B !important;
+}
+
+.mat-mdc-form-field-appearance-outline.mat-focused .mdc-notched-outline__leading,
+.mat-mdc-form-field-appearance-outline.mat-focused .mdc-notched-outline__notch,
+.mat-mdc-form-field-appearance-outline.mat-focused .mdc-notched-outline__trailing {
+  border-color: #3B221B !important;
+}
+
+.mat-mdc-form-field-appearance-outline:hover .mdc-notched-outline__leading,
+.mat-mdc-form-field-appearance-outline:hover .mdc-notched-outline__notch,
+.mat-mdc-form-field-appearance-outline:hover .mdc-notched-outline__trailing {
+  border-color: #3B221B !important;
+}
+
+// Custom Global Spinner with Pizza
+.global-spinner-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7); /* Ajustado para uma cor mais escura e transparente */
+  z-index: 9999; // Ensure it's on top of everything
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.custom-pizza-spinner.mat-mdc-progress-spinner {
+  --mdc-circular-progress-active-indicator-color: transparent !important; // Hide default spinner indicator
+  
+  .mat-mdc-progress-spinner-circle {
+    stroke: transparent !important; // Hide default spinner circle
+  }
+}
+
+::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__background { border-color: var(--text-primary) !important; background-color: transparent !important; }
+::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__checkmark-path { stroke: var(--text-primary) !important; }
+::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
+  background-color: var(--primary) !important; border-color: var(--primary) !important;
+}
+::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background .mdc-checkbox__checkmark-path { stroke: var(--text-primary) !important; }
+::ng-deep .mat-mdc-checkbox.mat-primary:hover .mdc-checkbox__background { border-color: var(--primary) !important; }
+
+// Menu mobile
+@media (max-width: 768px) {
+  ::ng-deep .mat-mdc-menu-panel {
+    position: fixed !important;
+    transform: none !important;
+    top: 80px !important;
+    left: 20px !important;
+    right: auto !important;
+    bottom: auto !important;
+    margin: 0 !important;
+    max-width: calc(100vw - 40px) !important;
+  }
+}
+
+/* =============================================== */
+/* === ESTILOS GLOBAIS PARA DIÁLOGOS RESPONSIVOS === */
+/* =============================================== */
+
+// PASSO 1: Tornar a "casca" do dialog do Angular Material completamente invisível.
+::ng-deep .mat-mdc-dialog-container .mdc-dialog__surface {
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+}
+
+// Remover bordas cinzas de todos os dialogs Angular Material
+::ng-deep .mat-mdc-dialog-container {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+::ng-deep .cdk-overlay-pane {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+// PASSO 2: Remover qualquer fundo do overlay
+::ng-deep .cdk-overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.5) !important;
+}
+
+// PASSO 3: Estilos para ecrãs pequenos (mobile).
+@media (max-width: 768px) {
+  
+  // Força o painel que envolve o dialog a ocupar a tela inteira,
+  // sem margens ou paddings que criam as bordas cinzas.
+  .cdk-global-overlay-wrapper,
+  .cdk-overlay-pane {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100vw !important;
+    height: 100% !important;
+  }
+
+  // Garante que o container interno do Material também não tenha padding.
+  .mat-mdc-dialog-container {
+    padding: 0 !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .dialog-container {
+    // Ocupa a largura da tela menos 32px (16px de margem de cada lado).
+    width: calc(100vw - 32px);
+    max-width: calc(100vw - 32px);
+    min-width: unset; // Remove qualquer largura mínima.
+
+    // Garante que a altura não ultrapasse a tela do dispositivo.
+    height: auto;
+    max-height: calc(100vh - 32px);
+    
+    // As margens criam o espaçamento entre o nosso dialog e as bordas da tela.
+    margin: 16px;
+  }
+}
+
+// PASSO 4: Estilos para desktop - garantir que não apareça fundo cinza
+@media (min-width: 769px) {
+  .cdk-global-overlay-wrapper,
+  .cdk-overlay-pane {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+
+  .mat-mdc-dialog-container {
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    padding: 0 !important;
+  }
+}

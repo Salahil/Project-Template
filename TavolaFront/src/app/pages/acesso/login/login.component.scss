@@ -1,0 +1,57 @@
+@use "../../../../styles/variables" as *;
+
+.login-card { padding: 28px 24px; }
+.logo { display: block; margin: 0 auto 16px; width: 72px; }
+.title { text-align: center; margin: 0 0 4px; font-size: 1.5rem; font-weight: 700; color: var(--text-primary); }
+.subtitle { text-align: center; margin: 0 0 24px; font-size: 0.95rem; color: var(--text-secondary); }
+
+.login-form .full { width: 100%; }
+.forgot-row { text-align: right; margin-top: -8px; margin-bottom: 4px; }
+.login-error { padding: 10px; border-radius: var(--radius); text-align: center; font-size: 14px; }
+.btn-primary { margin-top: 8px; }
+
+.divider { text-align: center; margin: 20px 0 12px; font-size: 13px; color: var(--text-muted); }
+
+.socials {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  .social {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: var(--bg-surface);
+    color: var(--text-primary); font-size: 14px; cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    &:hover { background: var(--border); border-color: var(--border-strong); }
+  }
+  .google-icon, .linkedin-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .social.linkedin { color: #0A66C2; }
+  .social.linkedin .linkedin-icon { color: #0A66C2; }
+}
+.signup-link {
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  a {
+    color: var(--primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: text-decoration 0.2s;
+    &:hover {
+      text-decoration: underline;
+      color: var(--primary);
+    }
+  }
+}
+
+::ng-deep .mat-mdc-form-field .mdc-floating-label,
+::ng-deep .mat-mdc-form-field .mat-mdc-input-element { color: var(--text-primary) !important; }
+::ng-deep .mat-mdc-form-field .mdc-text-field--outlined {
+  --mdc-outlined-text-field-outline-color: var(--input-border);
+  --mdc-outlined-text-field-hover-outline-color: var(--primary);
+  --mdc-outlined-text-field-focus-outline-color: var(--primary);
+}
+
+@media (max-width: 480px) {
+  .login-card { padding: 20px 16px; margin: 0 8px; }
+  .title { font-size: 1.35rem; }
+  .logo { width: 64px; }
+}

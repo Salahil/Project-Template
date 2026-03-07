@@ -1,0 +1,77 @@
+/* Minimal menu navigation styles using CSS variables (light/dark handled globally) */
+
+.categorias-nav-container {
+  margin: 0 0 16px 0;
+
+  .categorias-nav {
+    background: var(--bg-surface);
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+
+    .categorias-scroll {
+      display: flex;
+      gap: 8px;
+      overflow-x: auto;
+      padding: 0 12px;
+      -webkit-overflow-scrolling: touch;
+
+      .categoria-btn {
+        flex-shrink: 0;
+        padding: 8px 12px;
+        border-radius: 999px;
+        background: transparent;
+        border: 1px solid transparent;
+        color: var(--text-primary);
+        font-weight: 500;
+
+        &.active {
+          background: var(--primary);
+          color: var(--bg-surface);
+        }
+      }
+    }
+  }
+}
+
+.categorias-content {
+  .categoria-section {
+    margin: 24px 0;
+
+    .categoria-titulo {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+      padding-bottom: 6px;
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .itens-lista {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+
+      .item-card {
+        background: var(--bg-surface);
+        border-radius: var(--radius);
+        padding: 12px;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+    }
+  }
+}
+
+// Responsive tweaks
+@media (max-width: 768px) {
+  .categorias-nav-container .categorias-scroll { padding: 0 8px; gap: 6px; }
+  .categorias-content .item-card { padding: 10px; }
+}
+
+@media (max-width: 480px) {
+  .categorias-nav-container .categoria-btn { padding: 6px 10px; font-size: 14px; }
+  .categorias-content .categoria-titulo { font-size: 16px; }
+}

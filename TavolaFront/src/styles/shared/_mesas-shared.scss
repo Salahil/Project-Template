@@ -1,0 +1,332 @@
+@use '../variables' as *; // keep reference for SASS variables if used
+
+/* Minimal shared styles for 'mesas' (tables) area. Uses CSS variables from variables.scss */
+
+.date-navigator-area {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  padding: 8px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--border);
+}
+
+.mesas-container {
+  background: var(--bg-surface);
+  border-radius: var(--radius);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.ambientes-list {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 6px 4px;
+}
+
+.ambiente-btn {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text-primary);
+  flex-shrink: 0;
+}
+
+.mesas-grid-css {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+}
+
+.mesa {
+  background: var(--glass);
+  border: 1px solid var(--border);
+  border-radius: calc(var(--radius) - 2px);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+@media (max-width: 768px) {
+  .mesas-grid-css { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+}
+
+@media (max-width: 480px) {
+  .ambientes-list .ambiente-btn { padding: 6px 10px; font-size: 13px; }
+  .mesas-grid-css { gap: 8px; }
+}
+      }
+
+      &.mesa-circular {
+        width: 75px; // Largura igual à altura para círculo perfeito
+        height: 75px;
+        max-width: 75px;
+        border-radius: 50% !important;
+      }
+
+      // Indicador de status no canto superior esquerdo
+      .status-indicator-icon {
+        position: absolute;
+        top: 4px;
+        left: 4px;
+        font-size: 14px;
+        z-index: 2;
+      }
+
+      // Ícone VIP (opcional)
+      .vip-icon {
+        position: absolute;
+        top: 4px;
+        right: 4px;
+        font-size: 16px;
+        color: gold; // Ou $primary-color
+      }
+
+      // Overlay dos avatares dos garçons
+      .garcons-overlay {
+        position: absolute;
+        bottom: 4px;
+        right: 4px;
+        display: flex;
+        gap: -8px; // Faz os avatares sobreporem-se
+        z-index: 3;
+
+        .avatar-garcom {
+          width: 20px;
+          height: 20px;
+          border-radius: 50%;
+          background-color: $primary-color;
+          color: white;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 8px;
+          font-weight: bold;
+          border: 1px solid white;
+          overflow: hidden;
+
+          img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+          }
+
+          &.mais-garcons {
+            background-color: $text-color-light;
+          }
+        }
+      }
+    }
+
+    .mesa-etiqueta {
+      padding: 3px 8px;
+      background-color: $text-color-light; // Cor base mais suave
+      color: white;
+      border-radius: 4px;
+      font-size: 12px;
+      font-weight: 500;
+      text-align: center;
+      min-width: 60px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+      transition: background-color 0.2s ease, color 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+
+      &.mesa-vip {
+        background-color: color.adjust($primary-color, $lightness: -10%); // Cor diferente para VIP
+        color: white; // Ou $text-color
+        font-weight: 600;
+      }
+
+      // Tempo de ocupação dentro da etiqueta
+      .tempo-ocupacao {
+        font-size: 0.8em;
+        opacity: 0.7;
+        font-weight: normal;
+        white-space: nowrap;
+      }
+    }
+
+    // --- Estados da Mesa ---
+
+    // Estado Ocupada (Base)
+    &.mesa-ocupada {
+      .mesa-visual {
+        // Pode ter uma aparência base, como borda vermelha suave
+        border-color: rgba($accent-color, 0.5);
+      }
+      .mesa-etiqueta {
+         // Cor da etiqueta pode mudar
+         background-color: $accent-color;
+         color: white;
+      }
+    }
+
+    // Estado Reservada (Visual distinto)
+    &.mesa-reservada {
+       .mesa-visual {
+        border-color: #2196F3; // Azul para reservado
+        background-color: rgba(33, 150, 243, 0.05);
+      }
+      .mesa-etiqueta {
+        background-color: #2196F3;
+        color: white;
+      }
+    }
+
+    // Estado Livre (pode ser o padrão ou ter um hover específico)
+    &.mesa-livre:hover, &:not(.mesa-ocupada):not(.mesa-reservada):hover { // Hover apenas se livre
+      .mesa-visual {
+        background-color: color.adjust($primary-color, $lightness: 45%);
+        border-color: $primary-color;
+        transform: translateY(-2px);
+        box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
+      }
+      .mesa-etiqueta {
+        background-color: $primary-color;
+        color: $text-color;
+      }
+    }
+
+     // Estado específico de 'atribuída à reserva atual' (Pode ficar em reservas.scss)
+     &.mesa-atribuida-reserva-atual {
+       // Estilos específicos serão definidos nos componentes individuais
+       .mesa-visual {
+         background-color: color.adjust($primary-color, $lightness: 30%);
+         border: 3px solid $primary-color;
+         box-shadow: 0 0 12px rgba($primary-color, 0.5);
+       }
+     }
+
+     // Estado específico 'em atendimento' (Pode ficar em painel-garcom.scss)
+     &.em-atendimento {
+      // Estilos específicos serão definidos nos componentes individuais
+      .mesa-visual {
+        background-color: #fff3e0;
+        border-color: #ff9800;
+      }
+     }
+
+
+    // Menu de contexto (se aplicável a ambos)
+    .mesa-menu {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: 10;
+      // ... mais estilos ...
+    }
+  }
+
+  // --- Responsividade para o Mapa de Mesas ---
+  @media (max-width: 700px) {
+    padding: 0; // Remove padding no mobile, o pai terá
+
+    .areas-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 12px;
+      padding: 0 12px 12px 12px; // Adiciona padding interno
+      margin-bottom: 8px;
+    }
+
+    .ambientes-nav-wrapper {
+      width: 100%;
+      gap: 8px; // Gap entre setas e scroll
+    }
+     .ambientes-scroll-container {
+       flex: 1; // Ocupa espaço disponível entre as setas
+       min-width: 0;
+     }
+
+    .ambientes-list {
+       padding: 8px 4px 12px 4px; // Ajusta padding
+       min-width: min-content; // Para scroll funcionar corretamente
+    }
+     .ambiente-btn {
+        padding: 10px 16px; // Ajusta padding botão
+        font-size: 13px;
+     }
+
+     .nav-arrow {
+        display: flex !important; // Garante exibição
+        width: 36px;
+        height: 36px;
+        mat-icon { font-size: 20px; }
+      }
+
+
+    .add-area-container {
+      width: 100%;
+      padding: 0 12px; // Padding lateral
+      box-sizing: border-box;
+      display: flex;
+      justify-content: center;
+
+      .add-area-btn { // Ou .add-area-input
+        width: 100%;
+        max-width: 300px;
+        height: 44px;
+        font-size: 14px;
+      }
+    }
+
+     .mesas-grid-container {
+       padding: 0 8px 8px 8px; // Padding em volta do grid
+     }
+
+     .mesas-grid-css {
+        grid-template-columns: repeat(3, 1fr) !important; // 3 colunas mobile
+        gap: 8px !important;
+      }
+
+      .mesa {
+        gap: 6px;
+        .mesa-visual {
+          max-width: 80px !important;
+          height: 60px !important;
+          .mesa-capacidade { font-size: 11px !important; mat-icon { font-size: 14px; width: 14px; height: 14px;}}
+        }
+        .mesa-etiqueta {
+          font-size: 10px !important;
+          padding: 2px 5px !important;
+          min-width: 45px !important;
+        }
+      }
+  }
+
+   @media (max-width: 576px) {
+      .ambientes-nav-wrapper { gap: 6px; } // Menor gap
+      .ambientes-list { padding: 6px 4px 10px 4px; gap: 6px; }
+      .ambiente-btn { padding: 8px 12px; font-size: 12px; min-width: 60px; }
+      .nav-arrow { width: 32px !important; height: 32px !important; mat-icon { font-size: 18px !important; } }
+      .add-area-container .add-area-btn { height: 40px; font-size: 13px; }
+
+      .mesas-grid-container { padding: 0 4px 4px 4px; }
+      .mesas-grid-css { gap: 6px !important; }
+
+       .mesa {
+         .mesa-visual {
+           max-width: 70px !important;
+           height: 55px !important;
+           .mesa-capacidade { font-size: 10px !important; }
+         }
+         .mesa-etiqueta {
+           font-size: 9px !important;
+           padding: 2px 4px !important;
+           min-width: 40px !important;
+         }
+      }
+   }
+} // Fim do mixin mapa-mesas-container

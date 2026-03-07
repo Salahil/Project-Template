@@ -1,0 +1,121 @@
+@use "../../../../styles/variables" as *;
+
+:host { display: block; width: 100%; overflow-y: auto; }
+
+.signup-tabs {
+  margin-top: -24px;
+  padding-bottom: 80px;
+  ::ng-deep {
+    .mat-mdc-tab-header {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg-page);
+      z-index: 1;
+      .mat-mdc-tab {
+        color: var(--text-muted);
+        min-height: 48px;
+        &.mdc-tab--active .mdc-tab__text-label { color: var(--accent) !important; }
+        .mdc-tab-indicator__content--underline { border-color: var(--accent); }
+      }
+    }
+    .mat-mdc-tab-body-wrapper { height: auto; overflow: visible; }
+  }
+}
+
+.card-inner {
+  margin: 24px auto;
+  padding: 28px 24px;
+}
+
+.signup-header {
+  text-align: center;
+  margin-bottom: 24px;
+  .signup-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary);
+    color: var(--text-primary);
+    margin-bottom: 12px;
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+  .signup-phrase {
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+  }
+  .title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+}
+
+.signup-form { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.form-section { display: none; }
+
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+  .mat-mdc-input-element, .mdc-floating-label { color: var(--text-primary) !important; }
+  .mdc-text-field--outlined {
+    --mdc-outlined-text-field-outline-color: var(--input-border);
+    --mdc-outlined-text-field-hover-outline-color: var(--primary);
+    --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  }
+  textarea { min-height: 100px; }
+}
+
+.horarios-grid {
+  display: flex; flex-direction: column; gap: 16px;
+  .horario-row { display: flex; align-items: center; gap: 16px; }
+  .dia-semana { min-width: 120px; color: var(--text-primary); }
+  .horarios-inputs { display: flex; gap: 16px; flex: 1; }
+}
+
+mat-error, .mat-mdc-form-field-error { color: var(--danger) !important; }
+
+.add-horario-btn { margin-top: 12px; color: var(--text-primary) !important; background: var(--primary) !important; border-color: var(--primary) !important; font-weight: 600; }
+
+.divider { text-align: center; margin: 20px 0 12px; font-size: 13px; color: var(--text-muted); }
+.socials {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  .social {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: var(--bg-surface);
+    color: var(--text-primary); font-size: 14px; cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    &:hover { background: var(--border); border-color: var(--border-strong); }
+  }
+  .google-icon, .linkedin-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .social.linkedin { color: #0A66C2; }
+  .social.linkedin .linkedin-icon { color: #0A66C2; }
+}
+.signup-link { text-align: center; margin-top: 20px; font-size: 14px; }
+.signup-link a { color: var(--primary); cursor: pointer; text-decoration: none; }
+.signup-link a:hover { text-decoration: underline; }
+
+.actions {
+  margin-top: 1.5rem; display: flex; flex-direction: column; gap: 10px; padding: 0 8px;
+  .primary-action { width: 100%; height: 48px; padding: 12px; border: none; border-radius: var(--radius); background: var(--primary); color: var(--text-primary); font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .primary-action:hover:not(:disabled) { background: var(--primary-hover); }
+  .primary-action:disabled { opacity: 0.6; cursor: not-allowed; }
+  .secondary-action { width: 100%; height: 45px; padding: 10px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: transparent; color: var(--primary); font-weight: 500; cursor: pointer; }
+}
+
+.primary-action.btn-primary-page { margin-top: 0; }
+
+@media (max-width: 768px) {
+  .signup-form .form-row.two-columns { grid-template-columns: 1fr; }
+  .horarios-grid .horario-row { flex-direction: column; align-items: flex-start; .dia-semana { min-width: auto; } .horarios-inputs { width: 100%; } }
+}
