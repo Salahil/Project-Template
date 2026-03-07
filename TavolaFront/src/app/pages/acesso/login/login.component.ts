@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { DefaultLoginLayoutComponent } from '../default-login-layout/default-login-layout.component';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -12,6 +12,8 @@ import { CommonModule } from '@angular/common';
 import { ILoginForm } from '../../../Interfaces/ILoginForm.interface';
 import { AuthService } from '../../../core/services/auth.service';
 import { NzIconModule } from 'ng-zorro-antd/icon';
+import { SocialAuthService, GoogleLoginProvider, SocialUser } from '@abacritt/angularx-social-login';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-login',
@@ -29,7 +31,7 @@ import { NzIconModule } from 'ng-zorro-antd/icon';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup<ILoginForm>;
   showLoginError = false;
   hidePassword = true;
@@ -38,6 +40,8 @@ export class LoginComponent {
   private loginService = inject(AcessService);
   private toastService = inject(ToastrService);
   private authService = inject(AuthService);
+  private socialAuthService = inject(SocialAuthService);
+  private googleAuthSub: Subscription | null = null;
 
   constructor() {
     this.loginForm = new FormGroup<ILoginForm>({
@@ -80,6 +84,34 @@ export class LoginComponent {
       this.showLoginError = true;
       this.toastService.error('Email ou senha inválidos.');
     }
+  }
+
+  ngOnInit(): void {
+    this.googleAuthSub = this.socialAuthService.authState.subscribe((user: SocialUser | null) => {
+      if (user?.idToken) {
+        this.loginService.loginWithGoogle(user.idToken).subscribe({
+          next: (res) => {
+            this.showLoginError = false;
+            this.toastService.success('Login feito com sucesso!');
+            this.authService.setAuthData(res.token, res.nome, res.tipoUsuario, res.id, res.imagem, res.restauranteId);
+            this.router.navigate(['app']);
+          },
+          error: (err) => {
+            this.showLoginError = true;
+            const msg = err.error?.erro || err.error?.message || 'Não foi possível entrar com o Google. Tente novamente.';
+            this.toastService.error(msg);
+          }
+        });
+      }
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.googleAuthSub?.unsubscribe();
+  }
+
+  signInWithGoogle(): void {
+    this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
   }
 
   irParaCadastro() { this.router.navigate(['signup']); }

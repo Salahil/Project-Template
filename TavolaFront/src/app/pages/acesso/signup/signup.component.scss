@@ -1,249 +1,121 @@
-@use "../../../../styles/variables.scss" as vars;
+@use "../../../../styles/variables" as *;
 
-:host {
-    display: block;
-    width: 100%;
-    overflow-y: auto;
-}
+:host { display: block; width: 100%; overflow-y: auto; }
 
 .signup-tabs {
-    margin-top: -24px;
-    padding-bottom: 80px;
-    
-    ::ng-deep {
-        .mat-mdc-tab-header {
-            margin-bottom: 24px;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.12);
-            position: sticky;
-            top: 0;
-            background: transparent;
-            z-index: 1;
-
-            .mat-mdc-tab {
-                color: rgba(255, 255, 255, 0.6);
-                min-height: 48px;
-                .mdc-tab__text-label {
-                    transition: color 0.2s;
-                }
-                &.mdc-tab--active .mdc-tab__text-label {
-                    color: #D1495B !important;
-                }
-                .mdc-tab-indicator__content--underline {
-                    border-color: #D1495B;
-                }
-            }
-        }
-
-        // Remove scroll interno
-        .mat-mdc-tab-body-wrapper {
-            height: auto;
-            overflow: visible;
-        }
+  margin-top: -24px;
+  padding-bottom: 80px;
+  ::ng-deep {
+    .mat-mdc-tab-header {
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      background: var(--bg-page);
+      z-index: 1;
+      .mat-mdc-tab {
+        color: var(--text-muted);
+        min-height: 48px;
+        &.mdc-tab--active .mdc-tab__text-label { color: var(--accent) !important; }
+        .mdc-tab-indicator__content--underline { border-color: var(--accent); }
+      }
     }
+    .mat-mdc-tab-body-wrapper { height: auto; overflow: visible; }
+  }
 }
 
 .card-inner {
-    width: 100%;
-    max-width: 420px;
-    background: var(--bg-surface);
+  margin: 24px auto;
+  padding: 28px 24px;
+}
+
+.signup-header {
+  text-align: center;
+  margin-bottom: 24px;
+  .signup-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--primary);
     color: var(--text-primary);
-    border-radius: 12px;
-    padding: 22px;
-    box-shadow: 0 22px 64px rgba(10,12,20,0.12), inset 0 1px 0 rgba(255,255,255,0.02);
-    border: 1px solid rgba(0,0,0,0.05);
-    margin: 24px auto;
+    margin-bottom: 12px;
+    mat-icon {
+      font-size: 28px;
+      width: 28px;
+      height: 28px;
+    }
+  }
+  .signup-phrase {
+    margin: 0 0 8px 0;
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+  }
+  .title {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
 }
 
-.signup-form {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    width: 100%;
-}
-    .form-section { display:none }
+.signup-form { display: flex; flex-direction: column; gap: 12px; width: 100%; }
+.form-section { display: none; }
 
-::ng-deep {
-    .mat-mdc-form-field {
-        width: 100%;
-
-        .mat-mdc-input-element,
-        .mat-mdc-select-value-text,
-        .mdc-floating-label,
-        .mat-mdc-select-arrow {
-            color: white !important;
-        }
-
-        // Remove o hover marrom
-        .mat-mdc-input-element:hover,
-        .mat-mdc-input-element:focus {
-            color: white !important;
-        }
-
-        .mdc-text-field--outlined {
-            --mdc-outlined-text-field-label-text-color: rgba(255, 255, 255, 0.6);
-            --mdc-outlined-text-field-outline-color: rgba(255, 255, 255, 0.3);
-            --mdc-outlined-text-field-hover-outline-color: #F6BD38;
-            --mdc-outlined-text-field-focus-outline-color: #F6BD38;
-        }
-
-        .mdc-text-field--focused:not(.mdc-text-field--disabled) .mdc-floating-label {
-            color: #F6BD38 !important;
-        }
-
-        textarea {
-            min-height: 100px;
-        }
-    }
-
-    .mat-mdc-checkbox {
-        --mdc-checkbox-selected-checkmark-color: #fff;
-        --mdc-checkbox-selected-focus-icon-color: #F6BD38;
-        --mdc-checkbox-selected-hover-icon-color: #F6BD38;
-        --mdc-checkbox-selected-icon-color: #F6BD38;
-        --mdc-checkbox-selected-pressed-icon-color: #F6BD38;
-        --mdc-checkbox-unselected-focus-icon-color: #D1495B;
-        --mdc-checkbox-unselected-hover-icon-color: #D1495B;
-        --mdc-checkbox-unselected-icon-color: #D1495B;
-        --mdc-checkbox-unselected-pressed-icon-color: #D1495B;
-    }
+::ng-deep .mat-mdc-form-field {
+  width: 100%;
+  .mat-mdc-input-element, .mdc-floating-label { color: var(--text-primary) !important; }
+  .mdc-text-field--outlined {
+    --mdc-outlined-text-field-outline-color: var(--input-border);
+    --mdc-outlined-text-field-hover-outline-color: var(--primary);
+    --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  }
+  textarea { min-height: 100px; }
 }
 
 .horarios-grid {
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-
-    .horario-row {
-        display: flex;
-        align-items: center;
-        gap: 16px;
-
-        .dia-semana {
-            min-width: 120px;
-            color: white;
-        }
-
-        .horarios-inputs {
-            display: flex;
-            gap: 16px;
-            flex: 1;
-        }
-    }
+  display: flex; flex-direction: column; gap: 16px;
+  .horario-row { display: flex; align-items: center; gap: 16px; }
+  .dia-semana { min-width: 120px; color: var(--text-primary); }
+  .horarios-inputs { display: flex; gap: 16px; flex: 1; }
 }
 
-mat-error {
-    color: #D1495B !important;
-    font-size: 0.8rem;
-    font-weight: 500;
-    opacity: 1 !important;
+mat-error, .mat-mdc-form-field-error { color: var(--danger) !important; }
+
+.add-horario-btn { margin-top: 12px; color: var(--text-primary) !important; background: var(--primary) !important; border-color: var(--primary) !important; font-weight: 600; }
+
+.divider { text-align: center; margin: 20px 0 12px; font-size: 13px; color: var(--text-muted); }
+.socials {
+  display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;
+  .social {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 10px 16px; border-radius: var(--radius);
+    border: 1px solid var(--border); background: var(--bg-surface);
+    color: var(--text-primary); font-size: 14px; cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    &:hover { background: var(--border); border-color: var(--border-strong); }
+  }
+  .google-icon, .linkedin-icon { display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .social.linkedin { color: #0A66C2; }
+  .social.linkedin .linkedin-icon { color: #0A66C2; }
 }
-
-.mat-mdc-form-field-error {
-    color: #D1495B !important;
-}
-
-@media (max-width: 768px) {
-    .signup-form {
-        padding: 0;
-
-        .form-section {
-            padding: 16px;
-
-            .form-row {
-                &.two-columns {
-                    grid-template-columns: 1fr;
-                }
-            }
-        }
-    }
-
-    .horarios-grid {
-        .horario-row {
-            flex-direction: column;
-            align-items: flex-start;
-
-            .dia-semana {
-                min-width: auto;
-            }
-
-            .horarios-inputs {
-                width: 100%;
-            }
-        }
-    }
-}
-
-.horario-row-flex {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    margin-bottom: 12px;
-}
-
-.add-horario-btn {
-    margin-top: 12px;
-    color: #3B221B !important;
-    border-color: #F6BD38 !important;
-    background: #F6BD38 !important;
-    font-weight: 600;
-}
-
-.add-horario-btn mat-icon {
-    color: #3B221B !important;
-}
+.signup-link { text-align: center; margin-top: 20px; font-size: 14px; }
+.signup-link a { color: var(--primary); cursor: pointer; text-decoration: none; }
+.signup-link a:hover { text-decoration: underline; }
 
 .actions {
-    margin-top: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    padding: 0 8px;
+  margin-top: 1.5rem; display: flex; flex-direction: column; gap: 10px; padding: 0 8px;
+  .primary-action { width: 100%; height: 48px; padding: 12px; border: none; border-radius: var(--radius); background: var(--primary); color: var(--text-primary); font-weight: 600; cursor: pointer; transition: background 0.2s; }
+  .primary-action:hover:not(:disabled) { background: var(--primary-hover); }
+  .primary-action:disabled { opacity: 0.6; cursor: not-allowed; }
+  .secondary-action { width: 100%; height: 45px; padding: 10px; border: 1px solid var(--border-strong); border-radius: var(--radius); background: transparent; color: var(--primary); font-weight: 500; cursor: pointer; }
+}
 
-        .primary-action {
-            width: 100%;
-            height: 48px;
-            background: linear-gradient(180deg, #BFFF24 0%, #8CE600 100%);
-            border: none;
-            color: #15311a;
-            font-weight: 700;
-            font-size: 0.98rem;
-            border-radius: 8px;
-            transition: all 0.18s ease;
-            cursor: pointer;
-            box-shadow: 0 14px 40px rgba(30,120,20,0.10);
+.primary-action.btn-primary-page { margin-top: 0; }
 
-            &:hover:not(:disabled) {
-                transform: translateY(-2px);
-                box-shadow: 0 22px 48px rgba(30,120,20,0.14);
-            }
-
-            &:disabled {
-                opacity: 0.6;
-                cursor: not-allowed;
-                transform: none;
-            }
-
-            i { margin-right: 0.5rem }
-        }
-
-    .secondary-action {
-        width: 100%;
-        height: 45px;
-        border: 1px solid rgba(0,0,0,0.07);
-        color: var(--text-muted);
-        background: transparent;
-        font-weight: 500;
-        border-radius: 8px;
-        transition: all 0.18s ease;
-        cursor: pointer;
-
-        &:hover {
-            background: rgba(0,0,0,0.03);
-            border-color: rgba(0,0,0,0.12);
-        }
-
-        i {
-            margin-right: 0.5rem;
-        }
-    }
+@media (max-width: 768px) {
+  .signup-form .form-row.two-columns { grid-template-columns: 1fr; }
+  .horarios-grid .horario-row { flex-direction: column; align-items: flex-start; .dia-semana { min-width: auto; } .horarios-inputs { width: 100%; } }
 }

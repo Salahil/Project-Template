@@ -1,25 +1,18 @@
 <main class="login-layout">
-    <div class="side-visual" aria-hidden="true"></div>
-
-    <div class="form-area">
-        <div class="theme-toggle">
-            <label class="switch">
-                <input #themeSwitch type="checkbox" (change)="toggleTheme(themeSwitch.checked)" />
-                <span class="slider"></span>
-            </label>
-            <span class="theme-label">Tema</span>
-        </div>
-
-        <div class="center-wrap">
-            <div class="content">
-                <ng-content></ng-content>
-            </div>
-
-            <!-- Optional action buttons (kept for pages that use the wrapper inputs) -->
-            <div class="action-buttons" *ngIf="primaryBtnText || secondaryBtnText">
-                <button nz-button nzType="primary" (click)="onPrimaryClick()" [disabled]="disablePrimaryBtn" [nzLoading]="primaryBtnLoading" class="primary-btn" *ngIf="primaryBtnText">{{ primaryBtnText }}</button>
-                <button nz-button nzType="default" (click)="onSecondaryClick()" class="secondary-btn" *ngIf="secondaryBtnText">{{ secondaryBtnText }}</button>
-            </div>
-        </div>
+  <div class="layout-bg" aria-hidden="true"></div>
+  <div class="theme-toggle" aria-label="Alternar tema">
+    <button type="button" class="toggle-pill" [class.dark]="isDark" (click)="toggleTheme()">
+      <span class="pill-label light" title="Modo claro"><mat-icon>light_mode</mat-icon></span>
+      <span class="pill-label dark" title="Modo escuro"><mat-icon>dark_mode</mat-icon></span>
+    </button>
+  </div>
+  <div class="form-area">
+    <div class="content">
+      <ng-content></ng-content>
     </div>
+    <div class="action-buttons" *ngIf="primaryBtnText || secondaryBtnText">
+      <button nz-button nzType="primary" (click)="onPrimaryClick()" [disabled]="disablePrimaryBtn" [nzLoading]="primaryBtnLoading" class="primary-btn" *ngIf="primaryBtnText">{{ primaryBtnText }}</button>
+      <button nz-button nzType="default" (click)="onSecondaryClick()" class="secondary-btn" *ngIf="secondaryBtnText">{{ secondaryBtnText }}</button>
+    </div>
+  </div>
 </main>

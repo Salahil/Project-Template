@@ -6,6 +6,11 @@ import { provideAnimations } from '@angular/platform-browser/animations';
 import { provideToastr } from 'ngx-toastr';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { AuthInterceptor } from './core/interceptors/auth.interceptor';
+import {
+  SocialAuthServiceConfig,
+  GoogleLoginProvider,
+  SOCIAL_AUTH_CONFIG
+} from '@abacritt/angularx-social-login';
 
 // Imports necessários para NG-ZORRO e internacionalização
 import { registerLocaleData } from '@angular/common';
@@ -67,6 +72,8 @@ export const ICONS: IconDefinition[] = [
   CrownOutline
 ];
 
+const googleClientId = '48867302798-cu3d9mpbmlmt9hepff9oc7cjqjs22fiq.apps.googleusercontent.com';
+
 export const appConfig: ApplicationConfig = {
   providers: [
     // Provedores existentes
@@ -74,8 +81,23 @@ export const appConfig: ApplicationConfig = {
     provideAnimations(),
     provideToastr(),
     provideHttpClient(withFetch()),
-    provideAnimationsAsync(), // Removida a duplicação
+    provideAnimationsAsync(),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
+
+    // Login com Google
+    {
+      provide: SOCIAL_AUTH_CONFIG,
+      useValue: {
+        autoLogin: false,
+        providers: [
+          {
+            id: GoogleLoginProvider.PROVIDER_ID,
+            provider: new GoogleLoginProvider(googleClientId)
+          }
+        ],
+        onError: (err) => console.error(err)
+      } as SocialAuthServiceConfig
+    },
 
     // CORREÇÃO: Provedores centralizados adicionados aqui
     { provide: LOCALE_ID, useValue: 'pt-BR' },

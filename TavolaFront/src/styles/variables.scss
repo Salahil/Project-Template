@@ -11,37 +11,7 @@ $header-height: 70px !default;
 $cor-erro: #D1495B !default;
 $cor-sucesso: #4CAF50 !default;
 
-// Output CSS variables and a minimal theme system
-// These will be used by components: add the class `theme-dark` on body to switch to dark mode.
-:root {
-	--bg-page: #ebe8e2;
-	--bg-surface: #ffffff;
-	--text-primary: #3B221B;
-	--text-muted: rgba(59,34,27,0.6);
-	--primary: #F6BD38;
-	--accent: #DA4A24;
-	--success: #4CAF50;
-	--danger: #D1495B;
-	--border: rgba(59,34,27,0.12);
-	--radius: 8px;
-	--header-height: 70px;
-	--sidebar-width: 280px;
-	--glass: rgba(255,255,255,0.6);
-}
-
-/* Dark theme overrides */
-.theme-dark {
-	--bg-page: #0f1720;
-	--bg-surface: #0b1220;
-	--text-primary: #e6eef8;
-	--text-muted: rgba(230,238,248,0.6);
-	--primary: #6bd26b;
-	--accent: #8bd0ff;
-	--success: #2ecc71;
-	--danger: #ff6b6b;
-	--border: rgba(255,255,255,0.06);
-	--glass: rgba(255,255,255,0.04);
-}
+// SASS vars + mixins. Tema light/dark está em _theme.scss (CSS variables).
 
 // Small responsive helpers as mixins
 @mixin respond($break) {

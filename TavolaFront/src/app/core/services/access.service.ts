@@ -28,6 +28,24 @@ export class AcessService {
     );
   }
 
+  /**
+   * Login com token do Google (idToken). Envia o token para o backend e salva JWT + perfil.
+   */
+  loginWithGoogle(idToken: string): Observable<LoginResponse> {
+    return this.httpClient.post<LoginResponse>(`${this.apiUrl}/google`, { token: idToken }, { withCredentials: true }).pipe(
+      tap((value) => {
+        this.auth.setToken(value.token);
+        this.auth.setPerfil({
+          tipo: value.tipoUsuario as 'CLIENTE' | 'RESTAURANTE' | 'FUNCIONARIO',
+          nome: value.nome,
+          id: value.id,
+          imagem: value.imagem,
+          restauranteId: value.restauranteId
+        });
+      })
+    );
+  }
+
   signup(data: any): Observable<RegisterResponse> {
     return this.httpClient.post<RegisterResponse>(`${this.apiUrl}/register`, data, { withCredentials: true });
   }

@@ -1,68 +1,22 @@
-<div *ngIf="visivel" class="chef-spinner-overlay">
-  <div class="chef-spinner-content">
-    <div class="chef-spinner-anim">
-      <div class="chef-spinner-circle chef-spinner-circle-1"></div>
-      <div class="chef-spinner-circle chef-spinner-circle-2"></div>
-      <div class="chef-spinner-circle chef-spinner-circle-3"></div>
-      <div class="chef-spinner-icon">
-        <!-- Ícone de prato com utensílios melhorado -->
-        <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-          <!-- Prato principal com melhor proporção -->
-          <circle cx="40" cy="40" r="35" fill="#F6BD38" stroke="#3B221B" stroke-width="2.5" opacity="0.95"/>
-          <circle cx="40" cy="40" r="28" fill="#FFFFFF" stroke="#F6BD38" stroke-width="2"/>
-          <circle cx="40" cy="40" r="20" fill="none" stroke="#F6BD38" stroke-width="1.5" opacity="0.6"/>
-          
-          <!-- Garfo (esquerda) - Melhor posicionamento e visibilidade -->
-          <g transform="translate(15, 25)">
-            <!-- Cabo do garfo -->
-            <rect x="3" y="18" width="2" height="12" fill="#3B221B" rx="1"/>
-            <!-- Dentes do garfo -->
-            <rect x="1" y="8" width="1.5" height="12" fill="#3B221B" rx="0.5"/>
-            <rect x="3" y="8" width="1.5" height="12" fill="#3B221B" rx="0.5"/>
-            <rect x="5" y="8" width="1.5" height="12" fill="#3B221B" rx="0.5"/>
-            <!-- Base dos dentes -->
-            <rect x="1" y="18" width="5.5" height="2" fill="#3B221B" rx="1"/>
-            <!-- Ponta do cabo -->
-            <circle cx="4" cy="32" r="1.5" fill="#3B221B"/>
-          </g>
-          
-          <!-- Faca (direita) - Melhor posicionamento e visibilidade -->
-          <g transform="translate(58, 25)">
-            <!-- Cabo da faca -->
-            <rect x="3" y="18" width="2" height="12" fill="#3B221B" rx="1"/>
-            <!-- Lâmina da faca -->
-            <path d="M1 8 L6 8 L6 18 L4 18 L4 10 L1 12 Z" fill="#3B221B"/>
-            <!-- Guarda da faca -->
-            <rect x="2" y="17" width="4" height="1.5" fill="#3B221B" rx="0.5"/>
-            <!-- Ponta do cabo -->
-            <circle cx="4" cy="32" r="1.5" fill="#3B221B"/>
-          </g>
-          
-          <!-- Detalhes decorativos no prato - Melhor distribuição -->
-          <circle cx="40" cy="28" r="2" fill="#F6BD38" opacity="0.7"/>
-          <circle cx="52" cy="35" r="1.5" fill="#F6BD38" opacity="0.8"/>
-          <circle cx="52" cy="45" r="1.5" fill="#F6BD38" opacity="0.8"/>
-          <circle cx="40" cy="52" r="2" fill="#F6BD38" opacity="0.7"/>
-          <circle cx="28" cy="45" r="1.5" fill="#F6BD38" opacity="0.8"/>
-          <circle cx="28" cy="35" r="1.5" fill="#F6BD38" opacity="0.8"/>
-          
-          <!-- Brilho no prato -->
-          <ellipse cx="35" cy="35" rx="8" ry="4" fill="#FFFFFF" opacity="0.3"/>
-        </svg>
-      </div>
-    </div>
-    
-    <div class="chef-spinner-text">
-      Preparando sua experiência <span class="highlight">Tavola</span>
-    </div>
-    <div class="chef-spinner-subtitle">
-      Aguarde enquanto organizamos tudo para você...
-    </div>
-    
-    <div class="chef-spinner-dots">
-      <div class="chef-spinner-dot chef-spinner-dot-1"></div>
-      <div class="chef-spinner-dot chef-spinner-dot-2"></div>
-      <div class="chef-spinner-dot chef-spinner-dot-3"></div>
+@if (visivel) {
+  <div class="spinner-overlay" [class.fast]="fastMode" [class.dark]="darkTheme">
+    <div class="spinner-box">
+      @switch (spinnerType) {
+        @case ('dots') {
+          <div class="spinner-dots">
+            <span></span><span></span><span></span>
+          </div>
+        }
+        @case ('custom') {
+          <ng-content></ng-content>
+        }
+        @default {
+          <div class="spinner-circle"></div>
+        }
+      }
+      @if (message) {
+        <p class="spinner-message">{{ message }}</p>
+      }
     </div>
   </div>
-</div>
+}

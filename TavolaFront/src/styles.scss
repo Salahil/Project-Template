@@ -2,107 +2,42 @@
 @use 'sass:color';
 @use 'ngx-toastr/toastr';
 @use 'styles/variables' as *;
+@use 'styles/theme';
+@use 'styles/shared/pages-shared' as shared;
 @include mat.elevation-classes();
+@include shared.pages-shared;
 @include mat.app-background();
 @import 'ng-zorro-antd/ng-zorro-antd.min.css'; // Certifique-se que está importado
 
+// Compatibilidade NG-Zorro e MDC (tema principal vem de _theme.scss)
 :root {
-  // Cores base do seu tema Tavola (reutilize ou defina conforme sua paleta)
-  --tavola-amarelo: #F6BD38;
-  --tavola-vermelho: #DA4A24;
-  --tavola-marrom-escuro: #3B221B;
-  --tavola-marrom-medio: #4e2e22; // Ex: scrollbar thumb
-  --tavola-marrom-claro: #5C7028; // Ex: card image bg
-  --tavola-fundo-componente-claro: #FFFFFF; // Para cards e modais em fundo #ebe8e2
-  --tavola-fundo-componente-dialog: #FFF8EE; // Usado em .dialog-cardapio
-  --tavola-fundo-pagina: #ebe8e2;
-  --tavola-texto-sobre-escuro: #FFFFFF;
-  --tavola-texto-sobre-claro: var(--tavola-marrom-escuro);
-  --tavola-erro: #D1495B; // Consistent with mat-error
-
-  // === Variáveis Globais NG-ZORRO ===
-
-  // Cor Primária (principal para ações, botões, links ativos, foco)
-  --ant-primary-color: var(--tavola-amarelo);
-  --ant-primary-color-hover: darken(var(--tavola-amarelo), 5%);
-  --ant-primary-color-active: darken(var(--tavola-amarelo), 10%);
-  --ant-primary-color-outline: fade(var(--tavola-amarelo), 20%); // Para outlines e sombras de foco
-
-  // Links
-  --ant-link-color: var(--tavola-vermelho); // Ou var(--tavola-amarelo) se preferir
-  --ant-link-hover-color: darken(var(--ant-link-color), 10%);
-  --ant-link-active-color: darken(var(--ant-link-color), 20%);
-
-  // Cores de Texto
-  --ant-text-color: var(--tavola-texto-sobre-claro); // Para texto em fundos claros (padrão de componentes Zorro)
-  --ant-text-color-secondary: rgba(59, 34, 27, 0.7); // Um pouco mais claro que o principal
-  --ant-heading-color: var(--tavola-texto-sobre-claro); // Cor dos títulos
-
-  // Cores de Fundo
-  --ant-component-background: var(--tavola-fundo-componente-claro); // Fundo de la maioria dos componentes: modais, cards, popovers, datepickers
-  --ant-body-background: var(--tavola-fundo-pagina); // Fundo principal da página
-  --ant-background-color-light: var(--tavola-amarelo-claro); // Usado em destaques, hovers sutis
-
-  // Bordas e Divisores
-  --ant-border-color-base: rgba(59, 34, 27, 0.2); // Cor base para bordas (ex: inputs, cards) - como em dialog-item-cardapio
-  --ant-border-color-split: rgba(59, 34, 27, 0.1);  // Cor para divisores internos
-  --ant-border-radius-base: 8px; // Consistente com seus cards e botões Material
-
-  // Inputs e Form Fields (para alinhar com seus MatFormField customizados)
-  --ant-input-placeholder-color: rgba(59, 34, 27, 0.6);
-  --ant-input-bg: var(--tavola-fundo-componente-claro);
-  --ant-input-border-color: var(--ant-border-color-base);
-  --ant-input-hover-border-color: var(--tavola-amarelo); // Similar ao MatFormField hover
-  // Para foco, NG-Zorro usa --ant-primary-color por padrão, que já definimos como amarelo.
-
-  // Botões (para alinhar com seus botões Material customizados)
-  --ant-btn-primary-bg: var(--tavola-amarelo);
-  --ant-btn-default-bg: var(--tavola-fundo-componente-claro);
-  --ant-btn-default-color: var(--tavola-texto-sobre-claro);
-  --ant-btn-default-border: var(--ant-border-color-base);
-  --ant-btn-border-radius-base: 8px;
-
-  // Alertas e Mensagens
-  --ant-error-color: var(--tavola-erro);
-  --ant-success-color: #52c41a; // Cor de sucesso (pode ajustar)
-  --ant-warning-color: #faad14; // Cor de aviso (pode ajustar)
-
-  // Modais (para alinhar com Material Dialogs customizados)
-  --ant-modal-content-bg: var(--tavola-fundo-componente-dialog); // Se quiser o fundo creme para modais Zorro
-  --ant-modal-header-bg: var(--tavola-fundo-componente-dialog);
-  --ant-modal-mask-bg: rgba(0,0,0,0.7); // Fundo do overlay (já usado no seu spinner)
-
-  // Outros componentes que você usa bastante (ex: DatePicker, Select)
-  --ant-picker-bg: var(--tavola-fundo-componente-claro);
-  --ant-select-bg: var(--tavola-fundo-componente-claro);
-
-  --ant-card-background: var(--tavola-fundo-componente-claro); 
-  --ant-card-head-background: transparent;
-
-  // Isso é um ponto de partida. Você pode precisar adicionar mais variáveis
-  // específicas do NG-Zorro conforme for usando mais componentes.
-  // Consulte a documentação do NG-Zorro sobre "Customize Theme" para a lista completa.
-
-  // Suas variáveis existentes (para referência, pode ser que algumas do MDC não sejam mais necessárias ou precisem de ajuste)
-  --mdc-outlined-text-field-focus-outline-color: #32CD32 !important; // Esta parece ser uma cor diferente do seu tema principal
-  --mdc-outlined-text-field-focus-label-text-color: #32CD32 !important; // Esta parece ser uma cor diferente
+  --ant-primary-color: var(--primary);
+  --ant-link-color: var(--accent);
+  --ant-text-color: var(--text-primary);
+  --ant-heading-color: var(--text-primary);
+  --ant-component-background: var(--bg-surface);
+  --ant-body-background: var(--bg-page);
+  --ant-border-color-base: var(--border);
+  --ant-border-radius-base: var(--radius);
+  --ant-input-bg: var(--input-bg);
+  --ant-input-border-color: var(--input-border);
+  --ant-input-hover-border-color: var(--primary);
+  --ant-btn-primary-bg: var(--primary);
+  --ant-btn-default-bg: var(--bg-surface);
+  --ant-btn-default-color: var(--text-primary);
+  --ant-btn-default-border: var(--border);
+  --ant-error-color: var(--danger);
+  --ant-modal-content-bg: var(--bg-surface);
+  --ant-modal-header-bg: var(--bg-surface);
+  --ant-picker-bg: var(--bg-surface);
+  --ant-select-bg: var(--bg-surface);
+  --ant-card-background: var(--bg-surface);
+  --mdc-outlined-text-field-focus-outline-color: var(--primary);
+  --mdc-outlined-text-field-focus-label-text-color: var(--primary);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: "Poppins", sans-serif;
-}
-
-html, body {
-    height: 100%;
-}
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
-
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { height: 100%; margin: 0; font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", sans-serif; }
 
 
 
@@ -122,61 +57,21 @@ $dark-theme: mat.m2-define-dark-theme((
 
 @include mat.all-component-themes($dark-theme);
 
-// Estilo customizado para os Tooltips do Angular Material
-.tavola-tooltip {
-  &.mdc-tooltip .mdc-tooltip__surface,
-  &.mdc-tooltip--rich .mdc-tooltip__surface {
-    background-color: #3B221B;     
-    color: #FFFFFF;               
-    border-radius: 4px;          
-    font-size: 12px;            
-    padding: 6px 8px;              // Padding similar ao NG-Zorro (padrão é 6px 8px)
-    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 
-                0 6px 16px 0 rgba(0, 0, 0, 0.08), 
-                0 9px 28px 8px rgba(0, 0, 0, 0.05); // Sombra padrão do NG-Zorro
-    // Para garantir que sobrescreva, pode ser necessário !important, mas evite se possível.
-  }
-}
-
-// Estilo customizado para os Tooltips do NG-Zorro (para garantir consistência se necessário)
-// Geralmente, o NG-Zorro já tem um estilo escuro por padrão que é bem similar.
-// Estas regras são para forçar o estilo Tavola se o padrão do Zorro não for exatamente o que você quer.
 ::ng-deep .ant-tooltip-inner {
-  background-color: #3B221B !important; 
-  color: #FFFFFF !important;       
-  border-radius: 4px !important;    // NG-Zorro padrão é 2px ou 4px dependendo da versão.
-  font-size: 12px !important;       // Padrão do NG-Zorro
-  padding: 6px 8px !important;      // Padrão do NG-Zorro
-  min-height: 30px !important;      // Padrão do NG-Zorro
-  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.12), 
-              0 6px 16px 0 rgba(0, 0, 0, 0.08), 
-              0 9px 28px 8px rgba(0, 0, 0, 0.05) !important; // Sombra padrão do NG-Zorro
+  background-color: var(--bg-surface-elevated, #1a1f26) !important;
+  color: var(--text-primary) !important;
+  border-radius: var(--radius) !important;
+  font-size: 12px !important;
+  padding: 6px 8px !important;
 }
+::ng-deep .ant-tooltip-arrow-content { background-color: var(--bg-surface-elevated, #1a1f26) !important; }
 
-::ng-deep .ant-tooltip-arrow-content {
-  background-color: #3B221B !important; // Cor da seta do tooltip NG-Zorro
-  // O NG-Zorro cuida da forma e posicionamento da seta.
-}
-
-// Customização do Material Design
 .mat-mdc-select-panel, .mat-mdc-autocomplete-panel {
-  background-color: #fff8ee !important;
-
+  background-color: var(--bg-surface) !important;
   .mat-mdc-option {
-    color: #3B221B !important;
-
-    &.mdc-list-item--selected,
-    &:hover {
-      background-color: rgba(246, 189, 56, 0.2) !important;
-      
-      .mdc-list-item__primary-text {
-        color: #3B221B !important;
-      }
-    }
-
-    .mdc-list-item__primary-text {
-      color: #3B221B !important;
-    }
+    color: var(--text-primary) !important;
+    &.mdc-list-item--selected, &:hover { background-color: rgba(246, 189, 56, 0.15) !important; }
+    .mdc-list-item__primary-text { color: var(--text-primary) !important; }
   }
 }
 
@@ -208,82 +103,30 @@ $dark-theme: mat.m2-define-dark-theme((
   }
 }
 
-// Customização global dos componentes Material
 .mat-mdc-menu-panel:not(.notification-dropdown) {
-  background-color: #FFF8EE !important;
-
+  background-color: var(--bg-surface) !important;
   .mat-mdc-menu-item {
-    color: #3B221B !important;
-
-    .mat-icon {
-      color: #DA4A24;
-    }
-
-    &:hover {
-      background-color: rgba(246, 189, 56, 0.1);
-    }
+    color: var(--text-primary) !important;
+    .mat-icon { color: var(--accent); }
+    &:hover { background-color: rgba(246, 189, 56, 0.1); }
   }
 }
 
-// Correção global para inputs e selects
 .mat-mdc-form-field {
-  .mat-mdc-input-element,
-  .mat-mdc-select-value-text,
-  .mdc-floating-label,
-  .mat-mdc-select-arrow {
-    color: white;
-  }
-
-  .mdc-text-field--filled {
-    background-color: transparent;
-  }
-
-  &:hover {
-    .mdc-floating-label {
-      color: #F6BD38 !important;
-    }
-  }
-
-  &.mat-focused {
-    .mdc-floating-label {
-      color: #F6BD38 !important;
-    }
-  }
-
-  .mat-mdc-form-field-hint,
-  .mat-mdc-form-field-error {
-    color: rgba(59, 34, 27, 0.6) !important;
-  }
-
-  // Removendo o hover marrom dos inputs
-  .mat-mdc-input-element:hover,
-  .mat-mdc-input-element:focus {
-    color: white;
-  }
-
+  .mat-mdc-input-element, .mat-mdc-select-value-text, .mdc-floating-label, .mat-mdc-select-arrow { color: var(--text-primary); }
+  .mdc-text-field--filled { background-color: transparent; }
+  &:hover .mdc-floating-label, &.mat-focused .mdc-floating-label { color: var(--primary) !important; }
+  .mat-mdc-form-field-hint, .mat-mdc-form-field-error { color: var(--text-muted) !important; }
   .mdc-text-field--outlined {
-    --mdc-outlined-text-field-hover-outline-color: #F6BD38;
-    --mdc-outlined-text-field-focus-outline-color: #F6BD38;
+    --mdc-outlined-text-field-hover-outline-color: var(--primary);
+    --mdc-outlined-text-field-focus-outline-color: var(--primary);
   }
 }
 
-// Estilo dos chips/tags
-.mat-mdc-chip {
-  &.mat-mdc-standard-chip {
-    background-color: rgba(246, 189, 56, 0.9) !important;
-    
-    .mdc-evolution-chip__text-label {
-      color: #3B221B !important;
-    }
-
-    .mat-mdc-chip-remove {
-      color: #3B221B !important;
-    }
-
-    &:hover {
-      background-color: rgba(246, 189, 56, 1) !important;
-    }
-  }
+.mat-mdc-chip.mat-mdc-standard-chip {
+  background-color: var(--primary) !important;
+  .mdc-evolution-chip__text-label, .mat-mdc-chip-remove { color: var(--text-primary) !important; }
+  &:hover { background-color: var(--primary-hover) !important; }
 }
 
 // Força cor marrom nos inputs, labels, placeholder e hover globalmente
@@ -336,476 +179,25 @@ $dark-theme: mat.m2-define-dark-theme((
   }
 }
 
-// Checkbox Tavola amarelo global
-::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__background {
-  border-color: #3B221B !important;
-  background-color: transparent !important;
-  transition: background 0.2s, border 0.2s;
-}
-::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__checkmark-path {
-  stroke: #3B221B !important;
-}
+::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__background { border-color: var(--text-primary) !important; background-color: transparent !important; }
+::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__checkmark-path { stroke: var(--text-primary) !important; }
 ::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background {
-  background-color: #F6BD38 !important;
-  border-color: #F6BD38 !important;
+  background-color: var(--primary) !important; border-color: var(--primary) !important;
 }
-::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background .mdc-checkbox__checkmark-path {
-  stroke: #3B221B !important;
-}
-::ng-deep .mat-mdc-checkbox.mat-primary:hover .mdc-checkbox__background {
-  border-color: #F6BD38 !important;
-}
+::ng-deep .mat-mdc-checkbox.mat-primary .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background .mdc-checkbox__checkmark-path { stroke: var(--text-primary) !important; }
+::ng-deep .mat-mdc-checkbox.mat-primary:hover .mdc-checkbox__background { border-color: var(--primary) !important; }
 
-// ===== ESTILOS GLOBAIS TAVOLA =====
-
-// Menu Bar Global (para reservas, cardápio, etc.)
-.tavola-menu-bar {
-  border-radius: 16px !important;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2) !important;
-  border: 1px solid rgba(194, 37, 35, 0.1) !important;
-  overflow: hidden !important;
-  backdrop-filter: blur(10px) !important;
-
-  .mat-mdc-menu-content {
-    padding: 8px !important;
-    background: white !important;
-  }
-
-  .mat-mdc-menu-item {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    padding: 14px 20px !important;
-    border-radius: 10px !important;
-    margin: 4px 0 !important;
-    transition: all 0.3s ease !important;
-    font-weight: 600 !important;
-    font-size: 15px !important;
-
-    &:hover {
-      background: rgba(246, 189, 56, 0.15) !important;
-      transform: translateX(6px) !important;
-      color: #c22523 !important;
-    }
-
-    &.delete-action:hover {
-      background: rgba(244, 67, 54, 0.15) !important;
-      color: #f44336 !important;
-    }
-
-    mat-icon {
-      margin: 0 !important;
-      font-size: 22px !important;
-      width: 40px !important;
-      height: 40px !important;
-    }
-  }
-}
-
-// Correção para posicionamento de menus mobile
+// Menu mobile
 @media (max-width: 768px) {
   ::ng-deep .mat-mdc-menu-panel {
     position: fixed !important;
     transform: none !important;
-    top: 80px !important; // Posiciona abaixo da toolbar
+    top: 80px !important;
     left: 20px !important;
     right: auto !important;
     bottom: auto !important;
     margin: 0 !important;
     max-width: calc(100vw - 40px) !important;
-  }
-}
-
-// FAB Global (para todos os componentes)
-.tavola-fab {
-  background-color: #F6BD38 !important;
-  color: #3B221B !important;
-  border-radius: 8px !important;
-  width: 48px !important;
-  height: 48px !important;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background-color: color.adjust(#F6BD38, $lightness: -5%) !important;
-    transform: scale(1.05);
-    box-shadow: 0 4px 12px rgba(246, 189, 56, 0.3);
-    transform: scale(1.15) rotate(90deg);
-  }
-
-  mat-icon {
-    font-size: 24px !important;
-    width: 24px !important;
-    height: 24px !important;
-  }
-}
-
-// Copy Button Global
-.tavola-copy-btn {
-  color: #F6BD38;
-  background: rgba(246, 189, 56, 0.1);
-  border-radius: 10px;
-  transition: all 0.3s ease;
-  width: 40px;
-  height: 40px;
-
-  &:hover {
-    color: white;
-    background: #F6BD38;
-    transform: scale(1.1) rotate(5deg);
-  }
-
-  &.copied {
-    color: #4CAF50;
-    background: rgba(76, 175, 80, 0.1);
-    
-    &:hover {
-      background: #4CAF50;
-      color: white;
-    }
-  }
-
-  mat-icon {
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
-  }
-}
-
-// SweetAlert2 Customização Tavola
-.swal-popup-tavola {
-  border-radius: 16px !important;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15) !important;
-}
-
-.swal-title-tavola {
-  color: #3B221B !important;
-  font-weight: 700 !important;
-}
-
-.swal-content-tavola {
-  color: #3B221B !important;
-}
-
-.swal-confirm-tavola {
-  background-color: #c22523 !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  
-  &:hover {
-    background-color: color.adjust(#c22523, $lightness: -5%) !important;
-  }
-}
-
-.swal-cancel-tavola {
-  background-color: #6c757d !important;
-  border-radius: 8px !important;
-  font-weight: 600 !important;
-  
-  &:hover {
-    background-color: color.adjust(#6c757d, $lightness: -5%) !important;
-  }
-}
-
-// Search Field Global - visual melhorado
-.tavola-search-field {
-  width: 100%;
-  max-width: 500px;
-  margin: 0 auto;
-
-  ::ng-deep {
-    .mat-mdc-form-field-flex {
-      background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%) !important;
-      border-radius: 16px !important;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-      border: 2px solid rgba(246, 189, 56, 0.2) !important;
-      transition: all 0.3s ease !important;
-    }
-    
-    .mdc-notched-outline__leading,
-    .mdc-notched-outline__notch,
-    .mdc-notched-outline__trailing {
-      border: none !important;
-    }
-    
-    &:hover .mat-mdc-form-field-flex {
-      border-color: #F6BD38 !important;
-      box-shadow: 0 6px 25px rgba(246, 189, 56, 0.15) !important;
-      transform: translateY(-2px) !important;
-    }
-    
-    &.mat-focused .mat-mdc-form-field-flex {
-      border-color: #F6BD38 !important;
-      border-width: 2px !important;
-      box-shadow: 0 8px 30px rgba(246, 189, 56, 0.2) !important;
-      transform: translateY(-3px) !important;
-    }
-    
-    .mat-mdc-input-element {
-      color: #3B221B !important;
-      font-size: 16px !important;
-      font-weight: 500 !important;
-      padding: 16px 20px !important;
-    }
-    
-    .mat-mdc-form-field-label {
-      color: rgba(59, 34, 27, 0.7) !important;
-      font-weight: 600 !important;
-      font-size: 15px !important;
-    }
-
-    .mat-mdc-form-field-hint-wrapper {
-      padding: 0 20px !important;
-    }
-
-    .mat-mdc-form-field-icon-suffix {
-      padding: 0 20px !important;
-    }
-
-    .mat-icon-button {
-      color: #F6BD38 !important;
-      transition: all 0.3s ease !important;
-
-      &:hover {
-        color: #c22523 !important;
-        transform: scale(1.1) !important;
-      }
-    }
-  }
-}
-
-// Empty Search State - visual melhorado
-.tavola-empty-search {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 80px 24px;
-  text-align: center;
-  background: linear-gradient(135deg, #ffffff 0%, #fafafa 100%);
-  border-radius: 24px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-  border: 2px solid rgba(246, 189, 56, 0.2);
-  margin: 24px 0;
-  animation: fadeInUp 0.6s ease-out;
-
-  .empty-icon {
-    margin-bottom: 32px;
-    width: 120px;
-    height: 120px;
-    background: linear-gradient(135deg, rgba(194, 37, 35, 0.1), rgba(246, 189, 56, 0.1));
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    position: relative;
-    box-shadow: 0 8px 24px rgba(194, 37, 35, 0.15);
-    animation: pulse 2s ease-in-out infinite;
-
-    &::before {
-      content: '';
-      position: absolute;
-      width: 140px;
-      height: 140px;
-      border: 3px dashed rgba(194, 37, 35, 0.2);
-      border-radius: 50%;
-      animation: rotate 20s linear infinite;
-    }
-
-    mat-icon {
-      font-size: 56px;
-      color: #c22523;
-      width: 50px;     
-      height: 50px;
-      z-index: 1;
-      animation: rotate 10s linear infinite reverse;
-    }
-  }
-
-  h3 {
-    margin: 0 0 16px 0;
-    color: #3B221B;
-    font-size: 28px;
-    font-weight: 700;
-    letter-spacing: -0.025em;
-    background: linear-gradient(135deg, #3B221B, #c22523);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
-  p {
-    margin: 0 0 32px 0;
-    color: #666;
-    font-size: 18px;
-    line-height: 1.5;
-    max-width: 400px;
-    font-weight: 500;
-  }
-
-  button {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 18px 36px;
-    background: linear-gradient(135deg, #F6BD38 0%, #f4a261 100%);
-    color: #3B221B;
-    font-weight: 700;
-    font-size: 18px;
-    border-radius: 16px;
-    border: none;
-    box-shadow: 0 8px 32px rgba(246, 189, 56, 0.4);
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    position: relative;
-    overflow: hidden;
-
-    &::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-      transition: left 0.5s ease;
-    }
-
-    &:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 12px 40px rgba(246, 189, 56, 0.5);
-      background: linear-gradient(135deg, #f4a261 0%, #F6BD38 100%);
-
-      &::before {
-        left: 100%;
-      }
-    }
-
-    mat-icon {
-      font-size: 22px;
-      width: 22px;
-      height: 22px;
-    }
-  }
-}
-
-// Animações para o estado vazio
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes rotate {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-@keyframes pulse {
-  0%, 100% {
-    transform: scale(1);
-    box-shadow: 0 8px 24px rgba(194, 37, 35, 0.15);
-  }
-  50% {
-    transform: scale(1.05);
-    box-shadow: 0 12px 32px rgba(194, 37, 35, 0.25);
-  }
-}
-
-// Estilos Globais para Diálogos - Baseados no reserva-confirmada-dialog
-.tavola-dialog {
-
-  @media (max-width: 768px) {
-    .dialog-container {
-      // Remove largura mínima e usa calc para ocupar quase toda a tela
-      width: calc(100vw - 24px) !important;
-      max-width: calc(100vw - 24px) !important;
-      min-width: unset !important;
-      margin: 12px !important;
-      max-height: calc(100vh - 24px) !important;
-      // Previne que o dialog seja arrastado
-      position: relative !important;
-    }
-
-    .dialog-header {
-      padding: 16px 20px;
-
-      h1, h2 {
-        font-size: 20px;
-      }
-
-      .subtitle {
-        font-size: 14px;
-      }
-    }
-
-    .dialog-content {
-      padding: 16px 20px;
-      max-height: calc(100vh - 280px);
-      overflow-y: auto;
-    }
-
-    .dialog-actions {
-      padding: 16px 20px;
-      gap: 10px;
-      position: sticky;
-      bottom: 0;
-      background: var(--fundo-claro);
-      border-top: 1px solid var(--cor-borda);
-
-      .secondary-actions-wrapper {
-        flex-direction: column;
-        gap: 10px;
-      }
-
-      .action-btn {
-        height: 48px;
-        font-size: 15px;
-        min-width: 120px;
-      }
-    }
-  }
-
-  @media (max-width: 480px) {
-    .dialog-container {
-      width: calc(100vw - 16px) !important;
-      max-width: calc(100vw - 16px) !important;
-      margin: 8px !important;
-      max-height: calc(100vh - 16px) !important;
-    }
-
-    .dialog-header {
-      padding: 14px 16px;
-
-      .header-icon mat-icon {
-        font-size: 40px;
-        width: 40px;
-        height: 40px;
-      }
-
-      h1, h2 {
-        font-size: 18px;
-      }
-    }
-
-    .dialog-content {
-      padding: 14px 16px;
-      max-height: calc(100vh - 240px);
-    }
-
-    .dialog-actions {
-      padding: 14px 16px;
-    }
   }
 }
 
@@ -860,9 +252,7 @@ $dark-theme: mat.m2-define-dark-theme((
     box-shadow: none !important;
   }
 
-  // Agora, estilizamos o NOSSO dialog (.dialog-container) para ter
-  // o tamanho e as margens corretas dentro do painel de tela cheia.
-  .tavola-dialog .dialog-container {
+  .dialog-container {
     // Ocupa a largura da tela menos 32px (16px de margem de cada lado).
     width: calc(100vw - 32px);
     max-width: calc(100vw - 32px);
@@ -891,396 +281,5 @@ $dark-theme: mat.m2-define-dark-theme((
     box-shadow: none !important;
     border: none !important;
     padding: 0 !important;
-  }
-}
-
-// ===== ESTILOS GLOBAIS PARA PAGE-HEADER TAVOLA =====
-
-// Page Header Global - Padrão para todas as páginas
-.tavola-page-header {
-  margin-bottom: 40px;
-  
-  .header-content {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    padding: 24px;
-    background: white;
-    border-radius: 16px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-    border: 1px solid rgba(194, 37, 35, 0.1);
-    position: relative;
-  }
-  
-  .header-icon {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #F6BD38, #ffd54f);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    
-    mat-icon {
-      font-size: 28px;
-      width: 28px;
-      height: 28px;
-      color: white;
-    }
-  }
-  
-  .header-text {
-    flex: 1;
-    
-    h1 {
-      color: #3B221B;
-      font-weight: 700;
-      font-size: 28px;
-      margin: 0 0 8px 0;
-      letter-spacing: -0.025em;
-    }
-    
-    p {
-      color: rgba(59, 34, 27, 0.7);
-      font-size: 16px;
-      margin: 0;
-      line-height: 1.5;
-      font-weight: 500;
-    }
-  }
-}
-
-// Variações de cores para diferentes tipos de page-header
-
-// Page Header para Cardápio
-.tavola-page-header.cardapio {
-  .header-icon {
-    background: linear-gradient(135deg, #DA4A24, #ff6b47);
-  }
-}
-
-// Page Header para Equipe
-.tavola-page-header.equipe {
-  .header-icon {
-    background: linear-gradient(135deg, #9C27B0, #ba68c8);
-  }
-}
-
-// Page Header para Reservas
-.tavola-page-header.reservas {
-  .header-icon {
-    background: linear-gradient(135deg, #4CAF50, #66bb6a);
-  }
-}
-
-// Page Header para Configurações
-.tavola-page-header.configuracoes {
-  .header-icon {
-    background: linear-gradient(135deg, #F6BD38, #ffd54f);
-  }
-}
-
-// Page Header para Meu Restaurante
-.tavola-page-header.meu-restaurante {
-  .header-icon {
-    background: linear-gradient(135deg, #FF9800, #ffb74d);
-  }
-}
-
-// Page Header para Favoritos
-.tavola-page-header.favoritos {
-  .header-icon {
-    background: linear-gradient(135deg, #FF5722, #ff7043);
-  }
-}
-
-// Page Header para Histórico
-.tavola-page-header.historico {
-  .header-icon {
-    background: linear-gradient(135deg, #607D8B, #78909c);
-  }
-}
-
-// Page Header para Garçom
-.tavola-page-header.garcom {
-  .header-icon {
-    background: linear-gradient(135deg, #2196F3, #42a5f5);
-  }
-}
-// Responsividade para page-header
-@media (max-width: 768px) {
-  .tavola-page-header {
-    margin-bottom: 24px;
-    
-    .header-content {
-      flex-direction: column;
-      text-align: center;
-      gap: 16px;
-      padding: 20px;
-    }
-    
-    .header-text {
-      h1 {
-        font-size: 24px;
-      }
-      
-      p {
-        font-size: 14px;
-      }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .tavola-page-header {
-    .header-content {
-      padding: 16px;
-      gap: 12px;
-    }
-    
-    .header-icon {
-      width: 56px;
-      height: 56px;
-      
-      mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-      }
-    }
-    
-    .header-text {
-      h1 {
-        font-size: 20px;
-      }
-      
-      p {
-        font-size: 13px;
-      }
-    }
-  }
-}
-
-// ===== ESTILOS GLOBAIS PARA CARDS TAVOLA =====
-
-// Card base para todas as páginas
-.tavola-card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  transition: all 0.3s ease;
-  overflow: hidden;
-  border: 1px solid rgba(59, 34, 27, 0.08);
-  
-  &:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
-  }
-}
-
-// Estrutura do card
-.tavola-card-content {
-  display: flex;
-  align-items: center;
-  padding: 24px;
-  gap: 20px;
-  height: 100%;
-  
-  .tavola-card-icon {
-    width: 80px;
-    height: 80px;
-    border-radius: 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    flex-shrink: 0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    
-    mat-icon {
-      font-size: 36px;
-      width: 36px;
-      height: 36px;
-      color: white;
-    }
-  }
-  
-  .tavola-card-info {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    gap: 8px;
-    
-    h3 {
-      margin: 0;
-      font-size: 20px;
-      font-weight: 600;
-      color: var(--tavola-marrom-escuro);
-      line-height: 1.2;
-    }
-    
-    p {
-      margin: 0;
-      font-size: 14px;
-      color: rgba(59, 34, 27, 0.7);
-      line-height: 1.4;
-    }
-  }
-  
-  .tavola-card-action {
-    flex-shrink: 0;
-    
-    button {
-      width: 56px;
-      height: 56px;
-      border-radius: 16px;
-      border: none;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      
-      mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-      }
-      
-      &:hover {
-        transform: scale(1.1);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
-      }
-    }
-  }
-}
-
-// Variações de cores para diferentes tipos de card
-
-// Card do Cardápio
-.tavola-card.cardapio {
-  .tavola-card-icon {
-    background: linear-gradient(135deg, #DA4A24, #ff6b47);
-  }
-  
-  .tavola-card-action button {
-    background: linear-gradient(135deg, #DA4A24, #ff6b47);
-    color: white;
-  }
-}
-
-// Card da Equipe
-.tavola-card.equipe {
-  .tavola-card-icon {
-    background: linear-gradient(135deg, #F6BD38, #ffd54f);
-  }
-  
-  .tavola-card-action button {
-    background: linear-gradient(135deg, #F6BD38, #ffd54f);
-    color: var(--tavola-marrom-escuro);
-  }
-}
-
-// Card das Reservas
-.tavola-card.reservas {
-  .tavola-card-icon {
-    background: linear-gradient(135deg, #4CAF50, #66bb6a);
-  }
-  
-  .tavola-card-action button {
-    background: linear-gradient(135deg, #4CAF50, #66bb6a);
-    color: white;
-  }
-}
-
-// Card das Configurações
-.tavola-card.configuracoes {
-  .tavola-card-icon {
-    background: linear-gradient(135deg, #9C27B0, #ba68c8);
-  }
-  
-  .tavola-card-action button {
-    background: linear-gradient(135deg, #9C27B0, #ba68c8);
-    color: white;
-  }
-}
-
-// Responsividade para mobile
-@media (max-width: 768px) {
-  .tavola-card-content {
-    padding: 20px;
-    gap: 16px;
-    
-    .tavola-card-icon {
-      width: 64px;
-      height: 64px;
-      
-      mat-icon {
-        font-size: 28px;
-        width: 28px;
-        height: 28px;
-      }
-    }
-    
-    .tavola-card-info {
-      h3 {
-        font-size: 18px;
-      }
-      
-      p {
-        font-size: 13px;
-      }
-    }
-    
-    .tavola-card-action button {
-      width: 48px;
-      height: 48px;
-      
-      mat-icon {
-        font-size: 20px;
-        width: 20px;
-        height: 20px;
-      }
-    }
-  }
-}
-
-@media (max-width: 480px) {
-  .tavola-card-content {
-    padding: 16px;
-    gap: 12px;
-    
-    .tavola-card-icon {
-      width: 56px;
-      height: 56px;
-      
-      mat-icon {
-        font-size: 24px;
-        width: 24px;
-        height: 24px;
-      }
-    }
-    
-    .tavola-card-info {
-      h3 {
-        font-size: 16px;
-      }
-      
-      p {
-        font-size: 12px;
-      }
-    }
-    
-    .tavola-card-action button {
-      width: 44px;
-      height: 44px;
-      
-      mat-icon {
-        font-size: 18px;
-        width: 18px;
-        height: 18px;
-      }
-    }
   }
 }

@@ -19,6 +19,8 @@ import { ISignupForm } from '../../../Interfaces/ISignupForm.interface';
 import { AuthService } from '../../../core/services/auth.service';
 import { NzIconModule} from 'ng-zorro-antd/icon';
 import { NgxMaskDirective } from 'ngx-mask';
+import { RecaptchaModule } from 'ng-recaptcha';
+import { environment } from '../../../../environments/environment';
 
 @Component({
   selector: 'app-signup',
@@ -26,12 +28,16 @@ import { NgxMaskDirective } from 'ngx-mask';
   imports: [
     CommonModule, DefaultLoginLayoutComponent, ReactiveFormsModule, MatFormFieldModule,
     MatInputModule, MatIconModule, MatButtonModule, MatDividerModule, MatSelectModule,
-    MatRadioModule, MatTabsModule, MatCheckboxModule, NzIconModule, NgxMaskDirective
+    MatRadioModule, MatTabsModule, MatCheckboxModule, NzIconModule, NgxMaskDirective,
+    RecaptchaModule
   ],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
 })
 export class SignUpComponent {
+
+  readonly siteKey = environment.recaptchaSiteKey;
+  captchaToken: string | null = null;
 
    // Objeto para controlar a visibilidade de cada campo de senha
    passwordVisibility: { [key: string]: boolean } = {
@@ -95,11 +101,17 @@ export class SignUpComponent {
     return null;
   }
 
-  // removed multi-form/tab logic — simplified to single signup flow
+  onResolved(token: string | null): void {
+    this.captchaToken = token;
+  }
 
   cadastrar() {
     if (this.signupForm.invalid) {
       this.signupForm.markAllAsTouched();
+      return;
+    }
+    if (!this.captchaToken) {
+      this.toastService.warning('Por favor, complete a verificação "Não sou um robô".');
       return;
     }
     const form = this.signupForm.getRawValue();
@@ -108,7 +120,8 @@ export class SignUpComponent {
       email: form.email,
       senha: form.password,
       telefone: form.telefone,
-      tipo: 'CLIENTE'
+      tipo: 'CLIENTE',
+      recaptchaToken: this.captchaToken
     };
     this.loginService.signup(payload).subscribe({
       next: (res) => {

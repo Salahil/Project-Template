@@ -34,5 +34,9 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/layout-principal/layout-principal.component').then(m => m.LayoutPrincipalComponent),
     canActivate: [AuthGuard],
   },
-  { path: '**', redirectTo: 'login' }
+  {
+    path: '404',
+    loadComponent: () => import('./pages/not-found/not-found.component').then(m => m.NotFoundComponent)
+  },
+  { path: '**', loadComponent: () => import('./pages/not-found/not-found.component').then(m => m.NotFoundComponent) }
 ];
