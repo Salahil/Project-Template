@@ -24,14 +24,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
-        service.registrar(request);
-        return ResponseEntity.ok(new ApiResponse<>("Sucesso", "Usuário criado com sucesso"));
+    	service.registrar(request, request.getRecaptchaToken());
+    	return ResponseEntity.ok(new ApiResponse<>("Sucesso", "Usuário criado com sucesso"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        var loginResponse = service.login(request);
-        String token = loginResponse.getToken(); 
+        
+    	LoginResponse loginResponse = service.login(request, request.getRecaptchaToken());
+        
+    	String token = loginResponse.getToken(); 
 
         ResponseCookie cookie = ResponseCookie.from("logapi-token", token)
                 .httpOnly(true)      

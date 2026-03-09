@@ -19,10 +19,14 @@ public class RegisterRequest {
 	private String senha;
     private String telefone;
     
+    private String recaptchaToken;
+    
     private Map<String, Object> dadosExtras;
 
     // -- Getters e Setters --
-    
+
+    public String getRecaptchaToken() { return recaptchaToken; }
+    public void setRecaptchaToken(String recaptchaToken) { this.recaptchaToken = recaptchaToken; }
     public String getNome() { return nome; }
     public void setNome(String nome) { this.nome = nome; }
     public String getEmail() { return email; }

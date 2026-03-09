@@ -25,52 +25,53 @@ import java.util.UUID;
 
 @Service
 public class AuthService {
+	
+	@Autowired
+	private RecaptchaService recaptchaService;
 
     @Autowired
     private UsuarioRepository repository;
     
     @Autowired
-    private PasswordEncoder passwordEncoder; // Já configuramos no SecurityConfig
+    private PasswordEncoder passwordEncoder; 
     
     @Autowired
     private JwtUtil jwtUtil;
     
     @Autowired
-    private AuthenticationManager authenticationManager; // Já configuramos no SecurityConfig
+    private AuthenticationManager authenticationManager; 
 
-    public Usuario registrar(RegisterRequest request) {
-        // 1. Validação simples
+    public Usuario registrar(RegisterRequest request, String recaptchaToken) {
+    
+    	if (!recaptchaService.isValido(recaptchaToken)) {
+            throw new RuntimeException("Falha na validação do reCAPTCHA. Você é um robô?");
+        }
+    	
         if (repository.existsByEmail(request.getEmail())) {
             throw new RuntimeException("E-mail já cadastrado!");
         }
 
-        // 2. Criação do Usuário
         Usuario user = new Usuario();
         user.setNome(request.getNome());
         user.setEmail(request.getEmail());
         user.setTelefone(request.getTelefone());
         user.setAtributos(request.getDadosExtras()); // Salva o JSON dinâmico
         
-        // 3. Criptografia da Senha
         user.setSenha(passwordEncoder.encode(request.getSenha()));
         
         return repository.save(user);
     }
 
-    public LoginResponse login(LoginRequest request) {
-        // 1. Autenticação (O Spring Security verifica a senha e o hash para nós)
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha())
-        );
-
-        // 2. Se não deu erro acima, busca o usuário
+    public LoginResponse login(LoginRequest request, String recaptchaToken) {
+    	if (!recaptchaService.isValido(recaptchaToken)) {
+            throw new RuntimeException("Falha na validação do reCAPTCHA.");
+        }
+    	authenticationManager.authenticate(
+    	        new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha())
+    	);
         Usuario user = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
-
-        // 3. Gera o Token
         String token = jwtUtil.generateAccessToken(user.getEmail());
-
-        // 4. Retorna tudo
         return new LoginResponse(
             token,
             user.getId(),
