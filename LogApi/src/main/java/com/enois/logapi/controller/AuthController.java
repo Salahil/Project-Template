@@ -1,6 +1,7 @@
 package com.enois.logapi.controller;
 
 import com.enois.logapi.dto.ApiResponse;
+import com.enois.logapi.dto.GoogleLoginRequest; // Importação adicionada
 import com.enois.logapi.dto.LoginRequest;
 import com.enois.logapi.dto.LoginResponse;
 import com.enois.logapi.dto.RegisterRequest;
@@ -24,16 +25,16 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
-    	service.registrar(request, request.getRecaptchaToken());
-    	return ResponseEntity.ok(new ApiResponse<>("Sucesso", "Usuário criado com sucesso"));
+        service.registrar(request, request.getRecaptchaToken());
+        return ResponseEntity.ok(new ApiResponse<>("Sucesso", "Usuário criado com sucesso"));
     }
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request, HttpServletResponse response) {
         
-    	LoginResponse loginResponse = service.login(request, request.getRecaptchaToken());
+        LoginResponse loginResponse = service.login(request, request.getRecaptchaToken());
         
-    	String token = loginResponse.getToken(); 
+        String token = loginResponse.getToken(); 
 
         ResponseCookie cookie = ResponseCookie.from("logapi-token", token)
                 .httpOnly(true)      
@@ -46,6 +47,26 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new ApiResponse<>(loginResponse, "Login realizado com sucesso"));
+    }
+
+    @PostMapping("/login/google")
+    public ResponseEntity<ApiResponse<LoginResponse>> loginComGoogle(@RequestBody GoogleLoginRequest request, HttpServletResponse response) {
+        
+        LoginResponse loginResponse = service.loginComGoogle(request);
+        
+        String token = loginResponse.getToken(); 
+
+        ResponseCookie cookie = ResponseCookie.from("logapi-token", token)
+                .httpOnly(true)      
+                .secure(true)        
+                .path("/")           
+                .maxAge(Duration.ofDays(1)) 
+                .sameSite("Lax")    
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, cookie.toString())
+                .body(new ApiResponse<>(loginResponse, "Login com Google realizado com sucesso"));
     }
 
     @PostMapping("/logout")
