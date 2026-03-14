@@ -1,11 +1,15 @@
 package com.enois.logapi.controller;
 
 import com.enois.logapi.dto.ApiResponse;
-import com.enois.logapi.dto.GoogleLoginRequest; // Importação adicionada
+import com.enois.logapi.dto.GoogleLoginRequest;
 import com.enois.logapi.dto.LoginRequest;
 import com.enois.logapi.dto.LoginResponse;
 import com.enois.logapi.dto.RegisterRequest;
+import com.enois.logapi.model.RefreshToken;
+import com.enois.logapi.model.Usuario;
+import com.enois.logapi.security.JwtUtil;
 import com.enois.logapi.service.AuthService;
+import com.enois.logapi.service.RefreshTokenService;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,6 +27,26 @@ public class AuthController {
     @Autowired
     private AuthService service;
 
+    @Autowired
+    private RefreshTokenService refreshTokenService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    // Método Auxiliar para criar Cookies facilmente
+    private void anexarCookies(HttpServletResponse response, String accessToken, String refreshToken) {
+        // Access Token (Ex: dura 15 a 60 minutos dependendo do teu JwtUtil)
+        ResponseCookie jwtCookie = ResponseCookie.from("logapi-token", accessToken)
+                .httpOnly(true).secure(true).path("/").maxAge(Duration.ofHours(1)).sameSite("Lax").build();
+        
+        // Refresh Token (Ex: dura 7 dias)
+        ResponseCookie refreshCookie = ResponseCookie.from("logapi-refresh", refreshToken)
+                .httpOnly(true).secure(true).path("/auth/refresh").maxAge(Duration.ofDays(7)).sameSite("Lax").build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody RegisterRequest request) {
         service.registrar(request, request.getRecaptchaToken());
@@ -31,56 +55,58 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<LoginResponse>> login(@RequestBody LoginRequest request, HttpServletResponse response) {
-        
         LoginResponse loginResponse = service.login(request, request.getRecaptchaToken());
-        
-        String token = loginResponse.getToken(); 
-
-        ResponseCookie cookie = ResponseCookie.from("logapi-token", token)
-                .httpOnly(true)      
-                .secure(true)        
-                .path("/")           
-                .maxAge(Duration.ofDays(1)) 
-                .sameSite("Lax")    
-                .build();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new ApiResponse<>(loginResponse, "Login realizado com sucesso"));
+        anexarCookies(response, loginResponse.getToken(), loginResponse.getRefreshToken());
+        return ResponseEntity.ok(new ApiResponse<>(loginResponse, "Login realizado com sucesso"));
     }
 
     @PostMapping("/login/google")
     public ResponseEntity<ApiResponse<LoginResponse>> loginComGoogle(@RequestBody GoogleLoginRequest request, HttpServletResponse response) {
-        
         LoginResponse loginResponse = service.loginComGoogle(request);
-        
-        String token = loginResponse.getToken(); 
+        anexarCookies(response, loginResponse.getToken(), loginResponse.getRefreshToken());
+        return ResponseEntity.ok(new ApiResponse<>(loginResponse, "Login com Google realizado com sucesso"));
+    }
 
-        ResponseCookie cookie = ResponseCookie.from("logapi-token", token)
-                .httpOnly(true)      
-                .secure(true)        
-                .path("/")           
-                .maxAge(Duration.ofDays(1)) 
-                .sameSite("Lax")    
-                .build();
+    // --- NOVO ENDPOINT: O MOTOR DO REFRESH ---
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@CookieValue(name = "logapi-refresh", required = false) String requestRefreshToken, HttpServletResponse response) {
+        if (requestRefreshToken == null || requestRefreshToken.isEmpty()) {
+            return ResponseEntity.status(401).body(new ApiResponse<>(false, "Refresh Token ausente no cookie."));
+        }
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new ApiResponse<>(loginResponse, "Login com Google realizado com sucesso"));
+        try {
+            // 1. Busca o token no banco
+            RefreshToken tokenNoBanco = refreshTokenService.buscarPorToken(requestRefreshToken)
+                    .orElseThrow(() -> new RuntimeException("Refresh token não encontrado!"));
+
+            // 2. Valida se expirou
+            refreshTokenService.verificarExpiracao(tokenNoBanco);
+
+            // 3. Pega o usuário e gera um NOVO Access Token
+            Usuario usuario = tokenNoBanco.getUsuario();
+            String novoAccessToken = jwtUtil.generateAccessToken(usuario.getEmail());
+
+            // 4. Anexa o novo cookie de acesso (mantém o refresh intacto)
+            ResponseCookie jwtCookie = ResponseCookie.from("logapi-token", novoAccessToken)
+                    .httpOnly(true).secure(true).path("/").maxAge(Duration.ofHours(1)).sameSite("Lax").build();
+            
+            response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+
+            return ResponseEntity.ok(new ApiResponse<>("Sucesso", "Token renovado com sucesso!"));
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(403).body(new ApiResponse<>(false, e.getMessage()));
+        }
     }
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        ResponseCookie cookie = ResponseCookie.from("logapi-token", "")
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .maxAge(0)
-                .build();
+        // Apaga os cookies
+        ResponseCookie limpaJwt = ResponseCookie.from("logapi-token", "").httpOnly(true).secure(true).path("/").maxAge(0).build();
+        ResponseCookie limpaRefresh = ResponseCookie.from("logapi-refresh", "").httpOnly(true).secure(true).path("/auth/refresh").maxAge(0).build();
 
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .body(new ApiResponse<>("Sucesso", "Logout realizado"));
+        response.addHeader(HttpHeaders.SET_COOKIE, limpaJwt.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, limpaRefresh.toString());
+
+        return ResponseEntity.ok(new ApiResponse<>("Sucesso", "Logout realizado"));
     }
-
 }
