@@ -38,7 +38,7 @@ export class VerificacaoEmailComponent implements OnInit, OnDestroy {
     this.isLoading = true
 
     try {
-      this.loginService.reenviarCodigo(this.emailUsuario).subscribe({
+      this.loginService.postReenviarCodigo(this.emailUsuario).subscribe({
         next: () => {
           this.toastService.success("E-mail reenviado com sucesso!")
           this.iniciarCooldown()

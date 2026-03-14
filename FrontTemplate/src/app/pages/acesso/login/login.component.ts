@@ -11,7 +11,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { CommonModule } from '@angular/common';
 import { ILoginForm } from '../../../Interfaces/ILoginForm.interface';
 import { AuthService } from '../../../core/services/auth.service';
-import { SocialAuthService, GoogleLoginProvider, SocialUser } from '@abacritt/angularx-social-login';
+import { SocialAuthService, SocialUser, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -24,7 +24,8 @@ import { Subscription } from 'rxjs';
     MatFormFieldModule,
     MatInputModule,
     MatIconModule,
-    MatButtonModule
+    MatButtonModule,
+    GoogleSigninButtonModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -33,6 +34,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   loginForm: FormGroup<ILoginForm>;
   showLoginError = false;
   hidePassword = true;
+  /** Exibido no centro da tela enquanto o login com Google é processado. */
+  googleLoginInProgress = false;
+  /** Tema atual (para o botão Google: preto no escuro, branco/outline no claro). */
+  isDark = false;
+
+  /** Tema do botão Google: preto no modo escuro, outline (claro) no modo claro. */
+  get googleButtonTheme(): 'outline' | 'filled_black' {
+    return this.isDark ? 'filled_black' : 'outline';
+  }
 
   private router = inject(Router);
   private loginService = inject(AcessService);
@@ -58,7 +68,7 @@ export class LoginComponent implements OnInit, OnDestroy {
     const senha = this.loginForm.get('senha')?.value;
 
     if (email && senha) {
-      this.loginService.login(email, senha).subscribe({
+      this.loginService.postLogin(email, senha).subscribe({
         next: (res: any) => {
           this.showLoginError = false;
 
@@ -85,17 +95,37 @@ export class LoginComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+    this.isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('theme-dark');
     if (this.socialAuthService) {
       this.googleAuthSub = this.socialAuthService.authState.subscribe((user: SocialUser | null) => {
         if (user?.idToken) {
-          this.loginService.loginWithGoogle(user.idToken).subscribe({
+          this.googleLoginInProgress = true;
+          this.showLoginError = false;
+          this.loginService.postLoginWithGoogle(user.idToken).subscribe({
             next: (res) => {
-              this.showLoginError = false;
-              this.toastService.success('Login feito com sucesso!');
-              this.authService.setAuthData(res.token, res.nome, res.tipoUsuario, res.id, res.imagem, res.restauranteId);
-              this.router.navigate(['app']);
+              this.googleLoginInProgress = false;
+              if (res?.token) {
+                this.authService.setAuthData(res.token, res.nome, res.tipoUsuario, res.id, res.imagem, res.restauranteId);
+                this.toastService.success('Login feito com sucesso!');
+                this.router.navigate(['app']);
+              } else {
+                this.loginService.postRefreshToken().subscribe({
+                  next: (refresh) => {
+                    this.googleLoginInProgress = false;
+                    this.authService.setAuthData(refresh.token, refresh.nome, refresh.tipoUsuario, refresh.id, refresh.imagem, refresh.restauranteId);
+                    this.toastService.success('Login feito com sucesso!');
+                    this.router.navigate(['app']);
+                  },
+                  error: () => {
+                    this.googleLoginInProgress = false;
+                    this.showLoginError = true;
+                    this.toastService.error('Não foi possível concluir o login. Tente novamente.');
+                  }
+                });
+              }
             },
             error: (err) => {
+              this.googleLoginInProgress = false;
               this.showLoginError = true;
               const msg = err.error?.erro || err.error?.message || 'Não foi possível entrar com o Google. Tente novamente.';
               this.toastService.error(msg);
@@ -110,14 +140,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     this.googleAuthSub?.unsubscribe();
   }
 
-  signInWithGoogle(): void {
-    if (this.socialAuthService) {
-      this.socialAuthService.signIn(GoogleLoginProvider.PROVIDER_ID);
-    } else {
-      this.toastService.warning('Login com Google não disponível. Verifique a configuração da origem no Google Cloud Console.');
-    }
-  }
-
   irParaCadastro() { this.router.navigate(['signup']); }
 
   forgotPassword() {
@@ -125,6 +147,6 @@ export class LoginComponent implements OnInit, OnDestroy {
     if (!email) { this.toastService.warning('Por favor, digite seu e-mail antes de solicitar a redefinição de senha.'); return; }
     if (this.loginForm.get('email')?.invalid) { this.toastService.warning('Por favor, digite um e-mail válido.'); return; }
 
-    this.loginService.esqueciMinhaSenha(email).subscribe({ next: () => this.toastService.success('Instruções para redefinição de senha foram enviadas para seu e-mail!'), error: (err) => this.toastService.error(err.error?.erro || err.error?.message || 'Erro ao enviar e-mail de redefinição. Tente novamente.') });
+    this.loginService.postEsqueciMinhaSenha(email).subscribe({ next: () => this.toastService.success('Instruções para redefinição de senha foram enviadas para seu e-mail!'), error: (err) => this.toastService.error(err.error?.erro || err.error?.message || 'Erro ao enviar e-mail de redefinição. Tente novamente.') });
   }
 }

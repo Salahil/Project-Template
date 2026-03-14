@@ -127,7 +127,9 @@ html, body {
   height: 20px !important;
 }
 
-/* ========== Estilos globais – telas de acesso (imagem 1) ========== */
+/* ========== Estilos globais – telas de acesso ========== */
+/* Botões amarelos (primary): gradiente global em modo claro e escuro */
+.btn-primary,
 .btn-primary-page,
 .primary-action {
   width: 100%;
@@ -137,18 +139,32 @@ html, body {
   font-size: 1rem;
   font-weight: 600;
   color: var(--btn-primary-text, #3B221B) !important;
-  background: linear-gradient(90deg, var(--btn-primary-from), var(--btn-primary-to));
+  background: linear-gradient(135deg, var(--btn-primary-from), var(--btn-primary-to));
+  box-shadow: 0 2px 8px rgba(246, 189, 56, 0.25);
   cursor: pointer;
-  transition: opacity 0.2s, transform 0.1s;
+  transition: opacity 0.2s, transform 0.1s, box-shadow 0.2s;
 }
+.btn-primary:hover:not(:disabled),
 .btn-primary-page:hover:not(:disabled),
 .primary-action:hover:not(:disabled) {
   opacity: 0.95;
+  box-shadow: 0 4px 12px rgba(246, 189, 56, 0.35);
 }
+.btn-primary:disabled,
 .btn-primary-page:disabled,
 .primary-action:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+.theme-dark .btn-primary,
+.theme-dark .btn-primary-page,
+.theme-dark .primary-action {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+.theme-dark .btn-primary:hover:not(:disabled),
+.theme-dark .btn-primary-page:hover:not(:disabled),
+.theme-dark .primary-action:hover:not(:disabled) {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
 }
 
 /* Conteúdo interno do card único (sem segundo quadrado) */

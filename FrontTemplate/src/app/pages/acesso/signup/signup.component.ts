@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { DefaultLoginLayoutComponent } from '../default-login-layout/default-login-layout.component';
 import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, FormArray, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -17,6 +17,8 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
+import { SocialAuthService, SocialUser, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -34,14 +36,22 @@ import { environment } from '../../../environments/environment';
     MatRadioModule,
     MatTabsModule,
     MatCheckboxModule,
+    GoogleSigninButtonModule,
   ],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
 })
-export class SignUpComponent {
+export class SignUpComponent implements OnInit, OnDestroy {
 
   readonly siteKey = environment.recaptchaSiteKey;
   captchaToken: string | null = null;
+  /** Tema atual (para o botão Google: preto no escuro, branco/outline no claro). */
+  isDark = false;
+
+  /** Tema do botão Google: preto no modo escuro, outline (claro) no modo claro. */
+  get googleButtonTheme(): 'outline' | 'filled_black' {
+    return this.isDark ? 'filled_black' : 'outline';
+  }
 
    // Objeto para controlar a visibilidade de cada campo de senha
    passwordVisibility: { [key: string]: boolean } = {
@@ -58,6 +68,8 @@ export class SignUpComponent {
   private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private socialAuthService = inject(SocialAuthService, { optional: true });
+  private googleAuthSub: Subscription | null = null;
 
   mensagemCepInvalido = '';
   // future-proof: container for extra dynamic fields if needed
@@ -109,6 +121,31 @@ export class SignUpComponent {
     this.captchaToken = token;
   }
 
+  ngOnInit(): void {
+    this.isDark = typeof document !== 'undefined' && document.documentElement.classList.contains('theme-dark');
+    if (this.socialAuthService) {
+      this.googleAuthSub = this.socialAuthService.authState.subscribe((user: SocialUser | null) => {
+        if (user?.idToken) {
+          this.loginService.postLoginWithGoogle(user.idToken).subscribe({
+            next: (res) => {
+              this.toastService.success('Conta conectada com sucesso!');
+              this.authService.setAuthData(res.token, res.nome, res.tipoUsuario, res.id, res.imagem, res.restauranteId);
+              this.router.navigate(['app']);
+            },
+            error: (err) => {
+              const msg = err.error?.erro || err.error?.message || 'Não foi possível entrar com o Google. Tente novamente.';
+              this.toastService.error(msg);
+            }
+          });
+        }
+      });
+    }
+  }
+
+  ngOnDestroy(): void {
+    this.googleAuthSub?.unsubscribe();
+  }
+
   cadastrar() {
     if (this.signupForm.invalid) {
       this.signupForm.markAllAsTouched();
@@ -123,7 +160,7 @@ export class SignUpComponent {
       tipo: 'CLIENTE',
       recaptchaToken: this.captchaToken ?? ''
     };
-    this.loginService.signup(payload).subscribe({
+    this.loginService.postSignup(payload).subscribe({
       next: (res) => {
         localStorage.setItem('emailCadastro', form.email);
         localStorage.setItem('idVerificacao', res.idVerificacao);

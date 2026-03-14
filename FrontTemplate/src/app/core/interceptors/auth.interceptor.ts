@@ -22,6 +22,7 @@ export class AuthInterceptor implements HttpInterceptor {
   // NOVO: Lista de rotas que NÃO precisam de token de autorização
   private publicRoutes = [
     '/auth/login',
+    '/auth/login/google',
     '/auth/register',
     '/auth/verificar',
     '/auth/reenviar-codigo',
@@ -85,7 +86,7 @@ export class AuthInterceptor implements HttpInterceptor {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
 
-      return this.loginService.refreshToken().pipe(
+      return this.loginService.postRefreshToken().pipe(
         switchMap(res => {
           this.refreshTokenSubject.next(res.token);
           const retry = request.clone({

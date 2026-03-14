@@ -107,7 +107,7 @@ export class RedefinirSenhaComponent implements OnInit {
     this.isLoading = true;
     const novaSenha = this.resetForm.get('novaSenha')?.value;
     
-    this.accessService.redefinirSenha(this.token, novaSenha).subscribe({
+    this.accessService.postRedefinirSenha(this.token, novaSenha).subscribe({
       next: (response) => {
         console.log('Resposta da redefinição:', response);
         this.isLoading = false;

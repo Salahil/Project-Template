@@ -1,4 +1,4 @@
-// auth.service.ts
+// auth.service.ts — Sem chamadas HTTP; estado/token local. Services com HTTP usam prefixo do verbo: post, get, put, delete.
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
 

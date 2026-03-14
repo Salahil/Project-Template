@@ -20,6 +20,8 @@ export class DefaultLoginLayoutComponent implements OnInit {
   @Input() primaryBtnLoading = false
   @Output() submit = new EventEmitter<void>()
   @Output() navigate = new EventEmitter<void>()
+  /** Emitido quando o usuário alterna tema (para o botão Google atualizar). */
+  @Output() themeChange = new EventEmitter<boolean>()
 
   isDark = false
 
@@ -39,6 +41,7 @@ export class DefaultLoginLayoutComponent implements OnInit {
     const root = document.documentElement
     root.classList.toggle("theme-dark")
     this.isDark = root.classList.contains("theme-dark")
+    this.themeChange.emit(this.isDark)
     if (typeof localStorage !== "undefined") {
       localStorage.setItem(THEME_KEY, this.isDark ? "dark" : "light")
     }
