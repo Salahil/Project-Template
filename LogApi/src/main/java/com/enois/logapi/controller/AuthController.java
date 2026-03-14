@@ -49,13 +49,17 @@ public class AuthController {
                 .body(new ApiResponse<>(loginResponse, "Login realizado com sucesso"));
     }
 
+    // --- NOVO ENDPOINT: Login com Google ---
     @PostMapping("/login/google")
     public ResponseEntity<ApiResponse<LoginResponse>> loginComGoogle(@RequestBody GoogleLoginRequest request, HttpServletResponse response) {
         
+        // 1. Chama o serviço passando o token recebido do Google
         LoginResponse loginResponse = service.loginComGoogle(request);
         
+        // 2. Extrai o nosso Token JWT gerado pelo backend
         String token = loginResponse.getToken(); 
 
+        // 3. Cria o cookie de segurança, idêntico ao login normal
         ResponseCookie cookie = ResponseCookie.from("logapi-token", token)
                 .httpOnly(true)      
                 .secure(true)        
@@ -64,6 +68,7 @@ public class AuthController {
                 .sameSite("Lax")    
                 .build();
 
+        // 4. Retorna a resposta com o Cookie no cabeçalho
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
                 .body(new ApiResponse<>(loginResponse, "Login com Google realizado com sucesso"));
