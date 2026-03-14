@@ -18,6 +18,7 @@ import pt from '@angular/common/locales/pt';
 // Registra a localidade "pt" para o Angular
 registerLocaleData(pt);
 
+// Apenas o ID público do cliente (Client ID). A chave secreta fica só no backend.
 const googleClientId = '48867302798-cu3d9mpbmlmt9hepff9oc7cjqjs22fiq.apps.googleusercontent.com';
 
 export const appConfig: ApplicationConfig = {
@@ -29,7 +30,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withFetch()),
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
 
-    // Login com Google
+    // Login com Google (oneTapEnabled: false evita botão personalizado com nome/email)
     {
       provide: SOCIAL_AUTH_CONFIG,
       useValue: {
@@ -37,7 +38,10 @@ export const appConfig: ApplicationConfig = {
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider(googleClientId)
+            provider: new GoogleLoginProvider(googleClientId, {
+            oneTapEnabled: false,
+            prompt_parent_id: 'google-prompt-parent'
+          })
           }
         ],
         onError: (err) => console.error(err)

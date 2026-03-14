@@ -1,3 +1,4 @@
+/** Padrão: métodos HTTP com prefixo do verbo (get, post, put, delete). */
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 

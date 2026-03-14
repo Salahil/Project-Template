@@ -1,3 +1,4 @@
+/** Sem chamadas HTTP; estado local. Services com HTTP usam prefixo do verbo: post, get, put, delete. */
 import { Injectable } from '@angular/core';
 import { BehaviorSubject } from 'rxjs';
 

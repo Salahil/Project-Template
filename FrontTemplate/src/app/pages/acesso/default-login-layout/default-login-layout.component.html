@@ -1,10 +1,11 @@
 <main class="login-layout">
+  <!-- Container central para o popup do Google (evita abrir no canto) -->
+  <div id="google-prompt-parent" class="google-prompt-parent" aria-hidden="true"></div>
   <div class="layout-bg" aria-hidden="true"></div>
   <div class="theme-toggle" aria-label="Alternar tema">
-    <span class="theme-label">Tema:</span>
     <button type="button" class="toggle-pill" [class.dark]="isDark" (click)="toggleTheme()">
-      <span class="pill-label light" title="Tema claro"><mat-icon>light_mode</mat-icon> Claro</span>
-      <span class="pill-label dark" title="Tema escuro"><mat-icon>dark_mode</mat-icon> Escuro</span>
+      <span class="pill-label light" title="Tema claro"><mat-icon>light_mode</mat-icon></span>
+      <span class="pill-label dark" title="Tema escuro"><mat-icon>dark_mode</mat-icon></span>
     </button>
   </div>
   <div class="form-area">
