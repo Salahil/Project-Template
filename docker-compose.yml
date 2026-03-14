@@ -1,0 +1,29 @@
+services:
+  # 1. O teu Back-end Java
+  backend:
+    build: ./LogApi
+    ports:
+      - "8080:8080" # Porta padrão do Spring Boot
+    restart: always
+
+  # 2. O Front-end Angular do teu colega
+  frontend:
+    build: ./FrontTemplate
+    ports:
+      - "80:80" # Porta padrão do servidor Nginx
+    depends_on:
+      - backend # Diz ao Docker para ligar o Front só depois do Back
+    restart: always
+
+  # 3. O nosso n8n para automações
+  n8n:
+    image: n8nio/n8n
+    ports:
+      - "5678:5678"
+    volumes:
+      - n8n_data:/home/node/.n8n # Mantém os teus fluxos salvos
+    restart: always
+
+# Define o volume persistente do n8n
+volumes:
+  n8n_data:
