@@ -33,13 +33,10 @@ public class AuthController {
     @Autowired
     private JwtUtil jwtUtil;
 
-    // Método Auxiliar para criar Cookies facilmente
     private void anexarCookies(HttpServletResponse response, String accessToken, String refreshToken) {
-        // Access Token (Ex: dura 15 a 60 minutos dependendo do teu JwtUtil)
         ResponseCookie jwtCookie = ResponseCookie.from("logapi-token", accessToken)
                 .httpOnly(true).secure(true).path("/").maxAge(Duration.ofHours(1)).sameSite("Lax").build();
         
-        // Refresh Token (Ex: dura 7 dias)
         ResponseCookie refreshCookie = ResponseCookie.from("logapi-refresh", refreshToken)
                 .httpOnly(true).secure(true).path("/auth/refresh").maxAge(Duration.ofDays(7)).sameSite("Lax").build();
 
@@ -67,7 +64,6 @@ public class AuthController {
         return ResponseEntity.ok(new ApiResponse<>(loginResponse, "Login com Google realizado com sucesso"));
     }
 
-    // --- NOVO ENDPOINT: O MOTOR DO REFRESH ---
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@CookieValue(name = "logapi-refresh", required = false) String requestRefreshToken, HttpServletResponse response) {
         if (requestRefreshToken == null || requestRefreshToken.isEmpty()) {
@@ -75,18 +71,14 @@ public class AuthController {
         }
 
         try {
-            // 1. Busca o token no banco
             RefreshToken tokenNoBanco = refreshTokenService.buscarPorToken(requestRefreshToken)
                     .orElseThrow(() -> new RuntimeException("Refresh token não encontrado!"));
 
-            // 2. Valida se expirou
             refreshTokenService.verificarExpiracao(tokenNoBanco);
 
-            // 3. Pega o usuário e gera um NOVO Access Token
             Usuario usuario = tokenNoBanco.getUsuario();
             String novoAccessToken = jwtUtil.generateAccessToken(usuario.getEmail());
 
-            // 4. Anexa o novo cookie de acesso (mantém o refresh intacto)
             ResponseCookie jwtCookie = ResponseCookie.from("logapi-token", novoAccessToken)
                     .httpOnly(true).secure(true).path("/").maxAge(Duration.ofHours(1)).sameSite("Lax").build();
             
@@ -100,7 +92,6 @@ public class AuthController {
 
     @PostMapping("/logout")
     public ResponseEntity<?> logout(HttpServletResponse response) {
-        // Apaga os cookies
         ResponseCookie limpaJwt = ResponseCookie.from("logapi-token", "").httpOnly(true).secure(true).path("/").maxAge(0).build();
         ResponseCookie limpaRefresh = ResponseCookie.from("logapi-refresh", "").httpOnly(true).secure(true).path("/auth/refresh").maxAge(0).build();
 
