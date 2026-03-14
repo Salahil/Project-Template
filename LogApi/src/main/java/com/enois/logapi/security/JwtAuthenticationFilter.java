@@ -23,34 +23,49 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
 
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt;
+        final String jwt = recuperarToken(request);
         final String userEmail;
 
-        // Se não tiver o header Authorization ou não começar com Bearer, ignora
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+        if (jwt == null) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        jwt = authHeader.substring(7); // Remove o "Bearer "
         try {
             userEmail = jwtUtil.extractUsername(jwt);
 
-            // Se o email existir e o usuário ainda não estiver autenticado no contexto do Spring
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 if (jwtUtil.isTokenValid(jwt, userEmail)) {
                     UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                            userEmail, null, null // Aqui poderíamos passar as Roles/Permissões
+                            userEmail, null, null 
                     );
                     authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                     SecurityContextHolder.getContext().setAuthentication(authToken);
                 }
             }
         } catch (Exception e) {
-            System.err.println("Erro ao validar token: " + e.getMessage());
+            // Log para ajudar no debug
+            System.err.println("Erro na validação do JWT: " + e.getMessage());
         }
 
         filterChain.doFilter(request, response);
+    }
+    
+    private String recuperarToken(HttpServletRequest request) {
+        // Primeiro tenta pelo Header (bom para testes no Postman/Insomnia)
+        var authHeader = request.getHeader("Authorization");
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            return authHeader.replace("Bearer ", "");
+        }
+
+        // Se não achar, tenta buscar no Cookie que criamos
+        if (request.getCookies() != null) {
+            for (var cookie : request.getCookies()) {
+                if ("logapi-token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

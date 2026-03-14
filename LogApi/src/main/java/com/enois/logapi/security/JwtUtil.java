@@ -18,19 +18,27 @@ import java.util.function.Function;
 
 @Component
 public class JwtUtil {
+	
+	private static final long REFRESH_TOKEN_VALIDITY = 7 * 24 * 60 * 60 * 1000;
+    private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
 
     private final PrivateKey privateKey;
     private final PublicKey publicKey;
-
-    // Expiração de 24 horas
-    private static final long JWT_TOKEN_VALIDITY = 24 * 60 * 60 * 1000;
 
     public JwtUtil() throws Exception {
         this.privateKey = loadPrivateKeyFromResource("private_key.pem");
         this.publicKey = loadPublicKeyFromResource("public_key.pem");
     }
+    
+    public String generateRefreshToken(String email) {
+        return Jwts.builder()
+                .setSubject(email)
+                .setIssuedAt(new Date(System.currentTimeMillis()))
+                .setExpiration(new Date(System.currentTimeMillis() + REFRESH_TOKEN_VALIDITY))
+                .signWith(privateKey, SignatureAlgorithm.RS256)
+                .compact();
+    }
 
-    // --- GERAÇÃO DO TOKEN ---
     public String generateAccessToken(String email) {
         return Jwts.builder()
                 .setSubject(email)

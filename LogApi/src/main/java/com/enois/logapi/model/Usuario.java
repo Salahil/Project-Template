@@ -3,9 +3,13 @@ package com.enois.logapi.model;
 import jakarta.persistence.*; 
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -14,9 +18,10 @@ import java.util.UUID;
 
 @Entity
 @Table(name = "usuarios")
+@EntityListeners(AuditingEntityListener.class)
 public class Usuario implements UserDetails {
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -37,6 +42,13 @@ public class Usuario implements UserDetails {
     private Map<String, Object> atributos = new HashMap<>();
 
     private boolean emailVerificado = false;
+    
+    @CreatedDate
+    @Column(updatable = false)
+    private LocalDateTime dataCriacao;
+
+    @LastModifiedDate
+    private LocalDateTime dataAtualizacao;
 
     public Usuario() {}
 
