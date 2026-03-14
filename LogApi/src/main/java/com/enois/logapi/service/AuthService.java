@@ -1,27 +1,29 @@
 package com.enois.logapi.service;
 
-import com.enois.logapi.dto.GoogleLoginRequest;
-import com.enois.logapi.dto.LoginRequest;
-import com.enois.logapi.dto.LoginResponse;
-import com.enois.logapi.dto.RegisterRequest;
-import com.enois.logapi.model.Usuario;
-import com.enois.logapi.repository.UsuarioRepository;
-import com.enois.logapi.security.JwtUtil;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Optional;
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import com.enois.logapi.dto.GoogleLoginRequest;
+import com.enois.logapi.dto.LoginRequest;
+import com.enois.logapi.dto.LoginResponse;
+import com.enois.logapi.dto.RegisterRequest;
+import com.enois.logapi.model.RefreshToken;
+import com.enois.logapi.model.Usuario;
+import com.enois.logapi.repository.UsuarioRepository;
+import com.enois.logapi.security.JwtUtil;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
-import org.springframework.beans.factory.annotation.Value;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Optional;
-import java.util.UUID;
 
 @Service
 public class AuthService {
@@ -40,6 +42,9 @@ public class AuthService {
     
     @Autowired
     private AuthenticationManager authenticationManager; 
+    
+    @Autowired
+    private RefreshTokenService refreshTokenService;
 
     public Usuario registrar(RegisterRequest request, String recaptchaToken) {
     
@@ -69,11 +74,17 @@ public class AuthService {
     	authenticationManager.authenticate(
     	        new UsernamePasswordAuthenticationToken(request.getEmail(), request.getSenha())
     	);
-        Usuario user = repository.findByEmail(request.getEmail())
+    	Usuario user = repository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+        
         String token = jwtUtil.generateAccessToken(user.getEmail());
+        
+        // GERA O REFRESH TOKEN AQUI!
+        RefreshToken refreshToken = refreshTokenService.criarRefreshToken(user);
+
         return new LoginResponse(
             token,
+            refreshToken.getToken(), // Passa o Refresh Token
             user.getId(),
             user.getNome(),
             user.getEmail(),
@@ -134,12 +145,15 @@ public class AuthService {
                 user = repository.save(user); // Salva no banco de dados
             }
 
-            // 5. Gera o NOSSO token JWT da API
             String nossoTokenJwt = jwtUtil.generateAccessToken(user.getEmail());
+            
+            // 5.5 GERA O REFRESH TOKEN
+            RefreshToken rtGoogle = refreshTokenService.criarRefreshToken(user);
 
-            // 6. Retorna a resposta padronizada para o Sérgio
+            // 6. Retorna a resposta padronizada
             return new LoginResponse(
                     nossoTokenJwt,
+                    rtGoogle.getToken(), // Passa o Refresh Token
                     user.getId(),
                     user.getNome(),
                     user.getEmail(),
