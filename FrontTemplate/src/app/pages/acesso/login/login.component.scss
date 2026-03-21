@@ -25,7 +25,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid var(--border-color, #e0e0e0);
-    border-top-color: var(--tavola-destaque, #f6bd38);
+    border-top-color: var(--primary);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -47,10 +47,22 @@
   padding: 0;
 }
 
-.logo {
-  display: block;
+.brand-mark {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin: 0 auto 16px;
   width: 72px;
+  height: 72px;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, var(--btn-primary-from), var(--btn-primary-to));
+  color: var(--btn-primary-text);
+}
+
+.brand-icon {
+  font-size: 40px;
+  width: 40px;
+  height: 40px;
 }
 
 .title {

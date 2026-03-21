@@ -1,21 +1,16 @@
-/** Padrão: métodos HTTP com prefixo do verbo (get, post, put, delete). */
 import { Injectable } from '@angular/core';
 import { Observable, of } from 'rxjs';
 
 export interface Notificacao {
   id: string;
-  restauranteId: string;
-  nomeRestaurante: string;
-  dataReserva: string;
-  // adicione outros campos conforme necessário
+  titulo: string;
+  corpo: string;
+  lida: boolean;
 }
 
 @Injectable({ providedIn: 'root' })
 export class NotificacoesService {
-  constructor() {}
-
   getNotificacoes(): Observable<Notificacao[]> {
-    // Implementação mínima: retornar lista vazia (o backend deve fornecer dados reais)
-    return of([] as Notificacao[]);
+    return of([]);
   }
 }

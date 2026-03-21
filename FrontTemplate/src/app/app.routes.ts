@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { AuthGuard } from './core/guards/auth.guard';
-import { roleGuard } from './core/guards/role.guard';
 import { ConfirmarCodigoComponent } from './pages/acesso/confirmar-codigo/confirmar-codigo.component';
 import { RedefinirSenhaComponent } from './pages/acesso/redefinir-senha/redefinir-senha.component';
 
@@ -33,11 +32,9 @@ export const routes: Routes = [
     loadComponent: () => RedefinirSenhaComponent
   },
   {
-    // Layout principal protegido por autenticação e papel do usuário
     path: 'app',
     loadComponent: () => import('./pages/layout-principal/layout-principal.component').then(m => m.LayoutPrincipalComponent),
-    canActivate: [AuthGuard, roleGuard],
-    data: { roles: ['CLIENTE', 'RESTAURANTE', 'FUNCIONARIO'] }
+    canActivate: [AuthGuard]
   },
   {
     path: '404',

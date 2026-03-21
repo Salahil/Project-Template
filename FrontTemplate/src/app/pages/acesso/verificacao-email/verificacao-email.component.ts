@@ -3,7 +3,7 @@ import { CommonModule } from "@angular/common"
 import { Router } from "@angular/router"
 import { MatIconModule } from "@angular/material/icon"
 import { DefaultLoginLayoutComponent } from "../default-login-layout/default-login-layout.component"
-import { AcessService } from "../../../core/services/access.service"
+import { AccessService } from "../../../core/services/access.service"
 import { ToastrService } from "ngx-toastr"
 
 @Component({
@@ -23,7 +23,7 @@ export class VerificacaoEmailComponent implements OnInit, OnDestroy {
   emailEnviado = true
 
   private router = inject(Router);
-  private loginService = inject(AcessService);
+  private accessService = inject(AccessService);
   private toastService = inject(ToastrService);
 
   ngOnInit(): void {
@@ -38,7 +38,7 @@ export class VerificacaoEmailComponent implements OnInit, OnDestroy {
     this.isLoading = true
 
     try {
-      this.loginService.postReenviarCodigo(this.emailUsuario).subscribe({
+      this.accessService.postAuthReenviarCodigo(this.emailUsuario).subscribe({
         next: () => {
           this.toastService.success("E-mail reenviado com sucesso!")
           this.iniciarCooldown()

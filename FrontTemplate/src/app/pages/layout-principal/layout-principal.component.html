@@ -1,15 +1,16 @@
-<!-- Minimal layout: menubar + sidebar with buttons -->
 <div class="layout-container">
   <header class="toolbar" role="banner">
-    <div style="display:flex;align-items:center;gap:16px">
-      <img src="assets/png/LogoTavolaSimples.png" alt="Logo Tavola" class="logo" style="height:40px" />
+    <div class="toolbar-left">
+      <div class="brand-inline" aria-hidden="true">
+        <mat-icon class="brand-inline-icon">apps</mat-icon>
+      </div>
       <button class="menu-toggle" (click)="toggleSidebar()" type="button" aria-label="Alternar sidebar">
         <mat-icon aria-hidden="true">menu</mat-icon>
       </button>
     </div>
 
-    <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
-      <span style="font-weight:600">{{ userName }}</span>
+    <div class="toolbar-right">
+      <span class="user-name">{{ userName }}</span>
       <button mat-button (click)="logout()" type="button">
         <mat-icon>logout</mat-icon>
         Sair
@@ -20,26 +21,18 @@
   <div class="main-wrapper">
     <aside class="desktop-sidebar" [class.fechada]="!sidebarAberta" role="navigation" aria-label="Menu lateral">
       <div class="sidebar-header">
-        <img src="assets/png/LogoTavolaSimples.png" alt="Logo Tavola" class="logo" />
+        <div class="brand-inline brand-inline--sidebar" aria-hidden="true">
+          <mat-icon class="brand-inline-icon">apps</mat-icon>
+        </div>
       </div>
       <nav class="menu" role="navigation" aria-label="Menu principal">
         <button routerLink="/home" routerLinkActive="active" type="button">
           <mat-icon>home</mat-icon>
           <span>Início</span>
         </button>
-        <button routerLink="/historico" routerLinkActive="active" type="button">
-          <mat-icon>history</mat-icon>
-          <span>Histórico</span>
-        </button>
-        <button routerLink="/favoritos" routerLinkActive="active" type="button">
-          <mat-icon>favorite</mat-icon>
-          <span>Favoritos</span>
-        </button>
       </nav>
     </aside>
 
-    <main class="content" role="main">
-      <!-- Intentionally empty: this layout shows only sidebar + menubar -->
-    </main>
+    <main class="content" role="main"></main>
   </div>
 </div>

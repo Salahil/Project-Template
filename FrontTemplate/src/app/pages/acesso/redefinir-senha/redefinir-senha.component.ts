@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { ToastrService } from 'ngx-toastr';
-import { AcessService } from '../../../core/services/access.service';
+import { AccessService } from '../../../core/services/access.service';
 import { DefaultLoginLayoutComponent } from '../default-login-layout/default-login-layout.component';
 
 // Imports do Angular Material e NG-Zorro (similares ao seu login)
@@ -51,7 +51,7 @@ export class RedefinirSenhaComponent implements OnInit {
 
   private route = inject(ActivatedRoute);
   private router = inject(Router);
-  private accessService = inject(AcessService);
+  private accessService = inject(AccessService);
   private toastService = inject(ToastrService);
   private fb = inject(FormBuilder);
 
@@ -107,7 +107,7 @@ export class RedefinirSenhaComponent implements OnInit {
     this.isLoading = true;
     const novaSenha = this.resetForm.get('novaSenha')?.value;
     
-    this.accessService.postRedefinirSenha(this.token, novaSenha).subscribe({
+    this.accessService.postAuthRedefinirSenha(this.token, novaSenha).subscribe({
       next: (response) => {
         console.log('Resposta da redefinição:', response);
         this.isLoading = false;

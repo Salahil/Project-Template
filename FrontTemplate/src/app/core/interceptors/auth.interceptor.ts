@@ -12,14 +12,13 @@ import { catchError, switchMap, filter, take, finalize } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 import { AuthService } from '../services/auth.service';
-import { AcessService } from '../services/access.service';
+import { AccessService } from '../services/access.service';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   private isRefreshing = false;
-  private refreshTokenSubject = new BehaviorSubject<string|null>(null);
+  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
 
-  // NOVO: Lista de rotas que NÃO precisam de token de autorização
   private publicRoutes = [
     '/auth/login',
     '/auth/login/google',
@@ -33,23 +32,18 @@ export class AuthInterceptor implements HttpInterceptor {
 
   constructor(
     private auth: AuthService,
-    private loginService: AcessService,
+    private accessService: AccessService,
     private router: Router
   ) {}
 
   intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     const isApiRequest = request.url.startsWith(`${environment.apiUrl}`);
-    
-    // NOVO: Verifica se a rota da requisição está na nossa lista de rotas públicas
-    const isPublicRoute = this.publicRoutes.some(route => request.url.includes(route));
+    const isPublicRoute = this.publicRoutes.some((route) => request.url.includes(route));
 
-    // Se não for uma requisição para a nossa API ou se for uma rota pública,
-    // simplesmente passamos a requisição adiante sem modificá-la.
     if (!isApiRequest || isPublicRoute) {
       return next.handle(request);
     }
-    
-    // Se for uma rota privada da API, adicionamos o token
+
     const token = this.auth.getToken();
     const authReq = request.clone({
       setHeaders: token ? { Authorization: `Bearer ${token}` } : {},
@@ -57,7 +51,7 @@ export class AuthInterceptor implements HttpInterceptor {
     });
 
     return next.handle(authReq).pipe(
-      catchError(err => {
+      catchError((err) => {
         if (!(err instanceof HttpErrorResponse)) {
           return throwError(() => err);
         }
@@ -76,18 +70,14 @@ export class AuthInterceptor implements HttpInterceptor {
       })
     );
   }
-  
-  // O resto do seu ficheiro handle401Error(...) permanece igual...
-  private handle401Error(
-    request: HttpRequest<any>,
-    next: HttpHandler
-  ): Observable<HttpEvent<any>> {
+
+  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
     if (!this.isRefreshing) {
       this.isRefreshing = true;
       this.refreshTokenSubject.next(null);
 
-      return this.loginService.postRefreshToken().pipe(
-        switchMap(res => {
+      return this.accessService.postAuthRefreshToken().pipe(
+        switchMap((res) => {
           const tkn = res.token || '';
           this.refreshTokenSubject.next(tkn);
           const retry = request.clone({
@@ -96,7 +86,7 @@ export class AuthInterceptor implements HttpInterceptor {
           });
           return next.handle(retry);
         }),
-        catchError(_ => {
+        catchError(() => {
           this.auth.clearAuthData();
           this.router.navigate(['/login']);
           return EMPTY;
@@ -110,7 +100,7 @@ export class AuthInterceptor implements HttpInterceptor {
     return this.refreshTokenSubject.pipe(
       filter((t): t is string => t != null),
       take(1),
-      switchMap(tkn => {
+      switchMap((tkn) => {
         const retry = request.clone({
           setHeaders: tkn ? { Authorization: `Bearer ${tkn}` } : {},
           withCredentials: true

@@ -1,8 +1,8 @@
 import { Component, inject, OnInit, OnDestroy } from '@angular/core';
 import { DefaultLoginLayoutComponent } from '../default-login-layout/default-login-layout.component';
-import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, FormArray, FormBuilder } from '@angular/forms';
+import { FormControl, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors, FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
-import { AcessService } from '../../../core/services/access.service';
+import { AccessService } from '../../../core/services/access.service';
 import { ToastrService } from 'ngx-toastr';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
@@ -14,7 +14,6 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatRadioModule } from '@angular/material/radio';
 import { MatTabsModule } from '@angular/material/tabs';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { HttpClient } from '@angular/common/http';
 import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 import { SocialAuthService, SocialUser, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
@@ -63,9 +62,8 @@ export class SignUpComponent implements OnInit, OnDestroy {
   signupForm: FormGroup;
 
   private router = inject(Router);
-  private loginService = inject(AcessService);
+  private accessService = inject(AccessService);
   private toastService = inject(ToastrService);
-  private http = inject(HttpClient);
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private socialAuthService = inject(SocialAuthService, { optional: true });
@@ -126,17 +124,10 @@ export class SignUpComponent implements OnInit, OnDestroy {
     if (this.socialAuthService) {
       this.googleAuthSub = this.socialAuthService.authState.subscribe((user: SocialUser | null) => {
         if (user?.idToken) {
-          this.loginService.postLoginWithGoogle(user.idToken).subscribe({
+          this.accessService.postAuthLoginGoogle(user.idToken).subscribe({
             next: (res) => {
               this.toastService.success('Conta conectada com sucesso!');
-              this.authService.setAuthData(
-                res.token || '',
-                res.nome,
-                res.tipoUsuario,
-                res.id,
-                res.imagem,
-                res.restauranteId
-              );
+              this.authService.setAuthData(res.token || '', res.nome, res.id, res.imagem);
               this.router.navigate(['app']);
             },
             error: (err) => {
@@ -164,10 +155,9 @@ export class SignUpComponent implements OnInit, OnDestroy {
       email: form.email,
       senha: form.password,
       telefone: form.telefone,
-      tipo: 'CLIENTE',
       recaptchaToken: this.captchaToken ?? ''
     };
-    this.loginService.postSignup(payload).subscribe({
+    this.accessService.postAuthRegister(payload).subscribe({
       next: (res) => {
         localStorage.setItem('emailCadastro', form.email);
         localStorage.setItem('idVerificacao', res.idVerificacao);

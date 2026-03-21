@@ -7,7 +7,9 @@
     </div>
   </div>
   <div class="login-card page-card">
-    <img src="/assets/png/LogoTavolaSimples.png" alt="Tavola" class="logo" />
+    <div class="brand-mark" aria-hidden="true">
+      <mat-icon class="brand-icon">apps</mat-icon>
+    </div>
     <h1 class="title">Bem-vindo de volta</h1>
     <p class="subtitle">Faça login na sua conta</p>
     <form [formGroup]="loginForm" (ngSubmit)="realizarLogin()" class="login-form page-form">
