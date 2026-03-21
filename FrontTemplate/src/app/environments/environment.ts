@@ -1,19 +1,15 @@
 /**
- * Configuração global da aplicação.
+ * Desenvolvimento (`ng serve` + `proxy.conf.json`):
+ * - No browser as URLs são `/api/auth/...` e `/api/usuarios/...` (prefixo só no front).
+ * - O proxy remove `/api` e encaminha para `https://localhost:8443/auth/...` (igual ao LogApi).
  *
- * API (HTTPS): O backend Spring Boot usa HTTPS com certificado (keystore.p12).
- * O arquivo keystore fica APENAS no backend (src/main/resources). O Angular
- * não deve e não tem acesso a esse arquivo — apenas usa a URL HTTPS aqui.
+ * Esse prefixo evita 404 no Vite (Angular 21): rotas diretas `/auth` nem sempre são proxadas.
  *
- * Certificado self-signed (desenvolvimento): ao testar, o navegador pode
- * bloquear por "Certificado inválido". Para liberar: com o backend rodando,
- * abra https://localhost:8080/... no Chrome, clique em "Avançado" e em
- * "Ir para localhost (não seguro)". Depois disso o Angular consegue falar
- * com o Java por HTTPS.
+ * Produção: `environment.prod.ts` usa `apiUrl` absoluto, sem `/api`.
  */
 export const environment = {
   production: false,
-  /** URL base do backend. Use HTTPS quando o backend estiver com SSL (ex.: keystore). */
-  apiUrl: 'https://localhost:8443',
+  apiUrl: '/api',
+  apiPathPrefixes: ['/api'] as const,
   recaptchaSiteKey: '6Ld3jIIsAAAAABndFXtLD84xSp7Terd6A3EMTPDB'
-}; 
+};

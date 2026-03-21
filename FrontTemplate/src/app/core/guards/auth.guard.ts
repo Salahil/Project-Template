@@ -19,8 +19,7 @@ export class AuthGuard implements CanActivate {
     _route: ActivatedRouteSnapshot,
     _state: RouterStateSnapshot
   ): Observable<boolean | UrlTree> {
-    const token = this.auth.getToken();
-    if (token) {
+    if (this.auth.hasSessionHint()) {
       return of(true);
     }
     return this.accessService.postAuthRefreshToken().pipe(

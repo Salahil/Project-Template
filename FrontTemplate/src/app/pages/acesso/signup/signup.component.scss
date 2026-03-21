@@ -105,6 +105,12 @@
   }
 }
 
+.recaptcha-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 12px 0 8px;
+}
+
 @media (max-width: 600px) {
   .signup-header .title {
     font-size: 1.35rem;

@@ -18,6 +18,7 @@ import { AuthService } from '../../../core/services/auth.service';
 import { environment } from '../../../environments/environment';
 import { SocialAuthService, SocialUser, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { Subscription } from 'rxjs';
+import { RecaptchaModule } from 'ng-recaptcha';
 
 @Component({
   selector: 'app-signup',
@@ -36,6 +37,7 @@ import { Subscription } from 'rxjs';
     MatTabsModule,
     MatCheckboxModule,
     GoogleSigninButtonModule,
+    RecaptchaModule
   ],
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss']
@@ -130,9 +132,8 @@ export class SignUpComponent implements OnInit, OnDestroy {
               this.authService.setAuthData(res.token || '', res.nome, res.id, res.imagem);
               this.router.navigate(['app']);
             },
-            error: (err) => {
-              const msg = err.error?.erro || err.error?.message || 'Não foi possível entrar com o Google. Tente novamente.';
-              this.toastService.error(msg);
+            error: (err: unknown) => {
+              this.toastService.error(AccessService.apiErrorMessage(err));
             }
           });
         }
@@ -149,24 +150,26 @@ export class SignUpComponent implements OnInit, OnDestroy {
       this.signupForm.markAllAsTouched();
       return;
     }
+    if (!this.captchaToken) {
+      this.toastService.warning('Confirme o reCAPTCHA antes de cadastrar.');
+      return;
+    }
     const form = this.signupForm.getRawValue();
     const payload = {
       nome: form.name,
       email: form.email,
       senha: form.password,
       telefone: form.telefone,
-      recaptchaToken: this.captchaToken ?? ''
+      recaptchaToken: this.captchaToken
     };
     this.accessService.postAuthRegister(payload).subscribe({
       next: (res) => {
         localStorage.setItem('emailCadastro', form.email);
-        localStorage.setItem('idVerificacao', res.idVerificacao);
-        this.toastService.success(res.mensagem);
-        this.router.navigate(['app']);
+        this.toastService.success(res.mensagem || 'Cadastro concluído.');
+        this.router.navigate(['/login']);
       },
-      error: (err: any) => {
-        const errorMessage = err.error?.erro || err.error?.message || "Erro inesperado! Tente novamente mais tarde";
-        this.toastService.error(errorMessage);
+      error: (err: unknown) => {
+        this.toastService.error(AccessService.apiErrorMessage(err));
       }
     });
   }

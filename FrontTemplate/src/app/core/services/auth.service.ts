@@ -16,7 +16,8 @@ export class AuthService {
 
   private _token: string | null = null;
   private _perfil: Perfil | null = null;
-  private readonly BASE_IMAGE_URL = `${environment.apiUrl}`;
+  /** Com proxy dev (`/api`), URLs de imagem relativas ao origin do app. */
+  private readonly BASE_IMAGE_URL = environment.apiUrl.startsWith('http') ? environment.apiUrl : '';
 
   constructor() {
     this._token = localStorage.getItem(this.TOKEN_KEY);
@@ -30,7 +31,12 @@ export class AuthService {
   }
 
   setAuthData(token: string, nome: string, id?: string, imagem?: string | null) {
-    this.setToken(token);
+    if (token) {
+      this.setToken(token);
+    } else {
+      this._token = null;
+      localStorage.removeItem(this.TOKEN_KEY);
+    }
     this.setPerfil({ nome, id, imagem });
     localStorage.setItem(this.USER_NAME_KEY, nome);
     if (id) {
@@ -78,12 +84,17 @@ export class AuthService {
     const id = localStorage.getItem(this.USER_ID_KEY) || undefined;
     const imagem = localStorage.getItem(this.USER_IMAGE_KEY) || undefined;
 
-    if (nome && this.getToken()) {
+    if (nome) {
       this._perfil = { nome, id, imagem };
       return this._perfil;
     }
 
     return null;
+  }
+
+  /** Há indício de sessão local (perfil salvo após login ou token legado). */
+  hasSessionHint(): boolean {
+    return !!this.getToken() || !!localStorage.getItem(this.USER_NAME_KEY);
   }
 
   clearAuthData() {
@@ -96,9 +107,13 @@ export class AuthService {
   }
 
   getAbsoluteImageUrl(relativePath: string | null | undefined): string {
-    if (relativePath) {
-      return `${this.BASE_IMAGE_URL}${relativePath}`;
+    if (!relativePath) {
+      return '';
     }
-    return '';
+    if (!this.BASE_IMAGE_URL) {
+      return relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
+    }
+    const path = relativePath.startsWith('/') ? relativePath : `/${relativePath}`;
+    return `${this.BASE_IMAGE_URL}${path}`;
   }
 }
