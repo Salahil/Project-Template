@@ -35,10 +35,20 @@ public class AuthController {
 
     private void anexarCookies(HttpServletResponse response, String accessToken, String refreshToken) {
         ResponseCookie jwtCookie = ResponseCookie.from("logapi-token", accessToken)
-                .httpOnly(true).secure(true).path("/").maxAge(Duration.ofHours(1)).sameSite("Lax").build();
+                .httpOnly(true)
+                .secure(true)    // Mantenha true se estiver usando HTTPS
+                .path("/")
+                .maxAge(Duration.ofHours(1))
+                .sameSite("None") // "None" é necessário para cross-site em localhost HTTPS
+                .build();
         
         ResponseCookie refreshCookie = ResponseCookie.from("logapi-refresh", refreshToken)
-                .httpOnly(true).secure(true).path("/auth/refresh").maxAge(Duration.ofDays(7)).sameSite("Lax").build();
+                .httpOnly(true)
+                .secure(true)
+                .path("/auth/refresh")
+                .maxAge(Duration.ofDays(7))
+                .sameSite("None")
+                .build();
 
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
         response.addHeader(HttpHeaders.SET_COOKIE, refreshCookie.toString());
@@ -58,12 +68,17 @@ public class AuthController {
     }
 
     @PostMapping("/login/google")
-    public ResponseEntity<ApiResponse<LoginResponse>> loginComGoogle(@RequestBody GoogleLoginRequest request, HttpServletResponse response) {
-        LoginResponse loginResponse = service.loginComGoogle(request);
-        anexarCookies(response, loginResponse.getToken(), loginResponse.getRefreshToken());
-        return ResponseEntity.ok(new ApiResponse<>(loginResponse, "Login com Google realizado com sucesso"));
+    public ResponseEntity<ApiResponse<?>> loginComGoogle(@RequestBody GoogleLoginRequest request, HttpServletResponse response) {
+        try {
+            LoginResponse loginResponse = service.loginComGoogle(request);
+            anexarCookies(response, loginResponse.getToken(), loginResponse.getRefreshToken());
+            return ResponseEntity.ok(new ApiResponse<>(loginResponse, "Login com Google realizado com sucesso"));
+        } catch (Exception e) {
+            // Evita o redirect para /error (GET) e retorna o erro real como 400
+            return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Erro no login Google: " + e.getMessage()));
+        }
     }
-
+    
     @PostMapping("/refresh")
     public ResponseEntity<?> refreshToken(@CookieValue(name = "logapi-refresh", required = false) String requestRefreshToken, HttpServletResponse response) {
         if (requestRefreshToken == null || requestRefreshToken.isEmpty()) {
