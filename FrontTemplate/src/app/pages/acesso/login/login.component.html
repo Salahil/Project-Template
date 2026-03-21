@@ -30,7 +30,10 @@
         <a href="#" (click)="forgotPassword(); $event.preventDefault();" class="link-primary">Esqueceu a senha?</a>
       </div>
       <div *ngIf="showLoginError" class="login-error text-danger">Credenciais inválidas</div>
-      <button class="btn-primary btn-primary-page" type="submit" [disabled]="!loginForm.valid">Entrar</button>
+      <div class="recaptcha-wrap">
+        <re-captcha [siteKey]="siteKey" (resolved)="onCaptchaResolved($event)"></re-captcha>
+      </div>
+      <button class="btn-primary btn-primary-page" type="submit" [disabled]="!loginForm.valid || !captchaToken">Entrar</button>
       <p class="divider">ou entre com</p>
       <div class="socials">
         <div class="social-google-wrapper">

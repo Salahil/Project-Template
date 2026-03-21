@@ -42,8 +42,10 @@
         <mat-error *ngIf="signupForm.get('passwordConfirm')?.hasError('required')">Confirmação obrigatória</mat-error>
         <mat-error *ngIf="signupForm.get('passwordConfirm')?.hasError('passwordMismatch')">Senhas não conferem</mat-error>
       </mat-form-field>
-      <p class="recaptcha-note">Proteção contra robôs pode ser reativada configurando ng-recaptcha.</p>
-      <button type="submit" class="primary-action btn-primary-page" [disabled]="signupForm.invalid">Cadastrar</button>
+      <div class="recaptcha-wrap">
+        <re-captcha [siteKey]="siteKey" (resolved)="onResolved($event)"></re-captcha>
+      </div>
+      <button type="submit" class="primary-action btn-primary-page" [disabled]="signupForm.invalid || !captchaToken">Cadastrar</button>
       <div class="divider" role="separator">Ou entre com:</div>
       <div class="socials">
         <div class="social-google-wrapper">

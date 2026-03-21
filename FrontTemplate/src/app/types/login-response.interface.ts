@@ -1,5 +1,12 @@
+/** Envelope padrão do LogApi (Java `ApiResponse<T>`). */
+export interface ApiResponseBody<T = unknown> {
+  sucesso: boolean;
+  mensagem: string;
+  dados?: T;
+}
+
 export interface LoginResponse {
-  /** Pode vir vazio se o JWT vier só em cookie httpOnly. */
+  /** O LogApi não serializa o JWT no JSON (@JsonIgnore); fica no cookie `logapi-token`. */
   token: string;
   nome: string;
   id: string;
@@ -8,13 +15,14 @@ export interface LoginResponse {
   idVerificacao?: string;
   mensagem?: string;
 
-  /** Campos crus do backend (antes de normalizar). */
   userId?: string;
   email?: string;
   dadosExtras?: Record<string, unknown>;
 }
 
+/** Resposta de POST /auth/register: `dados` costuma ser a string "Sucesso". */
 export interface RegisterResponse {
-  idVerificacao: string;
+  sucesso?: boolean;
   mensagem: string;
+  dados?: unknown;
 }

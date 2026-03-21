@@ -7,17 +7,43 @@ import {
   HttpErrorResponse
 } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, BehaviorSubject, EMPTY, throwError } from 'rxjs';
-import { catchError, switchMap, filter, take, finalize } from 'rxjs/operators';
+import { Observable, EMPTY, throwError } from 'rxjs';
+import { catchError, switchMap, shareReplay, tap, finalize } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
 
 import { AuthService } from '../services/auth.service';
 import { AccessService } from '../services/access.service';
 
+function requestPathname(url: string): string {
+  if (url.startsWith('http://') || url.startsWith('https://')) {
+    try {
+      return new URL(url).pathname;
+    } catch {
+      return '';
+    }
+  }
+  const q = url.indexOf('?');
+  return q >= 0 ? url.slice(0, q) : url;
+}
+
+/** Chamadas ao LogApi: URL absoluta em produção ou paths `/auth`, `/usuarios` no dev com proxy. */
+function isBackendRequest(url: string): boolean {
+  const base = environment.apiUrl;
+  if (base.startsWith('http')) {
+    return url.startsWith(base);
+  }
+  const path = requestPathname(url);
+  if (base.startsWith('/')) {
+    return path === base || path.startsWith(`${base}/`);
+  }
+  const prefixes = environment.apiPathPrefixes;
+  return prefixes.length > 0 && prefixes.some((p) => path === p || path.startsWith(`${p}/`));
+}
+
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
-  private isRefreshing = false;
-  private refreshTokenSubject = new BehaviorSubject<string | null>(null);
+  /** Uma única chamada a /auth/refresh por rajada de 401. */
+  private refreshInFlight$: Observable<void> | null = null;
 
   private publicRoutes = [
     '/auth/login',
@@ -36,12 +62,12 @@ export class AuthInterceptor implements HttpInterceptor {
     private router: Router
   ) {}
 
-  intercept(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    const isApiRequest = request.url.startsWith(`${environment.apiUrl}`);
+  intercept(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    const isApiRequest = isBackendRequest(request.url);
     const isPublicRoute = this.publicRoutes.some((route) => request.url.includes(route));
 
     if (!isApiRequest || isPublicRoute) {
-      return next.handle(request);
+      return next.handle(isApiRequest ? request.clone({ withCredentials: true }) : request);
     }
 
     const token = this.auth.getToken();
@@ -63,7 +89,7 @@ export class AuthInterceptor implements HttpInterceptor {
         }
 
         if (err.status === 401) {
-          return this.handle401Error(authReq, next);
+          return this.handle401Error(request, next);
         }
 
         return throwError(() => err);
@@ -71,42 +97,25 @@ export class AuthInterceptor implements HttpInterceptor {
     );
   }
 
-  private handle401Error(request: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (!this.isRefreshing) {
-      this.isRefreshing = true;
-      this.refreshTokenSubject.next(null);
-
-      return this.accessService.postAuthRefreshToken().pipe(
-        switchMap((res) => {
-          const tkn = res.token || '';
-          this.refreshTokenSubject.next(tkn);
-          const retry = request.clone({
-            setHeaders: tkn ? { Authorization: `Bearer ${tkn}` } : {},
-            withCredentials: true
-          });
-          return next.handle(retry);
+  private handle401Error(request: HttpRequest<unknown>, next: HttpHandler): Observable<HttpEvent<unknown>> {
+    if (!this.refreshInFlight$) {
+      this.refreshInFlight$ = this.accessService.postAuthRefreshToken().pipe(
+        tap({
+          error: () => {
+            this.auth.clearAuthData();
+            this.router.navigate(['/login']);
+          }
         }),
-        catchError(() => {
-          this.auth.clearAuthData();
-          this.router.navigate(['/login']);
-          return EMPTY;
-        }),
+        shareReplay({ bufferSize: 1, refCount: true }),
         finalize(() => {
-          this.isRefreshing = false;
+          this.refreshInFlight$ = null;
         })
       );
     }
 
-    return this.refreshTokenSubject.pipe(
-      filter((t): t is string => t != null),
-      take(1),
-      switchMap((tkn) => {
-        const retry = request.clone({
-          setHeaders: tkn ? { Authorization: `Bearer ${tkn}` } : {},
-          withCredentials: true
-        });
-        return next.handle(retry);
-      })
+    return this.refreshInFlight$.pipe(
+      switchMap(() => next.handle(request.clone({ withCredentials: true }))),
+      catchError(() => EMPTY)
     );
   }
 }

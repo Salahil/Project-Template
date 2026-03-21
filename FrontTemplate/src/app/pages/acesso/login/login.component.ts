@@ -13,6 +13,8 @@ import { ILoginForm } from '../../../Interfaces/ILoginForm.interface';
 import { AuthService } from '../../../core/services/auth.service';
 import { SocialAuthService, SocialUser, GoogleSigninButtonModule } from '@abacritt/angularx-social-login';
 import { Subscription } from 'rxjs';
+import { RecaptchaModule } from 'ng-recaptcha';
+import { environment } from '../../../environments/environment';
 
 @Component({
   selector: 'app-login',
@@ -25,7 +27,8 @@ import { Subscription } from 'rxjs';
     MatInputModule,
     MatIconModule,
     MatButtonModule,
-    GoogleSigninButtonModule
+    GoogleSigninButtonModule,
+    RecaptchaModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss']
@@ -36,9 +39,15 @@ export class LoginComponent implements OnInit, OnDestroy {
   hidePassword = true;
   googleLoginInProgress = false;
   isDark = false;
+  readonly siteKey = environment.recaptchaSiteKey;
+  captchaToken: string | null = null;
 
   get googleButtonTheme(): 'outline' | 'filled_black' {
     return this.isDark ? 'filled_black' : 'outline';
+  }
+
+  onCaptchaResolved(token: string | null): void {
+    this.captchaToken = token;
   }
 
   private router = inject(Router);
@@ -65,7 +74,11 @@ export class LoginComponent implements OnInit, OnDestroy {
     const senha = this.loginForm.get('senha')?.value;
 
     if (email && senha) {
-      this.accessService.postAuthLogin(email, senha).subscribe({
+      if (!this.captchaToken) {
+        this.toastService.warning('Confirme o reCAPTCHA antes de entrar.');
+        return;
+      }
+      this.accessService.postAuthLogin(email, senha, this.captchaToken).subscribe({
         next: (res) => {
           this.showLoginError = false;
 
@@ -75,17 +88,19 @@ export class LoginComponent implements OnInit, OnDestroy {
             return;
           }
 
-          this.toastService.success('Login feito com sucesso!');
+          if (!res.nome || !res.id) {
+            this.showLoginError = true;
+            this.toastService.error('Resposta de login inválida. Tente novamente.');
+            return;
+          }
+
+          this.toastService.success(res.mensagem || 'Login feito com sucesso!');
           this.authService.setAuthData(res.token || '', res.nome, res.id, res.imagem);
           this.router.navigate(['app']);
         },
-        error: (err: any) => {
+        error: (err: unknown) => {
           this.showLoginError = true;
-          const errorMessage =
-            err.error?.erro ||
-            err.error?.message ||
-            'Não foi possível acessar sua conta. Verifique seu e-mail e senha e tente novamente.';
-          this.toastService.error(errorMessage);
+          this.toastService.error(AccessService.apiErrorMessage(err));
         }
       });
     } else {
@@ -104,33 +119,19 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.accessService.postAuthLoginGoogle(user.idToken).subscribe({
             next: (res) => {
               this.googleLoginInProgress = false;
-              const sessaoOk = !!(res.token || (res.nome && res.id));
-              if (sessaoOk) {
+              if (res.nome && res.id) {
                 this.authService.setAuthData(res.token || '', res.nome, res.id, res.imagem);
-                this.toastService.success('Login feito com sucesso!');
+                this.toastService.success(res.mensagem || 'Login feito com sucesso!');
                 this.router.navigate(['app']);
               } else {
-                this.accessService.postAuthRefreshToken().subscribe({
-                  next: (refresh) => {
-                    this.googleLoginInProgress = false;
-                    this.authService.setAuthData(refresh.token || '', refresh.nome, refresh.id, refresh.imagem);
-                    this.toastService.success('Login feito com sucesso!');
-                    this.router.navigate(['app']);
-                  },
-                  error: () => {
-                    this.googleLoginInProgress = false;
-                    this.showLoginError = true;
-                    this.toastService.error('Não foi possível concluir o login. Tente novamente.');
-                  }
-                });
+                this.showLoginError = true;
+                this.toastService.error('Não foi possível concluir o login. Tente novamente.');
               }
             },
-            error: (err) => {
+            error: (err: unknown) => {
               this.googleLoginInProgress = false;
               this.showLoginError = true;
-              const msg =
-                err.error?.erro || err.error?.message || 'Não foi possível entrar com o Google. Tente novamente.';
-              this.toastService.error(msg);
+              this.toastService.error(AccessService.apiErrorMessage(err));
             }
           });
         }
