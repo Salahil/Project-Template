@@ -69,7 +69,7 @@ export class LoginComponent implements OnInit, OnDestroy {
 
     if (email && senha) {
       this.loginService.postLogin(email, senha).subscribe({
-        next: (res: any) => {
+        next: (res) => {
           this.showLoginError = false;
 
           if (res.idVerificacao) {
@@ -79,7 +79,14 @@ export class LoginComponent implements OnInit, OnDestroy {
           }
 
           this.toastService.success('Login feito com sucesso!');
-          this.authService.setAuthData(res.token, res.nome, res.tipoUsuario, res.id, res.imagem, res.restauranteId);
+          this.authService.setAuthData(
+            res.token || '',
+            res.nome,
+            res.tipoUsuario,
+            res.id,
+            res.imagem,
+            res.restauranteId
+          );
           this.router.navigate(['app']);
         },
         error: (err: any) => {
@@ -104,15 +111,30 @@ export class LoginComponent implements OnInit, OnDestroy {
           this.loginService.postLoginWithGoogle(user.idToken).subscribe({
             next: (res) => {
               this.googleLoginInProgress = false;
-              if (res?.token) {
-                this.authService.setAuthData(res.token, res.nome, res.tipoUsuario, res.id, res.imagem, res.restauranteId);
+              const sessaoOk = !!(res.token || (res.nome && res.id));
+              if (sessaoOk) {
+                this.authService.setAuthData(
+                  res.token || '',
+                  res.nome,
+                  res.tipoUsuario,
+                  res.id,
+                  res.imagem,
+                  res.restauranteId
+                );
                 this.toastService.success('Login feito com sucesso!');
                 this.router.navigate(['app']);
               } else {
                 this.loginService.postRefreshToken().subscribe({
                   next: (refresh) => {
                     this.googleLoginInProgress = false;
-                    this.authService.setAuthData(refresh.token, refresh.nome, refresh.tipoUsuario, refresh.id, refresh.imagem, refresh.restauranteId);
+                    this.authService.setAuthData(
+                      refresh.token || '',
+                      refresh.nome,
+                      refresh.tipoUsuario,
+                      refresh.id,
+                      refresh.imagem,
+                      refresh.restauranteId
+                    );
                     this.toastService.success('Login feito com sucesso!');
                     this.router.navigate(['app']);
                   },

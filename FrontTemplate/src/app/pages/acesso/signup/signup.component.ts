@@ -129,7 +129,14 @@ export class SignUpComponent implements OnInit, OnDestroy {
           this.loginService.postLoginWithGoogle(user.idToken).subscribe({
             next: (res) => {
               this.toastService.success('Conta conectada com sucesso!');
-              this.authService.setAuthData(res.token, res.nome, res.tipoUsuario, res.id, res.imagem, res.restauranteId);
+              this.authService.setAuthData(
+                res.token || '',
+                res.nome,
+                res.tipoUsuario,
+                res.id,
+                res.imagem,
+                res.restauranteId
+              );
               this.router.navigate(['app']);
             },
             error: (err) => {

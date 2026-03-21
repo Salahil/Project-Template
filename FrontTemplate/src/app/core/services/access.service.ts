@@ -1,9 +1,9 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable, tap } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { AuthService } from './auth.service';
-import { LoginResponse, RegisterResponse } from '../../types/login-response.interface';
+import { LoginResponse, RegisterResponse, TipoUsuario } from '../../types/login-response.interface';
 
 /** Padrão: métodos HTTP com prefixo do verbo (post, get, put, delete). */
 @Injectable({
@@ -14,37 +14,85 @@ export class AcessService {
 
   constructor(private httpClient: HttpClient, private auth: AuthService) {}
 
-  postLogin(email: string, senha: string): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(`${this.apiUrl}/login`, { email, senha }, { withCredentials: true }).pipe(
-      tap((value) => {
-        this.auth.setToken(value.token);
-        this.auth.setPerfil({
-          tipo: value.tipoUsuario,
-          nome: value.nome,
-          id: value.id,
-          imagem: value.imagem,
-          restauranteId: value.restauranteId
-        });
-      })
-    );
+  /**
+   * Corpo HTTP pode vir direto como `LoginResponse` ou embrulhado em `ApiResponse` (`dados`).
+   * O DTO Java também expõe `userId` e pode omitir `token` no JSON (JWT no cookie).
+   */
+  private normalizeLoginResponse(body: unknown): LoginResponse {
+    const b = body as Record<string, unknown> | null;
+    const raw =
+      b != null && typeof b === 'object' && 'dados' in b && b['dados'] !== undefined
+        ? b['dados']
+        : b;
+
+    if (raw == null || typeof raw !== 'object') {
+      return {
+        token: '',
+        tipoUsuario: 'CLIENTE',
+        nome: this.auth.perfil?.nome ?? '',
+        id: this.auth.perfil?.id ?? ''
+      };
+    }
+
+    const r = raw as Record<string, unknown>;
+    const extras = (r['dadosExtras'] as Record<string, unknown> | undefined) ?? {};
+    const tipoRaw = r['tipoUsuario'] ?? extras['tipoUsuario'] ?? extras['tipo'];
+    const tipo: TipoUsuario =
+      tipoRaw === 'RESTAURANTE' || tipoRaw === 'FUNCIONARIO' || tipoRaw === 'CLIENTE'
+        ? tipoRaw
+        : 'CLIENTE';
+
+    const id =
+      r['id'] != null ? String(r['id']) : r['userId'] != null ? String(r['userId']) : '';
+
+    const token = typeof r['token'] === 'string' ? r['token'] : '';
+
+    return {
+      token,
+      tipoUsuario: tipo,
+      nome: String(r['nome'] ?? ''),
+      id,
+      imagem: (r['imagem'] ?? extras['imagem']) as string | null | undefined,
+      restauranteId: (r['restauranteId'] ?? extras['restauranteId']) as string | undefined,
+      idVerificacao: r['idVerificacao'] as string | undefined,
+      mensagem: (r['mensagem'] as string | undefined) ?? (typeof b?.['mensagem'] === 'string' ? b['mensagem'] : undefined),
+      userId: r['userId'] as string | undefined,
+      email: r['email'] as string | undefined,
+      dadosExtras: r['dadosExtras'] as Record<string, unknown> | undefined
+    };
   }
 
-  /**
-   * Login com token do Google (idToken). Envia o token para o backend e salva JWT + perfil.
-   */
+  private applyAuthFromLogin(login: LoginResponse): void {
+    if (login.token) {
+      this.auth.setToken(login.token);
+    }
+    if (login.nome && login.tipoUsuario) {
+      this.auth.setPerfil({
+        tipo: login.tipoUsuario,
+        nome: login.nome,
+        id: login.id || undefined,
+        imagem: login.imagem,
+        restauranteId: login.restauranteId
+      });
+    }
+  }
+
+  postLogin(email: string, senha: string): Observable<LoginResponse> {
+    return this.httpClient
+      .post<unknown>(`${this.apiUrl}/login`, { email, senha }, { withCredentials: true })
+      .pipe(
+        map((body) => this.normalizeLoginResponse(body)),
+        tap((login) => this.applyAuthFromLogin(login))
+      );
+  }
+
   postLoginWithGoogle(idToken: string): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(`${this.apiUrl}/login/google`, { token: idToken }, { withCredentials: true }).pipe(
-      tap((value) => {
-        this.auth.setToken(value.token);
-        this.auth.setPerfil({
-          tipo: value.tipoUsuario,
-          nome: value.nome,
-          id: value.id,
-          imagem: value.imagem,
-          restauranteId: value.restauranteId
-        });
-      })
-    );
+    return this.httpClient
+      .post<unknown>(`${this.apiUrl}/login/google`, { token: idToken }, { withCredentials: true })
+      .pipe(
+        map((body) => this.normalizeLoginResponse(body)),
+        tap((login) => this.applyAuthFromLogin(login))
+      );
   }
 
   postSignup(data: any): Observable<RegisterResponse> {
@@ -53,21 +101,13 @@ export class AcessService {
 
   postRefreshToken(): Observable<LoginResponse> {
     console.log('[AcessService] calling /auth/refresh');
-    return this.httpClient
-      .post<LoginResponse>(`${this.apiUrl}/refresh`, {}, { withCredentials: true })
-      .pipe(
-        tap(res => {
-          console.log('[AcessService] refresh response received:', res);
-          this.auth.setToken(res.token);
-          this.auth.setPerfil({
-            tipo: res.tipoUsuario,
-            nome: res.nome,
-            imagem: res.imagem,
-            id: res.id,
-            restauranteId: res.restauranteId
-          });
-        })
-      );
+    return this.httpClient.post<unknown>(`${this.apiUrl}/refresh`, {}, { withCredentials: true }).pipe(
+      map((body) => this.normalizeLoginResponse(body)),
+      tap((login) => {
+        console.log('[AcessService] refresh response normalized:', login);
+        this.applyAuthFromLogin(login);
+      })
+    );
   }
 
   postReenviarCodigo(email: string): Observable<any> {
@@ -79,24 +119,24 @@ export class AcessService {
   }
 
   postVerificarCodigo(idVerificacao: string, codigo: string, mantenhaMeConectado: boolean): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(`${this.apiUrl}/verificar`, {
-      idVerificacao,
-      codigo,
-      mantenhaMeConectado
-    }, { withCredentials: true }).pipe(
-      tap((value) => {
-        if (value.token) {
-          this.auth.setToken(value.token);
-          this.auth.setPerfil({
-            tipo: value.tipoUsuario,
-            nome: value.nome,
-            id: value.id,
-            imagem: value.imagem,
-            restauranteId: value.restauranteId
-          });
-        }
-      })
-    );
+    return this.httpClient
+      .post<unknown>(
+        `${this.apiUrl}/verificar`,
+        {
+          idVerificacao,
+          codigo,
+          mantenhaMeConectado
+        },
+        { withCredentials: true }
+      )
+      .pipe(
+        map((body) => this.normalizeLoginResponse(body)),
+        tap((login) => {
+          if (login.token) {
+            this.applyAuthFromLogin(login);
+          }
+        })
+      );
   }
 
   postLogout(): Observable<any> {
@@ -107,50 +147,27 @@ export class AcessService {
     );
   }
 
-  /**
-   * Envia a nova senha para o backend para concluir a redefinição.
-   * O token é passado na URL como path parameter.
-   */
   postRedefinirSenha(token: string, novaSenha: string): Observable<any> {
     return this.httpClient.post(`${this.apiUrl}/mudar-senha/${token}`, { novaSenha }, { withCredentials: true });
   }
 
-  /**
-   * Login específico para garçons/funcionários
-   */
   postLoginGarcom(emailRestaurante: string, codigoIdentidade: string, senha: string): Observable<LoginResponse> {
-    return this.httpClient.post<LoginResponse>(`${this.apiUrl}/login/garcom`, {
-      emailRestaurante,
-      codigoIdentidade,
-      senha
-    }, { withCredentials: true }).pipe(
-      tap((value) => {
-        console.log('[AcessService] postLoginGarcom - Response completo:', value);
-        this.auth.setToken(value.token);
-        const restauranteId = value.restauranteId;
-        console.log('[AcessService] postLoginGarcom - restauranteId extraído:', restauranteId);
-        console.log('[AcessService] postLoginGarcom - Dados do perfil a serem salvos:', {
-          tipo: value.tipoUsuario,
-          nome: value.nome,
-          id: value.id,
-          imagem: value.imagem,
-          restauranteId: value.restauranteId
-        });
-        this.auth.setPerfil({
-          tipo: value.tipoUsuario,
-          nome: value.nome,
-          id: value.id,
-          imagem: value.imagem,
-          restauranteId: value.restauranteId
-        });
-        console.log('[AcessService] postLoginGarcom - Perfil salvo. Verificando localStorage...');
-        console.log('[AcessService] postLoginGarcom - localStorage após salvar:', {
-          tipoUsuario: localStorage.getItem('tipoUsuario'),
-          restauranteIdFuncionario: localStorage.getItem('restauranteIdFuncionario'),
-          nome: localStorage.getItem('nome'),
-          token: localStorage.getItem('token') ? 'presente' : 'ausente'
-        });
-      })
-    );
+    return this.httpClient
+      .post<unknown>(
+        `${this.apiUrl}/login/garcom`,
+        {
+          emailRestaurante,
+          codigoIdentidade,
+          senha
+        },
+        { withCredentials: true }
+      )
+      .pipe(
+        map((body) => this.normalizeLoginResponse(body)),
+        tap((login) => {
+          console.log('[AcessService] postLoginGarcom - normalized:', login);
+          this.applyAuthFromLogin(login);
+        })
+      );
   }
 }

@@ -88,9 +88,10 @@ export class AuthInterceptor implements HttpInterceptor {
 
       return this.loginService.postRefreshToken().pipe(
         switchMap(res => {
-          this.refreshTokenSubject.next(res.token);
+          const tkn = res.token || '';
+          this.refreshTokenSubject.next(tkn);
           const retry = request.clone({
-            setHeaders: { Authorization: `Bearer ${res.token}` },
+            setHeaders: tkn ? { Authorization: `Bearer ${tkn}` } : {},
             withCredentials: true
           });
           return next.handle(retry);
@@ -107,11 +108,11 @@ export class AuthInterceptor implements HttpInterceptor {
     }
 
     return this.refreshTokenSubject.pipe(
-      filter(t => t != null),
+      filter((t): t is string => t != null),
       take(1),
       switchMap(tkn => {
         const retry = request.clone({
-          setHeaders: { Authorization: `Bearer ${tkn!}` },
+          setHeaders: tkn ? { Authorization: `Bearer ${tkn}` } : {},
           withCredentials: true
         });
         return next.handle(retry);
