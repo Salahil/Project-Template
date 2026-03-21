@@ -1,5 +1,6 @@
 package com.enois.logapi.service;
 
+import java.time.Instant;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Optional;
@@ -45,6 +46,9 @@ public class AuthService {
     
     @Autowired
     private RefreshTokenService refreshTokenService;
+    
+    @Autowired
+    private EmailService emailService;
 
     public Usuario registrar(RegisterRequest request, String recaptchaToken) {
     
@@ -65,6 +69,33 @@ public class AuthService {
         user.setSenha(passwordEncoder.encode(request.getSenha()));
         
         return repository.save(user);
+    }
+    
+    public void solicitarRecuperacaoSenha(String email) {
+        Usuario user = repository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Se o e-mail existir no nosso sistema, um link será enviado.")); // Mensagem vaga por segurança
+        String token = UUID.randomUUID().toString();
+        
+        user.setResetToken(token);
+        user.setResetTokenExpiry(Instant.now().plusSeconds(15 * 60));
+
+        repository.save(user);
+        emailService.enviarEmailRecuperacaoSenha(user.getEmail(), user.getNome(), token);
+    }
+    
+    public void redefinirSenha(String token, String novaSenha) {
+        Usuario user = repository.findAll().stream()
+                .filter(u -> token.equals(u.getResetToken()))
+                .findFirst()
+                .orElseThrow(() -> new RuntimeException("Token inválido ou não encontrado."));
+        if (user.getResetTokenExpiry() == null || user.getResetTokenExpiry().isBefore(Instant.now())) {
+            throw new RuntimeException("Este link de recuperação já expirou. Pede um novo.");
+        }
+        user.setSenha(passwordEncoder.encode(novaSenha));
+        user.setResetToken(null);
+        user.setResetTokenExpiry(null);
+        
+        repository.save(user);
     }
 
     public LoginResponse login(LoginRequest request, String recaptchaToken) {

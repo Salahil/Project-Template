@@ -74,7 +74,6 @@ public class AuthController {
             anexarCookies(response, loginResponse.getToken(), loginResponse.getRefreshToken());
             return ResponseEntity.ok(new ApiResponse<>(loginResponse, "Login com Google realizado com sucesso"));
         } catch (Exception e) {
-            // Evita o redirect para /error (GET) e retorna o erro real como 400
             return ResponseEntity.badRequest().body(new ApiResponse<>(false, "Erro no login Google: " + e.getMessage()));
         }
     }

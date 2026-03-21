@@ -9,6 +9,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.time.Instant;
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 public class Usuario implements UserDetails {
 	
-	private static final long serialVersionUID = 2L;
+    private static final long serialVersionUID = 2L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -30,10 +31,10 @@ public class Usuario implements UserDetails {
     @Column(nullable = false, unique = true)
     private String email;
 
-    private String nome; // Username para exibição
+    private String nome;
 
     @Column(nullable = false)
-    private String senha; // O hash BCrypt
+    private String senha;
 
     private String telefone;
 
@@ -43,6 +44,17 @@ public class Usuario implements UserDetails {
 
     private boolean emailVerificado = false;
     
+    @Column(columnDefinition = "boolean default false")
+    private boolean mfaEnabled = false;
+    
+    private String mfaCode;
+    
+    private Instant mfaExpiry;
+    
+    private String resetToken;
+    
+    private Instant resetTokenExpiry;
+
     @CreatedDate
     @Column(updatable = false)
     private LocalDateTime dataCriacao;
@@ -54,19 +66,14 @@ public class Usuario implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Por enquanto retornamos lista vazia, depois podemos por roles (ADMIN, USER)
         return List.of(); 
     }
 
     @Override
-    public String getPassword() {
-        return this.senha;
-    }
+    public String getPassword() { return this.senha; }
 
     @Override
-    public String getUsername() {
-        return this.email; // O nosso "login" é o email
-    }
+    public String getUsername() { return this.email; }
 
     @Override
     public boolean isAccountNonExpired() { return true; }
@@ -78,7 +85,7 @@ public class Usuario implements UserDetails {
     public boolean isCredentialsNonExpired() { return true; }
 
     @Override
-    public boolean isEnabled() { return true; } // Podemos mudar se quiser bloquear usuários não verificados
+    public boolean isEnabled() { return true; }
 
     // --- Getters e Setters Normais ---
 
@@ -102,4 +109,20 @@ public class Usuario implements UserDetails {
 
     public boolean isEmailVerificado() { return emailVerificado; }
     public void setEmailVerificado(boolean emailVerificado) { this.emailVerificado = emailVerificado; }
+
+
+    public boolean isMfaEnabled() { return mfaEnabled; }
+    public void setMfaEnabled(boolean mfaEnabled) { this.mfaEnabled = mfaEnabled; }
+
+    public String getMfaCode() { return mfaCode; }
+    public void setMfaCode(String mfaCode) { this.mfaCode = mfaCode; }
+
+    public Instant getMfaExpiry() { return mfaExpiry; }
+    public void setMfaExpiry(Instant mfaExpiry) { this.mfaExpiry = mfaExpiry; }
+
+    public String getResetToken() { return resetToken; }
+    public void setResetToken(String resetToken) { this.resetToken = resetToken; }
+
+    public Instant getResetTokenExpiry() { return resetTokenExpiry; }
+    public void setResetTokenExpiry(Instant resetTokenExpiry) { this.resetTokenExpiry = resetTokenExpiry; }
 }
